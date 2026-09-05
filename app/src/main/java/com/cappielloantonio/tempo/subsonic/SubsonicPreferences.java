@@ -2,13 +2,14 @@ package com.cappielloantonio.tempo.subsonic;
 
 import com.cappielloantonio.tempo.subsonic.utils.StringUtil;
 
-import java.util.UUID;
+import java.security.SecureRandom;
 
 public class SubsonicPreferences {
     private String serverUrl;
     private String username;
     private String clientName = "Tempo";
     private SubsonicAuthentication authentication;
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     public String getServerUrl() {
         return serverUrl;
@@ -79,7 +80,13 @@ public class SubsonicPreferences {
         }
 
         void update(String password) {
-            this.salt = UUID.randomUUID().toString();
+            byte[] saltBytes = new byte[8];
+            secureRandom.nextBytes(saltBytes);
+            StringBuilder sb = new StringBuilder();
+            for (byte b : saltBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            this.salt = sb.toString();
             this.token = StringUtil.tokenize(password + salt);
         }
     }

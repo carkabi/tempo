@@ -106,6 +106,19 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Header / Welcome -->
+        <TextView
+            android:id="@+id/home_welcome_text"
+            style="@style/TitleLarge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp"
+            android:text="@string/home_welcome_text"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
         <!--  Discover music  -->
         <LinearLayout
             android:id="@+id/home_discover_sector"

@@ -167,6 +167,11 @@ object Preferences {
     }
 
     @JvmStatic
+    fun setInUseServerAddress(address: String?) {
+        App.getInstance().preferences.edit().putString(IN_USE_SERVER_ADDRESS, address).apply()
+    }
+
+    @JvmStatic
     fun getInUseServerAddress(): String? {
         return App.getInstance().preferences.getString(IN_USE_SERVER_ADDRESS, null)
             ?.takeIf { it.isNotBlank() }

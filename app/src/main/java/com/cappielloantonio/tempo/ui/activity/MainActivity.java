@@ -1,6 +1,7 @@
 package com.cappielloantonio.tempo.ui.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -77,6 +78,24 @@ public class MainActivity extends BaseActivity {
         checkConnectionType();
         getOpenSubsonicExtensions();
         checkTempoUpdate();
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (intent != null && Intent.ACTION_SEND.equals(intent.getAction()) && "text/plain".equals(intent.getType())) {
+            String sharedText = intent.getStringExtra(Intent.EXTRA_TEXT);
+            if (sharedText != null && sharedText.contains("spotify.com")) {
+                Bundle bundle = new Bundle();
+                bundle.putString("shared_url", sharedText);
+                navController.navigate(R.id.addMusicFragment, bundle);
+            }
+        }
     }
 
     @Override
@@ -228,8 +247,10 @@ public class MainActivity extends BaseActivity {
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED && (
                     destination.getId() == R.id.homeFragment ||
-                            destination.getId() == R.id.libraryFragment ||
-                            destination.getId() == R.id.downloadFragment)
+                            destination.getId() == R.id.searchFragment ||
+                            destination.getId() == R.id.playlistCatalogueFragment ||
+                            destination.getId() == R.id.addMusicFragment ||
+                            destination.getId() == R.id.settingsFragment)
             ) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }

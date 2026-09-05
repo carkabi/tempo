@@ -45,7 +45,7 @@
             app:layout_constraintTop_toTopOf="@+id/disc_title_text_view"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/song_cover_image_view"
         android:layout_width="52dp"
         android:layout_height="52dp"
@@ -53,7 +53,8 @@
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/different_disk_divider_sector" />
+        app:layout_constraintTop_toBottomOf="@+id/different_disk_divider_sector"
+        app:shapeAppearanceOverlay="@style/RoundedCornersImage" />
 
     <TextView
         android:id="@+id/track_number_text_view"

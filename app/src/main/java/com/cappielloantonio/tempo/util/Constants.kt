@@ -116,4 +116,6 @@ object Constants {
     const val HOME_SECTOR_RECENTLY_ADDED = "HOME_SECTOR_RECENTLY_ADDED"
     const val HOME_SECTOR_PINNED_PLAYLISTS = "HOME_SECTOR_PINNED_PLAYLISTS"
     const val HOME_SECTOR_SHARED = "HOME_SECTOR_SHARED"
+
+    const val NAVIDROME_SERVER_URL = "https://music.tropikeau.fr"
 }

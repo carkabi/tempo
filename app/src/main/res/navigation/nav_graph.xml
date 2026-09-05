@@ -335,4 +335,9 @@
         android:name="com.cappielloantonio.tempo.ui.fragment.bottomsheetdialog.ShareBottomSheetDialog"
         android:label="ShareBottomSheetDialog"
         tools:layout="@layout/bottom_sheet_share_dialog" />
+    <fragment
+        android:id="@+id/addMusicFragment"
+        android:name="com.cappielloantonio.tempo.ui.fragment.AddMusicFragment"
+        android:label="AddMusicFragment"
+        tools:layout="@layout/fragment_add_music" />
 </navigation>
