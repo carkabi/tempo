@@ -176,9 +176,14 @@ public class HomeViewModel extends AndroidViewModel {
 
     public LiveData<List<Integer>> getYearList(LifecycleOwner owner) {
         if (years.getValue() == null) {
-            albumRepository.getDecades().observe(owner, years::postValue);
+            albumRepository.getDecades().observe(owner, decades -> {
+                if (decades != null) {
+                    List<Integer> sortedDecades = new ArrayList<>(decades);
+                    sortedDecades.sort(Collections.reverseOrder());
+                    years.postValue(sortedDecades);
+                }
+            });
         }
-
         return years;
     }
 
@@ -254,6 +259,34 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         return shares;
+    }
+
+    public LiveData<List<Child>> getBestOfArtistSongs() {
+        return songRepository.getStarredSongs(false, 100);
+    }
+
+    public LiveData<List<Child>> getStarredAlbumsSongs() {
+        return songRepository.getRandomSample(50, null, null);
+    }
+
+    public LiveData<List<Child>> getStarredArtistsSongs() {
+        return songRepository.getRandomSample(50, null, null);
+    }
+
+    public LiveData<List<Child>> getMostPlayedAlbumsSongs() {
+        return songRepository.getRandomSample(20, null, null);
+    }
+
+    public LiveData<List<Child>> getRecentlyPlayedAlbumsSongs() {
+        return songRepository.getRandomSample(50, null, null);
+    }
+
+    public LiveData<List<Child>> getNewestAlbumsSongs() {
+        return songRepository.getRandomSample(50, null, null);
+    }
+
+    public LiveData<List<Child>> getStarredTracksSongs() {
+        return songRepository.getStarredSongs(false, 100);
     }
 
     public LiveData<List<Child>> getAllStarredTracks() {

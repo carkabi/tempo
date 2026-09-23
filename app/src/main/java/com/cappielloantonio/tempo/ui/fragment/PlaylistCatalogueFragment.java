@@ -68,10 +68,15 @@ public class PlaylistCatalogueFragment extends Fragment implements ClickCallback
     }
 
     private void init() {
-        if (requireArguments().getString(Constants.PLAYLIST_ALL) != null) {
+        Bundle args = getArguments();
+        if (args != null) {
+            if (args.getString(Constants.PLAYLIST_ALL) != null) {
+                playlistCatalogueViewModel.setType(Constants.PLAYLIST_ALL);
+            } else if (args.getString(Constants.PLAYLIST_DOWNLOADED) != null) {
+                playlistCatalogueViewModel.setType(Constants.PLAYLIST_DOWNLOADED);
+            }
+        } else {
             playlistCatalogueViewModel.setType(Constants.PLAYLIST_ALL);
-        } else if (requireArguments().getString(Constants.PLAYLIST_DOWNLOADED) != null) {
-            playlistCatalogueViewModel.setType(Constants.PLAYLIST_DOWNLOADED);
         }
     }
 

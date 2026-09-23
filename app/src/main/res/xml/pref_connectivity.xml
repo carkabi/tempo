@@ -1,0 +1,16 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="Connectivité">
+        <Preference
+            android:key="android_auto_info"
+            app:title="@string/settings_android_auto_title"
+            app:summary="@string/settings_android_auto_summary"
+            app:selectable="false" />
+
+        <SwitchPreference
+            android:title="@string/settings_wifi_only_title"
+            android:defaultValue="false"
+            android:summary="@string/settings_wifi_only_summary"
+            android:key="wifi_only" />
+    </PreferenceCategory>
+</PreferenceScreen>

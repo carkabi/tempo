@@ -47,8 +47,8 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/song_cover_image_view"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_gravity="center"
         android:layout_marginStart="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -59,8 +59,8 @@
     <TextView
         android:id="@+id/track_number_text_view"
         style="@style/LabelLarge"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
         android:layout_marginStart="16dp"
         android:gravity="center"
         android:text="@string/label_placeholder"
@@ -71,7 +71,7 @@
     <View
         android:id="@+id/cover_image_separator"
         android:layout_width="12dp"
-        android:layout_height="52dp"
+        android:layout_height="44dp"
         app:layout_constraintBottom_toBottomOf="@+id/song_cover_image_view"
         app:layout_constraintEnd_toStartOf="@+id/search_result_song_title_text_view"
         app:layout_constraintStart_toEndOf="@+id/song_cover_image_view"

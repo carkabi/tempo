@@ -1,12 +1,16 @@
 <resources>
     <string-array name="theme_list_titles">
-        <item>Clair</item>
-        <item>Sombre</item>
+        <item>Sombre Peach 🍑</item>
+        <item>Sombre Tropical 🌴</item>
+        <item>Clair Peach 🍑</item>
+        <item>Clair Tropical 🌴</item>
         <item>Système</item>
     </string-array>
     <string-array name="theme_list_values">
-        <item>light</item>
-        <item>dark</item>
+        <item>dark_peach</item>
+        <item>dark_tropical</item>
+        <item>light_peach</item>
+        <item>light_tropical</item>
         <item>default</item>
     </string-array>
 

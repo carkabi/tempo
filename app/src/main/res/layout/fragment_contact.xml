@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:title="Contact et suggestions"
+        app:titleTextColor="@color/accent_gold"
+        app:navigationIcon="@drawable/ic_arrow_back" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:paddingBottom="100dp">
+
+            <!-- Success Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/contact_success_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="#2600FF88"
+                app:strokeColor="#8000FF88"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/success_green" />
+
+                    <TextView
+                        android:id="@+id/contact_success_title"
+                        style="@style/TitleMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="Message envoyé !"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/contact_success_message"
+                        style="@style/BodyMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/white"
+                        android:gravity="center"
+                        tools:text="Ton message a bien été envoyé. Référence : #123" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/contact_new_message_button"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Nouveau message"
+                        android:textColor="@color/accent_cyan" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Form Container -->
+            <LinearLayout
+                android:id="@+id/contact_form_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/LabelMedium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TYPE DE MESSAGE"
+                    android:textColor="@color/accent_gold"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/contact_category_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/category_bug"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Rapport de problème (bug)"
+                        android:textColor="@color/white"
+                        android:checked="true" />
+
+                    <RadioButton
+                        android:id="@+id/category_suggestion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Suggestion d'amélioration"
+                        android:textColor="@color/white" />
+
+                    <RadioButton
+                        android:id="@+id/category_question"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Question"
+                        android:textColor="@color/white" />
+
+                    <RadioButton
+                        android:id="@+id/category_other"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Autre"
+                        android:textColor="@color/white" />
+                </RadioGroup>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/contact_name_input_layout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="Votre nom ou pseudo *"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="120"
+                    app:hintTextColor="@color/accent_cyan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contact_name_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="120"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/contact_email_input_layout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Adresse email pour réponse (facultatif)"
+                    app:hintTextColor="@color/accent_cyan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contact_email_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/contact_subject_input_layout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Sujet *"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="160"
+                    app:hintTextColor="@color/accent_cyan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contact_subject_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="160"
+                        android:inputType="text"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/contact_message_input_layout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Description détaillée *"
+                    app:counterEnabled="true"
+                    app:counterMaxLength="10000"
+                    app:hintTextColor="@color/accent_cyan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/contact_message_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLength="10000"
+                        android:minLines="5"
+                        android:gravity="top|start"
+                        android:inputType="textMultiLine"
+                        android:textColor="@color/white" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/contact_diagnostics_switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:checked="true"
+                    android:text="Inclure les informations techniques"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/contact_diagnostics_explanation"
+                    style="@style/BodySmall"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Aide à résoudre les bugs en transmettant la version de Peach, la version Android et le modèle de votre appareil. Aucun identifiant personnel, mot de passe ou contenu musical n'est envoyé."
+                    android:textColor="@color/white"
+                    android:alpha="0.7" />
+
+                <!-- Error Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/contact_error_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="12dp"
+                    app:cardBackgroundColor="#33FF0000"
+                    app:strokeColor="#80FF0000"
+                    app:strokeWidth="1dp">
+
+                    <TextView
+                        android:id="@+id/contact_error_text"
+                        style="@style/BodyMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp"
+                        android:textColor="@color/white"
+                        tools:text="Erreur lors de l'envoi." />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/contact_progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:visibility="gone" />
+
+                <!-- Send / Retry Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal"
+                    android:gravity="end">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/contact_retry_button"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="12dp"
+                        android:text="Réessayer"
+                        android:textColor="@color/accent_gold"
+                        app:strokeColor="@color/accent_gold"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/contact_send_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="56dp"
+                        android:text="Envoyer"
+                        app:backgroundTint="@color/accent_gold"
+                        android:textColor="@color/peach_background"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:cornerRadius="28dp" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

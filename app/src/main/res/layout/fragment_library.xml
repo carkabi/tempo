@@ -1,273 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient">
 
-    <fragment
-        android:id="@+id/toolbar_fragment"
-        android:name="com.cappielloantonio.tempo.ui.fragment.ToolbarFragment"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:title="@string/menu_library_label"
+        app:titleTextColor="@color/accent_gold" />
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/fragment_library_nested_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/library_linear_layout_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/global_padding_bottom">
+            android:padding="16dp">
 
-            <!--  Music Folder  -->
-            <LinearLayout
-                android:id="@+id/library_music_folder_sector"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_latest_releases_button"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="8dp"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="Dernières sorties"
+                app:icon="@drawable/ic_history"
+                app:iconTint="@color/accent_gold"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <TextView
-                    style="@style/TitleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/library_title_music_folder" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/music_folder_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:nestedScrollingEnabled="false"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp" />
-            </LinearLayout>
-
-            <!--  Album  -->
-            <LinearLayout
-                android:id="@+id/library_album_sector"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_artists_button"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/library_title_artist"
+                app:icon="@drawable/ic_placeholder_artist"
+                app:iconTint="@color/accent_gold"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <!--  Album  -->
-                <!--  Label and button  -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp">
-
-                    <TextView
-                        android:id="@+id/album_catalogue_sample_text_view_refreshable"
-                        style="@style/TitleLarge"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_album" />
-
-                    <TextView
-                        android:id="@+id/album_catalogue_text_view_clickable"
-                        style="@style/TitleMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_album_see_all_button" />
-
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/album_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/library_artist_sector"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_albums_button"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/library_title_album"
+                app:icon="@drawable/ic_placeholder_album"
+                app:iconTint="@color/accent_cyan"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <!--  Artist  -->
-                <!--  Label and button  -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp">
-
-                    <TextView
-                        android:id="@+id/artist_catalogue_sample_text_view_refreshable"
-                        style="@style/TitleLarge"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_artist" />
-
-
-                    <TextView
-                        android:id="@+id/artist_catalogue_text_view_clickable"
-                        style="@style/TitleMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_artist_see_all_button" />
-
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/artist_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/library_genres_sector"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_songs_button"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/library_title_starred_tracks"
+                app:icon="@drawable/ic_favorite"
+                app:iconTint="@color/success_green"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <!--  Genre  -->
-                <!--  Label and button  -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp">
-
-                    <TextView
-                        android:id="@+id/genre_catalogue_sample_text_view_refreshable"
-                        style="@style/TitleLarge"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_genre" />
-
-
-                    <TextView
-                        android:id="@+id/genre_catalogue_text_view_clickable"
-                        style="@style/TitleMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_genre_see_all_button" />
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/genre_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/library_playlist_sector"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_genres_button"
+                style="@style/Widget.Material3.Button.TextButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/library_title_genre"
+                app:icon="@drawable/ic_history"
+                app:iconTint="@color/warning_orange"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <!--  Playlist  -->
-                <!--  Label and button  -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingTop="16dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_playlists_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/library_title_playlist"
+                app:icon="@drawable/ic_placeholder_playlist"
+                app:iconTint="@color/accent_gold"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                    <TextView
-                        android:id="@+id/playlist_catalogue_sample_text_view_refreshable"
-                        style="@style/TitleLarge"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_playlist" />
+            <View style="@style/Divider" android:layout_marginVertical="16dp" android:background="@color/white" android:alpha="0.2" />
 
-                    <TextView
-                        android:id="@+id/playlist_catalogue_text_view_clickable"
-                        style="@style/TitleMedium"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="8dp"
-                        android:text="@string/library_title_playlist_see_all_button" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_downloads_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/download_title_section"
+                app:icon="@drawable/ic_download"
+                app:iconTint="@color/accent_cyan"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_folders_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="Intelligence Artificielle"
+                app:icon="@drawable/ic_info_stream"
+                app:iconTint="@color/accent_gold"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="@color/white" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/playlist_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:nestedScrollingEnabled="false"
-                    android:clipToPadding="false"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp" />
-            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

@@ -1,0 +1,42 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/settings_title_ui">
+        <ListPreference
+            app:key="theme"
+            app:title="@string/settings_theme"
+            app:entries="@array/theme_list_titles"
+            app:entryValues="@array/theme_list_values"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
+            android:key="always_on_display"
+            android:title="@string/settings_always_on_display" />
+
+        <SwitchPreference
+            android:key="rounded_corner"
+            android:title="@string/settings_rounded_corner" />
+
+        <ListPreference
+            app:key="rounded_corner_size"
+            app:title="@string/settings_rounded_corner_size"
+            app:entries="@array/rounded_corner_size_titles"
+            app:entryValues="@array/rounded_corner_size_values"
+            app:useSimpleSummaryProvider="true" />
+
+        <SwitchPreference
+            android:key="rating_per_item"
+            android:title="@string/settings_item_rating" />
+
+        <SwitchPreference
+            android:key="radio_section_visibility"
+            android:title="@string/settings_radio" />
+
+        <SwitchPreference
+            android:key="podcast_section_visibility"
+            android:title="@string/settings_podcast" />
+
+        <SwitchPreference
+            android:key="music_directory_section_visibility"
+            android:title="@string/settings_music_directory" />
+    </PreferenceCategory>
+</PreferenceScreen>

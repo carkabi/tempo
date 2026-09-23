@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Peach</string>
+    <string name="login_title_expanded">Connect to Peach</string>
+    <string name="login_title">Connect to Peach</string>
+    <string name="login_welcome">Welcome to Peach</string>
+    <string name="settings_about_summary">Peach is a smooth music player for Tropikeau and Navidrome.</string>
+</resources>

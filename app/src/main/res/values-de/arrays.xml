@@ -1,12 +1,16 @@
 <resources>
     <string-array name="theme_list_titles">
-        <item>Hell</item>
-        <item>Dunkel</item>
+        <item>Dunkel Peach 🍑</item>
+        <item>Dunkel Tropical 🌴</item>
+        <item>Hell Peach 🍑</item>
+        <item>Hell Tropical 🌴</item>
         <item>System Vorgabe</item>
     </string-array>
     <string-array name="theme_list_values">
-        <item>light</item>
-        <item>dark</item>
+        <item>dark_peach</item>
+        <item>dark_tropical</item>
+        <item>light_peach</item>
+        <item>light_tropical</item>
         <item>default</item>
     </string-array>
 

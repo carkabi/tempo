@@ -1,0 +1,67 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/settings_title_data">
+        <ListPreference
+            app:key="streaming_cache_size"
+            app:title="@string/settings_streaming_cache_size"
+            app:entries="@array/streaming_cache_size_titles"
+            app:entryValues="@array/streaming_cache_size_values" />
+
+        <Preference
+            android:key="streaming_cache_storage"
+            app:title="@string/settings_streaming_cache_storage_title" />
+
+        <Preference
+            android:key="download_storage"
+            app:title="@string/settings_download_storage_title" />
+
+        <SwitchPreference
+            android:key="sync_starred_tracks_for_offline_use"
+            android:title="@string/settings_sync_starred_tracks_for_offline_use_title" />
+
+        <SwitchPreference
+            android:title="@string/settings_data_saving_mode_title"
+            android:defaultValue="false"
+            android:summary="@string/settings_data_saving_mode_summary"
+            android:key="data_saving_mode" />
+
+        <ListPreference
+            app:defaultValue="500"
+            app:dialogTitle="@string/settings_covers_cache"
+            app:entries="@array/pref_cache_size_titles"
+            app:entryValues="@array/pref_cache_size_values"
+            app:key="image_cache_size"
+            app:title="@string/settings_covers_cache"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_transcoding_download">
+        <SwitchPreference
+            android:title="@string/settings_audio_transcode_download_title"
+            android:defaultValue="false"
+            android:key="audio_transcode_download" />
+
+        <SwitchPreference
+            android:title="@string/settings_audio_transcode_download_priority_title"
+            android:defaultValue="false"
+            android:key="audio_transcode_download_priority" />
+
+        <ListPreference
+            app:key="audio_transcode_format_download"
+            app:title="@string/settings_audio_transcode_format_download"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/audio_transcode_format_download_list_titles"
+            app:entryValues="@array/audio_transcode_format_download_list_values" />
+
+        <ListPreference
+            app:key="max_bitrate_download"
+            app:title="@string/settings_max_bitrate_download"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/max_bitrate_download_list_titles"
+            app:entryValues="@array/max_bitrate_download_list_values" />
+
+        <Preference
+            android:key="delete_download_storage"
+            app:title="@string/settings_delete_download_storage_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

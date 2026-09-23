@@ -33,6 +33,7 @@ import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.adapter.AlbumCatalogueAdapter;
 import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.viewmodel.AlbumCatalogueViewModel;
+import com.google.android.material.chip.Chip;
 
 @OptIn(markerClass = UnstableApi.class)
 public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
@@ -66,10 +67,29 @@ public class AlbumCatalogueFragment extends Fragment implements ClickCallback {
         View view = bind.getRoot();
 
         initAppBar();
+        initAlphabetFilter();
         initAlbumCatalogueView();
         initProgressLoader();
 
         return view;
+    }
+
+    private void initAlphabetFilter() {
+        String alphabet = "#ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        for (int i = 0; i < alphabet.length(); i++) {
+            final String letter = String.valueOf(alphabet.charAt(i));
+            Chip chip = new Chip(requireContext());
+            chip.setText(letter);
+            chip.setCheckable(true);
+            chip.setOnClickListener(v -> {
+                if (chip.isChecked()) {
+                    albumAdapter.getFilter().filter(letter);
+                } else {
+                    albumAdapter.getFilter().filter("");
+                }
+            });
+            bind.alphabetChipGroup.addView(chip);
+        }
     }
 
     @Override

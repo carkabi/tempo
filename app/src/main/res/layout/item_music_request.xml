@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/request_card"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardBackgroundColor="#1AFFFFFF"
+    app:strokeWidth="1dp"
+    app:strokeColor="#33FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Status Indicator Bar -->
+        <View
+            android:id="@+id/status_indicator_bar"
+            android:layout_width="4dp"
+            android:layout_height="match_parent"
+            android:background="@color/accent_gold" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/status_icon"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:contentDescription="Statut"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/white"
+                tools:src="@drawable/ic_history" />
+
+            <TextView
+                android:id="@+id/status_label"
+                style="@style/LabelSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textAllCaps="true"
+                android:alpha="0.8"
+                app:layout_constraintBottom_toBottomOf="@+id/status_icon"
+                app:layout_constraintStart_toEndOf="@+id/status_icon"
+                app:layout_constraintTop_toTopOf="@+id/status_icon"
+                tools:text="EN ATTENTE" />
+
+            <TextView
+                android:id="@+id/request_date"
+                style="@style/LabelSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:alpha="0.5"
+                app:layout_constraintBottom_toBottomOf="@+id/status_icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/status_icon"
+                tools:text="18:30" />
+
+            <TextView
+                android:id="@+id/music_title"
+                style="@style/TitleSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/status_icon"
+                tools:text="Bohemian Rhapsody" />
+
+            <TextView
+                android:id="@+id/music_artist"
+                style="@style/LabelSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:alpha="0.7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/music_title"
+                tools:text="Queen" />
+
+            <TextView
+                android:id="@+id/platform_label"
+                style="@style/LabelSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:background="#26000000"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
+                android:textColor="@color/white"
+                android:alpha="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/music_artist"
+                tools:text="SPOTIFY" />
+
+            <TextView
+                android:id="@+id/extra_info"
+                style="@style/LabelSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/white"
+                android:alpha="0.6"
+                app:layout_constraintBottom_toBottomOf="@+id/platform_label"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/platform_label"
+                app:layout_constraintTop_toTopOf="@+id/platform_label"
+                tools:text="Position : 1" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progress_indicator"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                app:indicatorColor="@color/white"
+                app:trackColor="#26FFFFFF"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/platform_label"
+                tools:progress="60"
+                tools:visibility="visible" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

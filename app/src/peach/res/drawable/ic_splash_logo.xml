@@ -1,0 +1,49 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+
+    <!-- Outer White Circle -->
+    <path
+        android:pathData="M144,144m-120,0a120,120 0,1 1,240 0a120,120 0,1 1,-240 0"
+        android:fillColor="#FFFFFF"/>
+
+    <!-- Peach Body Circle Gradient -->
+    <path
+        android:pathData="M144,144m-100,0a100,100 0,1 1,200 0a100,100 0,1 1,-200 0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="44"
+                android:startY="44"
+                android:endX="244"
+                android:endY="244">
+                <item android:color="#FF8E53" android:offset="0.0"/>
+                <item android:color="#FF6B57" android:offset="0.5"/>
+                <item android:color="#FF4E50" android:offset="1.0"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Green Leaves on Top -->
+    <path
+        android:pathData="M144,48 C120,20 85,25 95,48 C120,48 135,42 144,48 Z"
+        android:fillColor="#4CAF50"/>
+    <path
+        android:pathData="M144,48 C168,20 203,25 193,48 C168,48 153,42 144,48 Z"
+        android:fillColor="#81C784"/>
+
+    <!-- Audio Wave Line -->
+    <path
+        android:pathData="M64,144 Q80,120 96,144 T128,144 T160,144 T192,144 T224,144"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="12"
+        android:strokeLineCap="round"/>
+
+    <!-- Center White Play Triangle Icon -->
+    <path
+        android:pathData="M128,114 L176,144 L128,174 Z"
+        android:fillColor="#FFFFFF"/>
+</vector>

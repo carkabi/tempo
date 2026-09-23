@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        app:title="@string/menu_profile_label"
+        app:titleTextColor="?attr/colorPrimary" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <RelativeLayout
+                android:id="@+id/settings_news_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/settings_news_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:gravity="start|center_vertical"
+                    android:text="Actualités Peach"
+                    app:icon="@drawable/ic_feed"
+                    app:iconTint="?attr/colorPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:iconSize="36dp"
+                    app:iconPadding="16dp"
+                    android:textColor="?attr/appTextColorPrimary" />
+
+                <View
+                    android:id="@+id/news_badge_dot"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_alignTop="@id/settings_news_button"
+                    android:layout_alignEnd="@id/settings_news_button"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/ic_check_circle"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_contact_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/settings_contact_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:gravity="start|center_vertical"
+                    android:text="Contact et suggestions"
+                    app:icon="@drawable/ic_share"
+                    app:iconTint="?attr/colorSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:iconSize="36dp"
+                    app:iconPadding="16dp"
+                    android:textColor="?attr/appTextColorPrimary" />
+            </RelativeLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_general_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/settings_title_general"
+                app:icon="@drawable/ic_settings"
+                app:iconTint="?attr/colorSecondary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:iconSize="36dp"
+                app:iconPadding="16dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_audio_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/settings_title_transcoding"
+                app:icon="@drawable/ic_placeholder_radio"
+                app:iconTint="?attr/colorPrimary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:iconSize="36dp"
+                app:iconPadding="16dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_data_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/settings_title_data"
+                app:icon="@drawable/ic_download"
+                app:iconTint="@color/success_green"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:iconSize="36dp"
+                app:iconPadding="16dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_ui_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/settings_title_ui"
+                app:icon="@drawable/ic_graphic_eq"
+                app:iconTint="@color/warning_orange"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:iconSize="36dp"
+                app:iconPadding="16dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_connectivity_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/settings_connectivity_title"
+                app:icon="@drawable/ic_server_transcode_priority"
+                app:iconTint="?attr/colorSecondary"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:iconSize="36dp"
+                app:iconPadding="16dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <View style="@style/Divider" android:layout_marginVertical="24dp" android:background="?attr/appTextColorSecondary" android:alpha="0.3" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/settings_logout_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/settings_logout_title"
+                app:backgroundTint="@color/status_red"
+                android:textColor="@color/white"
+                app:cornerRadius="28dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

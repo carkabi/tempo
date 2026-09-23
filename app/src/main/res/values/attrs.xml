@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="appGradientStart" format="color" />
+    <attr name="appGradientCenter" format="color" />
+    <attr name="appGradientEnd" format="color" />
+    <attr name="appCardBackground" format="color" />
+    <attr name="appCardStroke" format="color" />
+    <attr name="appTextColorPrimary" format="color" />
+    <attr name="appTextColorSecondary" format="color" />
+    <attr name="appAccentColor" format="color" />
+</resources>

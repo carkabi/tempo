@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 /.idea/
+
+# Keystore and signing secrets
+keystore.properties
+*.jks
+*.keystore

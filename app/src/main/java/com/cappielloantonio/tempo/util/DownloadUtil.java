@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.RenderersFactory;
 import androidx.media3.exoplayer.offline.DownloadManager;
 import androidx.media3.exoplayer.offline.DownloadNotificationHelper;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.service.DownloaderManager;
 
 import java.io.File;
@@ -35,8 +36,8 @@ import java.util.concurrent.Executors;
 public final class DownloadUtil {
 
     public static final String DOWNLOAD_NOTIFICATION_CHANNEL_ID = "download_channel";
-    public static final String DOWNLOAD_NOTIFICATION_SUCCESSFUL_GROUP = "com.cappielloantonio.tempo.SuccessfulDownload";
-    public static final String DOWNLOAD_NOTIFICATION_FAILED_GROUP = "com.cappielloantonio.tempo.FailedDownload";
+    public static final String DOWNLOAD_NOTIFICATION_SUCCESSFUL_GROUP = BuildConfig.APPLICATION_ID + ".SuccessfulDownload";
+    public static final String DOWNLOAD_NOTIFICATION_FAILED_GROUP = BuildConfig.APPLICATION_ID + ".FailedDownload";
 
     private static final String STREAMING_CACHE_CONTENT_DIRECTORY = "streaming_cache";
     private static final String DOWNLOAD_CONTENT_DIRECTORY = "downloads";

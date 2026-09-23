@@ -1,6 +1,5 @@
 package com.cappielloantonio.tempo.ui.fragment;
 
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,77 +12,84 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentAddMusicBinding;
-import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.ui.adapter.MusicRequestAdapter;
 import com.cappielloantonio.tempo.viewmodel.AddMusicViewModel;
-
-import java.util.Objects;
 
 @UnstableApi
 public class AddMusicFragment extends Fragment {
 
     private FragmentAddMusicBinding bind;
     private AddMusicViewModel viewModel;
-    private MainActivity activity;
+    private MusicRequestAdapter adapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = (MainActivity) getActivity();
         bind = FragmentAddMusicBinding.inflate(inflater, container, false);
-        viewModel = new ViewModelProvider(this).get(AddMusicViewModel.class);
         return bind.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel = new ViewModelProvider(this).get(AddMusicViewModel.class);
 
+        initRecyclerView();
         initClickListeners();
         observeViewModel();
         checkArguments();
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        viewModel.startAutoRefresh();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        viewModel.stopAutoRefresh();
+    }
+
+    private void initRecyclerView() {
+        adapter = new MusicRequestAdapter(requireContext());
+        bind.requestsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        bind.requestsRecyclerView.setAdapter(adapter);
+    }
+
     private void checkArguments() {
-        if (getArguments() != null) {
+        if (getArguments() != null && getArguments().containsKey("shared_url")) {
             String sharedUrl = getArguments().getString("shared_url");
-            if (sharedUrl != null && !sharedUrl.isEmpty()) {
-                bind.spotifyUrlEditText.setText(sharedUrl);
-                viewModel.addMusic(sharedUrl);
-            }
+            bind.spotifyUrlEditText.setText(sharedUrl);
         }
     }
 
     private void initClickListeners() {
         bind.pasteButton.setOnClickListener(v -> pasteFromClipboard());
         bind.addButton.setOnClickListener(v -> {
-            String url = Objects.requireNonNull(bind.spotifyUrlEditText.getText()).toString().trim();
+            String url = bind.spotifyUrlEditText.getText() != null ? bind.spotifyUrlEditText.getText().toString().trim() : "";
             if (validateSpotifyUrl(url)) {
                 viewModel.addMusic(url);
             } else {
-                bind.spotifyUrlInputLayout.setError(getString(R.string.add_music_error_invalid));
+                bind.spotifyUrlInputLayout.setError("Veuillez entrer un lien Spotify valide");
             }
         });
-        bind.spotifyUrlEditText.setOnFocusChangeListener((v, hasFocus) -> {
-            if (hasFocus) {
-                bind.statusCard.setVisibility(View.GONE);
-            }
+        bind.swipeRefresh.setOnRefreshListener(() -> {
+            viewModel.loadHistory();
+            bind.swipeRefresh.setRefreshing(false);
         });
     }
 
     private void observeViewModel() {
         viewModel.getUiState().observe(getViewLifecycleOwner(), state -> {
             switch (state) {
-                case IDLE:
-                    setLoading(false);
-                    bind.statusCard.setVisibility(View.GONE);
-                    break;
                 case LOADING:
                     setLoading(true);
                     bind.statusCard.setVisibility(View.GONE);
-                    bind.spotifyUrlInputLayout.setError(null);
                     break;
                 case SUCCESS:
                     setLoading(false);
@@ -96,6 +102,15 @@ public class AddMusicFragment extends Fragment {
                     bind.statusCard.setVisibility(View.VISIBLE);
                     bind.statusTextView.setText(viewModel.getStatusMessage().getValue());
                     break;
+                default:
+                    setLoading(false);
+            }
+        });
+
+        viewModel.getRequestsList().observe(getViewLifecycleOwner(), requests -> {
+            if (requests != null) {
+                adapter.setItems(requests);
+                bind.emptyHistoryLayout.setVisibility(requests.isEmpty() ? View.VISIBLE : View.GONE);
             }
         });
     }
@@ -104,24 +119,20 @@ public class AddMusicFragment extends Fragment {
         bind.loadingProgressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
         bind.addButton.setEnabled(!isLoading);
         bind.pasteButton.setEnabled(!isLoading);
-        bind.spotifyUrlInputLayout.setEnabled(!isLoading);
     }
 
     private void pasteFromClipboard() {
-        ClipboardManager clipboard = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboard != null && clipboard.hasPrimaryClip()) {
-            ClipData clip = clipboard.getPrimaryClip();
-            if (clip != null && clip.getItemCount() > 0) {
-                CharSequence text = clip.getItemAt(0).getText();
-                if (text != null) {
-                    bind.spotifyUrlEditText.setText(text);
-                }
+        ClipboardManager clipboard = (ClipboardManager) requireActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null && clipboard.hasPrimaryClip() && clipboard.getPrimaryClip() != null) {
+            CharSequence text = clipboard.getPrimaryClip().getItemAt(0).getText();
+            if (text != null) {
+                bind.spotifyUrlEditText.setText(text);
             }
         }
     }
 
     private boolean validateSpotifyUrl(String url) {
-        return url.contains("spotify.com") && (url.contains("/track/") || url.contains("/album/") || url.contains("/artist/"));
+        return url != null && (url.contains("spotify.com") || url.contains("open.spotify.com"));
     }
 
     @Override

@@ -1,113 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@drawable/bg_premium_gradient">
 
-    <TextView
-        style="@style/TitleLarge"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="32dp"
-        android:paddingBottom="16dp"
-        android:text="@string/add_music_title" />
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-    <TextView
-        style="@style/TitleMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="24dp"
-        android:text="@string/add_music_subtitle" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/spotify_url_input_layout"
-        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/add_music_hint"
-        app:endIconMode="clear_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/spotify_url_edit_text"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textUri" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/paste_button"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:text="@string/add_music_paste" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/add_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="2"
-            android:text="@string/add_music_button" />
-    </LinearLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp">
-
-        <ProgressBar
-            android:id="@+id/loading_progress_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/status_card"
-            style="?attr/materialCardViewElevatedStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:cardBackgroundColor="@color/ocean_surface_variant"
-            app:contentPadding="16dp">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
-                android:id="@+id/status_text_view"
+                style="@style/TitleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="32dp"
+                android:paddingBottom="4dp"
+                android:text="Ajouter de la musique"
+                android:textColor="@color/accent_gold"
+                android:textStyle="bold" />
+
+            <TextView
+                style="@style/BodySmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="16dp"
+                android:text="Liens acceptés : Spotify - Soundcloud - YouTube Music"
+                android:textColor="@color/white"
+                android:alpha="0.8" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/spotify_url_input_layout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Coller le lien de la musique"
+                app:endIconMode="clear_text"
+                app:hintTextColor="@color/accent_gold"
+                app:boxStrokeColor="@color/accent_gold">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/spotify_url_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:textColor="@color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/paste_button"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:text="Coller"
+                    android:textColor="@color/white"
+                    app:strokeColor="@color/white" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="2"
+                    android:text="Ajouter"
+                    app:backgroundTint="@color/accent_gold"
+                    android:textColor="@color/peach_background" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/status_card"
+                style="?attr/materialCardViewElevatedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#26FFFFFF"
+                app:strokeWidth="0dp">
+                <TextView
+                    android:id="@+id/status_text_view"
+                    style="@style/TitleMedium"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:gravity="center"
+                    android:textColor="@color/white" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <ProgressBar
+                android:id="@+id/loading_progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:visibility="gone" />
+
+            <View style="@style/Divider" android:layout_marginTop="32dp" android:background="@color/white" android:alpha="0.2" />
+
+            <TextView
                 style="@style/TitleMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Mes derniers ajouts"
+                android:textColor="@color/accent_cyan"
+                android:textAllCaps="true"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/requests_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_music_request" />
+
+            <LinearLayout
+                android:id="@+id/empty_history_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
                 android:gravity="center"
-                android:text=""
-                android:textColor="@color/ocean_text_primary" />
-        </com.google.android.material.card.MaterialCardView>
-    </FrameLayout>
+                android:orientation="vertical"
+                android:visibility="gone">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Aucun ajout récent"
+                    android:textColor="@color/white"
+                    android:alpha="0.4" />
+            </LinearLayout>
 
-    <View
-        style="@style/Divider"
-        android:layout_marginTop="32dp"
-        android:layout_marginBottom="24dp" />
-
-    <TextView
-        style="@style/TitleLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="8dp"
-        android:text="@string/add_music_tutorial_title" />
-
-    <TextView
-        style="@style/TitleMedium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_music_tutorial_text" />
-
-</LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

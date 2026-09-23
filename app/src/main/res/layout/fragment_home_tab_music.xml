@@ -5,6 +5,7 @@
     android:id="@+id/fragment_home_nested_scroll_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_premium_gradient"
     app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <LinearLayout
@@ -12,785 +13,255 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="@dimen/global_padding_bottom">
+        android:paddingBottom="120dp">
 
-        <!--  Download/Sync starred  -->
+        <!--  Sync Starred  -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/home_sync_starred_card"
-            style="?attr/materialCardViewOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="12dp">
-
-                <!-- Title, secondary and supporting text -->
-                <TextView
-                    android:id="@+id/home_sync_starred_title"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_sync_starred_title"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textFontWeight="600"
-                    app:layout_constraintEnd_toStartOf="@id/vertical_guideline"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/home_sync_starred_subtitle"
-                    style="@style/TitleMedium"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/home_sync_starred_subtitle"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/home_sync_starred_title" />
-
-                <TextView
-                    android:id="@+id/home_sync_starred_tracks_to_sync"
-                    style="@style/TitleSmall"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="16dp"
-                    android:text="@string/home_sync_starred_subtitle"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/home_sync_starred_subtitle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="end"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/home_sync_starred_tracks_to_sync">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/home_sync_starred_cancel"
-                        style="?attr/materialButtonOutlinedStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:text="@string/home_sync_starred_cancel" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/home_sync_starred_download"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/home_sync_starred_download" />
-
-                </LinearLayout>
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/vertical_guideline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.90" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Header / Welcome -->
-        <TextView
-            android:id="@+id/home_welcome_text"
-            style="@style/TitleLarge"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="16dp"
-            android:text="@string/home_welcome_text"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <!--  Discover music  -->
-        <LinearLayout
-            android:id="@+id/home_discover_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_margin="16dp"
             android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
+            app:cardBackgroundColor="#33FFFFFF"
+            app:cardCornerRadius="16dp"
+            app:strokeWidth="0dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/discovery_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_discovery" />
-
-                <TextView
-                    android:id="@+id/discovery_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_discovery_shuffle_all_button" />
+                android:orientation="vertical"
+                android:padding="16dp">
+                <TextView android:id="@+id/home_sync_starred_title" style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Synchronisation" android:textColor="@color/accent_gold" />
+                <TextView android:id="@+id/home_sync_starred_tracks_to_sync" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:alpha="0.8" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="end" android:layout_marginTop="8dp">
+                    <Button android:id="@+id/home_sync_starred_cancel" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Annuler" android:textColor="@color/white" />
+                    <Button android:id="@+id/home_sync_starred_download" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Télécharger" />
+                </LinearLayout>
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-            <!--  slideview  -->
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/discover_song_view_pager"
-                android:layout_width="match_parent"
-                android:layout_height="212dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="16dp" />
+        <!-- Header / Welcome -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="32dp"
+            android:paddingBottom="16dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/home_welcome_text"
+                style="@style/TitleLarge"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/home_welcome_text"
+                android:textSize="28sp"
+                android:textColor="@color/accent_gold"
+                android:textStyle="bold" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/home_radio_button"
+                style="@style/Widget.Material3.Button.IconButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:icon="@drawable/ic_radio_premium"
+                app:iconTint="@color/accent_gold" />
+
+        </LinearLayout>
+
+        <!--  Discovery  -->
+        <LinearLayout
+            android:id="@+id/home_discover_sector"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/discovery_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_discovery" android:textColor="@color/accent_cyan" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/discovery_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/discovery_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Aléatoire" android:textColor="@color/white" android:alpha="0.7" />
+            </LinearLayout>
+            <androidx.viewpager2.widget.ViewPager2 android:id="@+id/discover_song_view_pager" android:layout_width="match_parent" android:layout_height="140dp" />
         </LinearLayout>
 
         <!--  Similar tracks -->
         <LinearLayout
             android:id="@+id/home_similar_tracks_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/similar_tracks_pre_text_view"
-                style="@style/TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_subtitle_made_for_you"
-                android:textAllCaps="true" />
-
-            <TextView
-                android:id="@+id/similar_tracks_text_view_refreshable"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_made_for_you" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/similar_tracks_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/similar_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_made_for_you" android:textColor="@color/white" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/similar_tracks_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/similar_tracks_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!--  Best of -->
+        <!--  Best Of Artist -->
         <LinearLayout
             android:id="@+id/home_best_of_artist_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/most_streamed_song_pre_text_view"
-                style="@style/TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_subtitle_best_of"
-                android:textAllCaps="true" />
-
-            <TextView
-                android:id="@+id/best_of_artist_text_view_refreshable"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_best_of" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/best_of_artist_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/best_of_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_best_of" android:textColor="@color/accent_gold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/best_of_artist_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/best_of_artist_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!--  Radio Artist -->
+        <!-- Radio Artist -->
         <LinearLayout
             android:id="@+id/home_radio_artist_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/radio_artist_text_view_refreshable"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_radio_station" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/radio_artist_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <TextView android:id="@+id/radio_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_radio_station" android:textColor="@color/accent_cyan" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/radio_artist_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
+        <View android:id="@+id/after_radio_artist_divider" android:layout_width="match_parent" android:layout_height="1dp" android:visibility="gone" />
 
-        <View
-            android:id="@+id/after_radio_artist_divider"
-            style="@style/Divider"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <!--  Grid tracks -->
+        <!--  Grid tracks / Top Songs -->
         <LinearLayout
             android:id="@+id/home_grid_tracks_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/grid_tracks_pre_text_view"
-                style="@style/TitleMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_last_week"
-                android:textAllCaps="true" />
-
-            <TextView
-                android:id="@+id/grid_tracks_text_view"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_top_songs" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/top_songs_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
-
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/grid_tracks_pre_text_view" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_title_last_week" android:textColor="@color/accent_gold" android:textAllCaps="true" />
+                <TextView android:id="@+id/grid_tracks_text_view" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:text="@string/home_title_top_songs" android:textColor="@color/white" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/top_songs_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/top_songs_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
+        <View android:id="@+id/after_grid_divider" android:layout_width="match_parent" android:layout_height="1dp" android:visibility="gone" />
 
-        <View
-            android:id="@+id/after_grid_divider"
-            style="@style/Divider"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <!-- Favorites -->
+        <!-- Starred Tracks -->
         <LinearLayout
             android:id="@+id/starred_tracks_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/starred_tracks_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_tracks" />
-
-                <TextView
-                    android:id="@+id/starred_tracks_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_tracks_see_all_button" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/starred_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_tracks" android:textColor="@color/accent_cyan" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/starred_tracks_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/starred_tracks_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/starred_tracks_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_tracks_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!-- Starred Albums -->
         <LinearLayout
             android:id="@+id/starred_albums_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/starred_albums_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_albums" />
-
-                <TextView
-                    android:id="@+id/starred_albums_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_albums_see_all_button" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/starred_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_albums" android:textColor="@color/white" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/starred_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/starred_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/starred_albums_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
+        <!-- Starred Artists -->
         <LinearLayout
             android:id="@+id/starred_artists_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/starred_artists_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_artists" />
-
-                <TextView
-                    android:id="@+id/starred_artists_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_starred_artists_see_all_button" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/starred_artists_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_artists" android:textColor="@color/accent_gold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/starred_artists_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/starred_artists_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/starred_artists_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_artists_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
+        <View android:id="@+id/after_favorites_divider" android:layout_width="match_parent" android:layout_height="1dp" android:visibility="gone" />
 
-        <View
-            android:id="@+id/after_favorites_divider"
-            style="@style/Divider"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
+        <!-- New Releases -->
         <LinearLayout
             android:id="@+id/home_new_releases_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  New releases  -->
-            <TextView
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_new_releases" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/new_releases_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_new_releases" android:textColor="@color/accent_cyan" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/new_releases_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/new_releases_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Fashback -->
+        <!-- Flashback -->
         <LinearLayout
             android:id="@+id/home_flashback_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <TextView
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_flashback" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/years_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <TextView style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_flashback" android:textColor="@color/white" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/years_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
-        <View
-            style="@style/Divider"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <!--  Most played albums -->
+        <!-- Most Played -->
         <LinearLayout
             android:id="@+id/home_most_played_albums_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/most_played_albums_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_most_played" />
-
-                <TextView
-                    android:id="@+id/most_played_albums_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_most_played_see_all_button" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/most_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_most_played" android:textColor="@color/accent_gold" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/most_played_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/most_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/most_played_albums_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/most_played_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!--  Recently played albums -->
+        <!-- Recently Played -->
         <LinearLayout
             android:id="@+id/home_recently_played_albums_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/recently_played_albums_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_last_played" />
-
-
-                <TextView
-                    android:id="@+id/recently_played_albums_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_last_played_see_all_button" />
-
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/recently_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_last_played" android:textColor="@color/white" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/recently_played_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/recently_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recently_played_albums_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/recently_played_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!--  Recently added albums -->
+        <!-- Recently Added -->
         <LinearLayout
             android:id="@+id/home_recently_added_albums_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <!--  Label and button  -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingStart="8dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp">
-
-                <TextView
-                    android:id="@+id/recently_added_albums_text_view_refreshable"
-                    style="@style/TitleLarge"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_recently_added" />
-
-
-                <TextView
-                    android:id="@+id/recently_added_albums_text_view_clickable"
-                    style="@style/TitleMedium"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    android:text="@string/home_title_recently_added_see_all_button" />
-
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                <TextView android:id="@+id/recently_added_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_recently_added" android:textColor="@color/accent_cyan" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/recently_added_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
+                <TextView android:id="@+id/recently_added_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
             </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recently_added_albums_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingStart="16dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="8dp" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/recently_added_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Playlists -->
+        <!-- Pinned Playlists -->
         <LinearLayout
             android:id="@+id/pinned_playlists_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/pinned_playlists_text_view"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_pinned_playlists" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/pinned_playlists_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <TextView android:id="@+id/pinned_playlists_text_view" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_pinned_playlists" android:textColor="@color/accent_gold" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/pinned_playlists_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
         <!-- Shares -->
         <LinearLayout
             android:id="@+id/shares_sector"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            tools:visibility="visible">
-
-            <TextView
-                android:id="@+id/shares_text_view_refreshable"
-                style="@style/TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingTop="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/home_title_shares" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/shares_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp" />
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
+            android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
+            <TextView android:id="@+id/shares_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_shares" android:textColor="@color/white" />
+            <androidx.recyclerview.widget.RecyclerView android:id="@+id/shares_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
         <Button
@@ -800,8 +271,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/home_option_reorganize"
+            android:textColor="@color/white"
+            android:alpha="0.6"
             android:visibility="gone"
             tools:visibility="visible"/>
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
-

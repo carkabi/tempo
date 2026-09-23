@@ -1,24 +1,32 @@
 package com.cappielloantonio.tempo.helper;
 
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
-public class ThemeHelper {
-    private static final String TAG = "ThemeHelper";
+import com.cappielloantonio.tempo.R;
 
-    public static final String LIGHT_MODE = "light";
-    public static final String DARK_MODE = "dark";
-    public static final String DEFAULT_MODE = "dark";
+public class ThemeHelper {
+
+    public static final String DARK_PEACH = "dark_peach";
+    public static final String DARK_TROPICAL = "dark_tropical";
+    public static final String LIGHT_PEACH = "light_peach";
+    public static final String LIGHT_TROPICAL = "light_tropical";
+    public static final String DEFAULT_MODE = "dark_peach";
 
     public static void applyTheme(@NonNull String themePref) {
         switch (themePref) {
-            case LIGHT_MODE: {
+            case LIGHT_PEACH:
+            case LIGHT_TROPICAL:
+            case "light": {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                 break;
             }
-            case DARK_MODE: {
+            case DARK_PEACH:
+            case DARK_TROPICAL:
+            case "dark": {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 break;
             }
@@ -30,6 +38,28 @@ public class ThemeHelper {
                 }
                 break;
             }
+        }
+    }
+
+    public static void applyActivityTheme(Activity activity, String themePref) {
+        if (activity == null) return;
+        if (themePref == null) themePref = DARK_PEACH;
+
+        switch (themePref) {
+            case DARK_TROPICAL:
+                activity.setTheme(R.style.AppTheme_DarkTropical);
+                break;
+            case LIGHT_PEACH:
+                activity.setTheme(R.style.AppTheme_LightPeach);
+                break;
+            case LIGHT_TROPICAL:
+                activity.setTheme(R.style.AppTheme_LightTropical);
+                break;
+            case DARK_PEACH:
+            case "dark":
+            default:
+                activity.setTheme(R.style.AppTheme_DarkPeach);
+                break;
         }
     }
 }

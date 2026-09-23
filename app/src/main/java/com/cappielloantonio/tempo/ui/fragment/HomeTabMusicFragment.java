@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
@@ -23,7 +25,6 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
-import androidx.recyclerview.widget.SnapHelper;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.cappielloantonio.tempo.R;
@@ -32,6 +33,7 @@ import com.cappielloantonio.tempo.helper.recyclerview.CustomLinearSnapHelper;
 import com.cappielloantonio.tempo.helper.recyclerview.DotsIndicatorDecoration;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
 import com.cappielloantonio.tempo.interfaces.PlaylistCallback;
+import com.cappielloantonio.tempo.model.Chronology;
 import com.cappielloantonio.tempo.model.Download;
 import com.cappielloantonio.tempo.model.HomeSector;
 import com.cappielloantonio.tempo.service.DownloaderManager;
@@ -68,57 +70,51 @@ import java.util.stream.Collectors;
 
 @UnstableApi
 public class HomeTabMusicFragment extends Fragment implements ClickCallback {
-    private static final String TAG = "HomeFragment";
-
     private FragmentHomeTabMusicBinding bind;
     private MainActivity activity;
     private HomeViewModel homeViewModel;
+    private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
 
     private DiscoverSongAdapter discoverSongAdapter;
     private SimilarTrackAdapter similarMusicAdapter;
     private ArtistAdapter radioArtistAdapter;
-    private ArtistAdapter bestOfArtistAdapter;
     private SongHorizontalAdapter starredSongAdapter;
     private SongHorizontalAdapter topSongAdapter;
+    private SongHorizontalAdapter mostPlayedSongAdapter;
     private AlbumHorizontalAdapter starredAlbumAdapter;
     private ArtistHorizontalAdapter starredArtistAdapter;
     private AlbumAdapter recentlyAddedAlbumAdapter;
     private AlbumAdapter recentlyPlayedAlbumAdapter;
-    private AlbumAdapter mostPlayedAlbumAdapter;
     private AlbumHorizontalAdapter newReleasesAlbumAdapter;
     private YearAdapter yearAdapter;
     private PlaylistHorizontalAdapter playlistHorizontalAdapter;
     private ShareHorizontalAdapter shareHorizontalAdapter;
 
-    private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
+    private static final String TAG = "PEACH_NAV";
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.i(TAG, "HomeTabMusicFragment.onCreateView()");
         activity = (MainActivity) getActivity();
-
         bind = FragmentHomeTabMusicBinding.inflate(inflater, container, false);
-        View view = bind.getRoot();
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
-
         init();
-
-        return view;
+        return bind.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        Log.i(TAG, "HomeTabMusicFragment.onViewCreated()");
         initSyncStarredView();
         initDiscoverSongSlideView();
         initSimilarSongView();
         initArtistRadio();
-        initArtistBestOf();
         initStarredTracksView();
         initStarredAlbumsView();
         initStarredArtistsView();
-        initMostPlayedAlbumView();
+        initMostPlayedSongView();
         initRecentPlayedAlbumView();
         initNewReleasesView();
         initYearSongView();
@@ -127,14 +123,12 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         initPinnedPlaylistsView();
         initSharesView();
         initHomeReorganizer();
-
         reorder();
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
         initializeMediaBrowser();
     }
 
@@ -157,109 +151,78 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     }
 
     private void init() {
-        bind.discoveryTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshDiscoverySongSample(getViewLifecycleOwner());
-            return true;
+        if (bind == null) return;
+        bind.gridTracksPreTextView.setOnClickListener(view -> showPopupMenu(view, R.menu.filter_top_songs_popup_menu));
+        bind.homeRadioButton.setOnClickListener(v -> {
+            Fragment parent = getParentFragment();
+            if (parent instanceof HomeFragment) {
+                ((HomeFragment) parent).showRadioTab();
+            }
         });
 
-        bind.discoveryTextViewClickable.setOnClickListener(v -> {
-            homeViewModel.getRandomShuffleSample().observe(getViewLifecycleOwner(), songs -> {
-                MusicUtil.ratingFilter(songs);
+        bind.discoveryPlayButton.setOnClickListener(v -> playSector(homeViewModel.getDiscoverSongSample(getViewLifecycleOwner())));
+        bind.similarTracksPlayButton.setOnClickListener(v -> playSector(homeViewModel.getStarredTracksSample(getViewLifecycleOwner())));
+        bind.topSongsPlayButton.setOnClickListener(v -> playChronologySector(homeViewModel.getChronologySample(getViewLifecycleOwner())));
+        bind.starredTracksPlayButton.setOnClickListener(v -> playSector(homeViewModel.getStarredTracksSongs()));
+        bind.starredAlbumsPlayButton.setOnClickListener(v -> playSector(homeViewModel.getStarredAlbumsSongs()));
+        bind.starredArtistsPlayButton.setOnClickListener(v -> playSector(homeViewModel.getStarredArtistsSongs()));
+        bind.mostPlayedAlbumsPlayButton.setOnClickListener(v -> playSector(homeViewModel.getMostPlayedAlbumsSongs()));
+        bind.recentlyPlayedAlbumsPlayButton.setOnClickListener(v -> playSector(homeViewModel.getRecentlyPlayedAlbumsSongs()));
+        bind.recentlyAddedAlbumsPlayButton.setOnClickListener(v -> playSector(homeViewModel.getNewestAlbumsSongs()));
 
+        // Listeners "Voir tout"
+        bind.starredTracksTextViewClickable.setOnClickListener(v -> navigateToSongList(v, Constants.MEDIA_STARRED));
+        bind.starredAlbumsTextViewClickable.setOnClickListener(v -> navigateToAlbumList(v, Constants.ALBUM_STARRED));
+        bind.starredArtistsTextViewClickable.setOnClickListener(v -> navigateToArtistList(v, Constants.ARTIST_STARRED));
+        bind.mostPlayedAlbumsTextViewClickable.setOnClickListener(v -> navigateToSongList(v, Constants.MEDIA_MOST_PLAYED));
+        bind.recentlyPlayedAlbumsTextViewClickable.setOnClickListener(v -> navigateToAlbumList(v, Constants.ALBUM_RECENTLY_PLAYED));
+        bind.recentlyAddedAlbumsTextViewClickable.setOnClickListener(v -> navigateToAlbumList(v, Constants.ALBUM_RECENTLY_ADDED));
+    }
+
+    private void navigateToSongList(View v, String type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(type, type);
+        Navigation.findNavController(v).navigate(R.id.songListPageFragment, bundle);
+    }
+
+    private void navigateToAlbumList(View v, String type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(type, type);
+        Navigation.findNavController(v).navigate(R.id.albumListPageFragment, bundle);
+    }
+
+    private void navigateToArtistList(View v, String type) {
+        Bundle bundle = new Bundle();
+        bundle.putString(type, type);
+        Navigation.findNavController(v).navigate(R.id.artistListPageFragment, bundle);
+    }
+
+    private void playSector(LiveData<List<Child>> liveData) {
+        liveData.observe(getViewLifecycleOwner(), songs -> {
+            if (songs != null && !songs.isEmpty()) {
+                MusicUtil.ratingFilter(songs);
                 if (!songs.isEmpty()) {
-                    MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
+                    List<Child> shuffled = new ArrayList<>(songs);
+                    java.util.Collections.shuffle(shuffled);
+                    MediaManager.startQueue(mediaBrowserListenableFuture, shuffled, 0);
                     activity.setBottomSheetInPeek(true);
                 }
-            });
+            }
         });
+    }
 
-        bind.similarTracksTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshSimilarSongSample(getViewLifecycleOwner());
-            return true;
+    private void playChronologySector(LiveData<List<Chronology>> liveData) {
+        liveData.observe(getViewLifecycleOwner(), chronologies -> {
+            if (chronologies != null && !chronologies.isEmpty()) {
+                List<Child> songs = chronologies.stream()
+                        .map(c -> (Child) c)
+                        .collect(Collectors.toList());
+                List<Child> shuffled = new ArrayList<>(songs);
+                java.util.Collections.shuffle(shuffled);
+                MediaManager.startQueue(mediaBrowserListenableFuture, shuffled, 0);
+                activity.setBottomSheetInPeek(true);
+            }
         });
-
-        bind.radioArtistTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshRadioArtistSample(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.bestOfArtistTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshBestOfArtist(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.starredTracksTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.MEDIA_STARRED, Constants.MEDIA_STARRED);
-            activity.navController.navigate(R.id.action_homeFragment_to_songListPageFragment, bundle);
-        });
-
-        bind.starredAlbumsTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ALBUM_STARRED, Constants.ALBUM_STARRED);
-            activity.navController.navigate(R.id.action_homeFragment_to_albumListPageFragment, bundle);
-        });
-
-        bind.starredArtistsTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ARTIST_STARRED, Constants.ARTIST_STARRED);
-            activity.navController.navigate(R.id.action_homeFragment_to_artistListPageFragment, bundle);
-        });
-
-        bind.recentlyAddedAlbumsTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ALBUM_RECENTLY_ADDED, Constants.ALBUM_RECENTLY_ADDED);
-            activity.navController.navigate(R.id.action_homeFragment_to_albumListPageFragment, bundle);
-        });
-
-        bind.recentlyPlayedAlbumsTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ALBUM_RECENTLY_PLAYED, Constants.ALBUM_RECENTLY_PLAYED);
-            activity.navController.navigate(R.id.action_homeFragment_to_albumListPageFragment, bundle);
-        });
-
-        bind.mostPlayedAlbumsTextViewClickable.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-            bundle.putString(Constants.ALBUM_MOST_PLAYED, Constants.ALBUM_MOST_PLAYED);
-            activity.navController.navigate(R.id.action_homeFragment_to_albumListPageFragment, bundle);
-        });
-
-        bind.starredTracksTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshStarredTracks(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.starredAlbumsTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshStarredAlbums(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.starredArtistsTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshStarredArtists(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.recentlyPlayedAlbumsTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshRecentlyPlayedAlbumList(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.mostPlayedAlbumsTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshMostPlayedAlbums(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.recentlyAddedAlbumsTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshMostRecentlyAddedAlbums(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.sharesTextViewRefreshable.setOnLongClickListener(v -> {
-            homeViewModel.refreshShares(getViewLifecycleOwner());
-            return true;
-        });
-
-        bind.gridTracksPreTextView.setOnClickListener(view -> showPopupMenu(view, R.menu.filter_top_songs_popup_menu));
     }
 
     private void initSyncStarredView() {
@@ -270,560 +233,250 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                     if (songs != null) {
                         DownloaderManager manager = DownloadUtil.getDownloadTracker(requireContext());
                         List<String> toSync = new ArrayList<>();
-
                         for (Child song : songs) {
-                            if (!manager.isDownloaded(song.getId())) {
-                                toSync.add(song.getTitle());
-                            }
+                            if (!manager.isDownloaded(song.getId())) toSync.add(song.getTitle());
                         }
-
                         if (!toSync.isEmpty()) {
                             bind.homeSyncStarredCard.setVisibility(View.VISIBLE);
                             bind.homeSyncStarredTracksToSync.setText(String.join(", ", toSync));
                         }
                     }
-
                     homeViewModel.getAllStarredTracks().removeObserver(this);
                 }
             });
         }
-
         bind.homeSyncStarredCancel.setOnClickListener(v -> bind.homeSyncStarredCard.setVisibility(View.GONE));
-
-        bind.homeSyncStarredDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                homeViewModel.getAllStarredTracks().observeForever(new Observer<List<Child>>() {
-                    @Override
-                    public void onChanged(List<Child> songs) {
-                        if (songs != null) {
-                            DownloaderManager manager = DownloadUtil.getDownloadTracker(requireContext());
-
-                            for (Child song : songs) {
-                                if (!manager.isDownloaded(song.getId())) {
-                                    manager.download(MappingUtil.mapDownload(song), new Download(song));
-                                }
-                            }
+        bind.homeSyncStarredDownload.setOnClickListener(v -> {
+            homeViewModel.getAllStarredTracks().observeForever(new Observer<List<Child>>() {
+                @Override
+                public void onChanged(List<Child> songs) {
+                    if (songs != null) {
+                        DownloaderManager manager = DownloadUtil.getDownloadTracker(requireContext());
+                        for (Child song : songs) {
+                            if (!manager.isDownloaded(song.getId())) manager.download(MappingUtil.mapDownload(song), new Download(song));
                         }
-
-                        homeViewModel.getAllStarredTracks().removeObserver(this);
-                        bind.homeSyncStarredCard.setVisibility(View.GONE);
                     }
-                });
-            }
+                    homeViewModel.getAllStarredTracks().removeObserver(this);
+                    bind.homeSyncStarredCard.setVisibility(View.GONE);
+                }
+            });
         });
     }
 
     private void initDiscoverSongSlideView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_DISCOVERY)) return;
-
         bind.discoverSongViewPager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL);
-
         discoverSongAdapter = new DiscoverSongAdapter(this);
         bind.discoverSongViewPager.setAdapter(discoverSongAdapter);
         bind.discoverSongViewPager.setOffscreenPageLimit(1);
         homeViewModel.getDiscoverSongSample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), songs -> {
             MusicUtil.ratingFilter(songs);
-
-            if (songs == null) {
-                if (bind != null) bind.homeDiscoverSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeDiscoverSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE);
-
-                discoverSongAdapter.setItems(songs);
-            }
+            if (songs == null) { if (bind != null) bind.homeDiscoverSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.homeDiscoverSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE); discoverSongAdapter.setItems(songs); }
         });
-
         setSlideViewOffset(bind.discoverSongViewPager, 20, 16);
     }
 
     private void initSimilarSongView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_MADE_FOR_YOU)) return;
-
         bind.similarTracksRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.similarTracksRecyclerView.setHasFixedSize(true);
-
         similarMusicAdapter = new SimilarTrackAdapter(this);
         bind.similarTracksRecyclerView.setAdapter(similarMusicAdapter);
         homeViewModel.getStarredTracksSample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), songs -> {
             MusicUtil.ratingFilter(songs);
-
-            if (songs == null) {
-                if (bind != null) bind.homeSimilarTracksSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeSimilarTracksSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE);
-
-                similarMusicAdapter.setItems(songs);
-            }
+            if (songs == null) { if (bind != null) bind.homeSimilarTracksSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.homeSimilarTracksSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE); similarMusicAdapter.setItems(songs); }
         });
-
-        CustomLinearSnapHelper similarSongSnapHelper = new CustomLinearSnapHelper();
-        similarSongSnapHelper.attachToRecyclerView(bind.similarTracksRecyclerView);
-    }
-
-    private void initArtistBestOf() {
-        if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_BEST_OF)) return;
-
-        bind.bestOfArtistRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        bind.bestOfArtistRecyclerView.setHasFixedSize(true);
-
-        bestOfArtistAdapter = new ArtistAdapter(this, false, true);
-        bind.bestOfArtistRecyclerView.setAdapter(bestOfArtistAdapter);
-        homeViewModel.getBestOfArtists(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), artists -> {
-            if (artists == null) {
-                if (bind != null) bind.homeBestOfArtistSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeBestOfArtistSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-
-                bestOfArtistAdapter.setItems(artists);
-            }
-        });
-
-        CustomLinearSnapHelper artistBestOfSnapHelper = new CustomLinearSnapHelper();
-        artistBestOfSnapHelper.attachToRecyclerView(bind.bestOfArtistRecyclerView);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.similarTracksRecyclerView);
     }
 
     private void initArtistRadio() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_RADIO_STATION)) return;
-
         bind.radioArtistRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.radioArtistRecyclerView.setHasFixedSize(true);
-
         radioArtistAdapter = new ArtistAdapter(this, true, false);
         bind.radioArtistRecyclerView.setAdapter(radioArtistAdapter);
         homeViewModel.getStarredArtistsSample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), artists -> {
-            if (artists == null) {
-                if (bind != null) bind.homeRadioArtistSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeRadioArtistSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.afterRadioArtistDivider.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-
-                radioArtistAdapter.setItems(artists);
-            }
+            if (artists == null) { if (bind != null) bind.homeRadioArtistSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.homeRadioArtistSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE); bind.afterRadioArtistDivider.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE); } radioArtistAdapter.setItems(artists); }
         });
-
-        CustomLinearSnapHelper artistRadioSnapHelper = new CustomLinearSnapHelper();
-        artistRadioSnapHelper.attachToRecyclerView(bind.radioArtistRecyclerView);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.radioArtistRecyclerView);
     }
 
     private void initTopSongsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_TOP_SONGS)) return;
-
         bind.topSongsRecyclerView.setHasFixedSize(true);
-
         topSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.topSongsRecyclerView.setAdapter(topSongAdapter);
         homeViewModel.getChronologySample(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), chronologies -> {
-            if (chronologies == null || chronologies.isEmpty()) {
-                if (bind != null) bind.homeGridTracksSector.setVisibility(View.GONE);
-                if (bind != null) bind.afterGridDivider.setVisibility(View.GONE);
-            } else {
-                if (bind != null) bind.homeGridTracksSector.setVisibility(View.VISIBLE);
-                if (bind != null) bind.afterGridDivider.setVisibility(View.VISIBLE);
-                if (bind != null)
-                    bind.topSongsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(chronologies.size(), 5), GridLayoutManager.HORIZONTAL, false));
-
-                List<Child> topSongs = chronologies.stream()
-                        .map(cronologia -> (Child) cronologia)
-                        .collect(Collectors.toList());
-
+            if (chronologies == null || chronologies.isEmpty()) { if (bind != null) { bind.homeGridTracksSector.setVisibility(View.GONE); bind.afterGridDivider.setVisibility(View.GONE); } }
+            else { if (bind != null) { bind.homeGridTracksSector.setVisibility(View.VISIBLE); bind.afterGridDivider.setVisibility(View.VISIBLE); bind.topSongsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(chronologies.size(), 4), GridLayoutManager.HORIZONTAL, false)); }
+                List<Child> topSongs = chronologies.stream().map(c -> (Child) c).collect(Collectors.toList());
                 topSongAdapter.setItems(topSongs);
             }
         });
-
-        SnapHelper topTrackSnapHelper = new PagerSnapHelper();
-        topTrackSnapHelper.attachToRecyclerView(bind.topSongsRecyclerView);
-
-        bind.topSongsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredTracksView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_STARRED_TRACKS)) return;
-
         bind.starredTracksRecyclerView.setHasFixedSize(true);
-
         starredSongAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.starredTracksRecyclerView.setAdapter(starredSongAdapter);
         homeViewModel.getStarredTracks(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), songs -> {
-            if (songs == null) {
-                if (bind != null) bind.starredTracksSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.starredTracksSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.starredTracksRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(songs.size(), 5), GridLayoutManager.HORIZONTAL, false));
-
-                starredSongAdapter.setItems(songs);
-            }
+            if (songs == null) { if (bind != null) bind.starredTracksSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.starredTracksSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE); bind.starredTracksRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(songs.size(), 4), GridLayoutManager.HORIZONTAL, false)); } starredSongAdapter.setItems(songs); }
         });
-
-        SnapHelper starredTrackSnapHelper = new PagerSnapHelper();
-        starredTrackSnapHelper.attachToRecyclerView(bind.starredTracksRecyclerView);
-
-        bind.starredTracksRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredAlbumsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_STARRED_ALBUMS)) return;
-
         bind.starredAlbumsRecyclerView.setHasFixedSize(true);
-
         starredAlbumAdapter = new AlbumHorizontalAdapter(this, false);
         bind.starredAlbumsRecyclerView.setAdapter(starredAlbumAdapter);
         homeViewModel.getStarredAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
-            if (albums == null) {
-                if (bind != null) bind.starredAlbumsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.starredAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.starredAlbumsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 5), GridLayoutManager.HORIZONTAL, false));
-
-                starredAlbumAdapter.setItems(albums);
-            }
+            if (albums == null) { if (bind != null) bind.starredAlbumsSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.starredAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE); bind.starredAlbumsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 4), GridLayoutManager.HORIZONTAL, false)); } starredAlbumAdapter.setItems(albums); }
         });
-
-        SnapHelper starredAlbumSnapHelper = new PagerSnapHelper();
-        starredAlbumSnapHelper.attachToRecyclerView(bind.starredAlbumsRecyclerView);
-
-        bind.starredAlbumsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initStarredArtistsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_STARRED_ARTISTS)) return;
-
         bind.starredArtistsRecyclerView.setHasFixedSize(true);
-
         starredArtistAdapter = new ArtistHorizontalAdapter(this);
         bind.starredArtistsRecyclerView.setAdapter(starredArtistAdapter);
         homeViewModel.getStarredArtists(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), artists -> {
-            if (artists == null) {
-                if (bind != null) bind.starredArtistsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.starredArtistsSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.afterFavoritesDivider.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.starredArtistsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(artists.size(), 5), GridLayoutManager.HORIZONTAL, false));
-
-                starredArtistAdapter.setItems(artists);
-            }
+            if (artists == null) { if (bind != null) bind.starredArtistsSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.starredArtistsSector.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE); bind.afterFavoritesDivider.setVisibility(!artists.isEmpty() ? View.VISIBLE : View.GONE); bind.starredArtistsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(artists.size(), 4), GridLayoutManager.HORIZONTAL, false)); } starredArtistAdapter.setItems(artists); }
         });
-
-        SnapHelper starredArtistSnapHelper = new PagerSnapHelper();
-        starredArtistSnapHelper.attachToRecyclerView(bind.starredArtistsRecyclerView);
-
-        bind.starredArtistsRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initNewReleasesView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_NEW_RELEASES)) return;
-
         bind.newReleasesRecyclerView.setHasFixedSize(true);
-
         newReleasesAlbumAdapter = new AlbumHorizontalAdapter(this, false);
         bind.newReleasesRecyclerView.setAdapter(newReleasesAlbumAdapter);
         homeViewModel.getRecentlyReleasedAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
-            if (albums == null) {
-                if (bind != null) bind.homeNewReleasesSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeNewReleasesSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-                if (bind != null)
-                    bind.newReleasesRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 5), GridLayoutManager.HORIZONTAL, false));
-
-                newReleasesAlbumAdapter.setItems(albums);
-            }
+            if (albums == null) { if (bind != null) bind.homeNewReleasesSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.homeNewReleasesSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE); bind.newReleasesRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(albums.size(), 4), GridLayoutManager.HORIZONTAL, false)); } newReleasesAlbumAdapter.setItems(albums); }
         });
-
-        SnapHelper newReleasesSnapHelper = new PagerSnapHelper();
-        newReleasesSnapHelper.attachToRecyclerView(bind.newReleasesRecyclerView);
-
-        bind.newReleasesRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initYearSongView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_FLASHBACK)) return;
-
         bind.yearsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.yearsRecyclerView.setHasFixedSize(true);
-
         yearAdapter = new YearAdapter(this);
         bind.yearsRecyclerView.setAdapter(yearAdapter);
         homeViewModel.getYearList(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), years -> {
-            if (years == null) {
-                if (bind != null) bind.homeFlashbackSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeFlashbackSector.setVisibility(!years.isEmpty() ? View.VISIBLE : View.GONE);
-
-                yearAdapter.setItems(years);
-            }
+            if (years == null) { if (bind != null) bind.homeFlashbackSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.homeFlashbackSector.setVisibility(!years.isEmpty() ? View.VISIBLE : View.GONE); yearAdapter.setItems(years); }
         });
-
-        CustomLinearSnapHelper yearSnapHelper = new CustomLinearSnapHelper();
-        yearSnapHelper.attachToRecyclerView(bind.yearsRecyclerView);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.yearsRecyclerView);
     }
 
-    private void initMostPlayedAlbumView() {
+    private void initMostPlayedSongView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_MOST_PLAYED)) return;
-
         bind.mostPlayedAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.mostPlayedAlbumsRecyclerView.setHasFixedSize(true);
-
-        mostPlayedAlbumAdapter = new AlbumAdapter(this);
-        bind.mostPlayedAlbumsRecyclerView.setAdapter(mostPlayedAlbumAdapter);
-        homeViewModel.getMostPlayedAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
-            if (albums == null) {
-                if (bind != null) bind.homeMostPlayedAlbumsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeMostPlayedAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-
-                mostPlayedAlbumAdapter.setItems(albums);
-            }
+        mostPlayedSongAdapter = new SongHorizontalAdapter(this, true, false, null);
+        bind.mostPlayedAlbumsRecyclerView.setAdapter(mostPlayedSongAdapter);
+        homeViewModel.getRandomShuffleSample().observe(getViewLifecycleOwner(), songs -> {
+            if (songs == null) { if (bind != null) bind.homeMostPlayedAlbumsSector.setVisibility(View.GONE); }
+            else { if (bind != null) { bind.homeMostPlayedAlbumsSector.setVisibility(!songs.isEmpty() ? View.VISIBLE : View.GONE); bind.mostPlayedAlbumsRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(songs.size(), 4), GridLayoutManager.HORIZONTAL, false)); } mostPlayedSongAdapter.setItems(songs.subList(0, Math.min(20, songs.size()))); }
         });
-
-        CustomLinearSnapHelper mostPlayedAlbumSnapHelper = new CustomLinearSnapHelper();
-        mostPlayedAlbumSnapHelper.attachToRecyclerView(bind.mostPlayedAlbumsRecyclerView);
     }
 
     private void initRecentPlayedAlbumView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_LAST_PLAYED)) return;
-
         bind.recentlyPlayedAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.recentlyPlayedAlbumsRecyclerView.setHasFixedSize(true);
-
         recentlyPlayedAlbumAdapter = new AlbumAdapter(this);
         bind.recentlyPlayedAlbumsRecyclerView.setAdapter(recentlyPlayedAlbumAdapter);
         homeViewModel.getRecentlyPlayedAlbumList(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
-            if (albums == null) {
-                if (bind != null) bind.homeRecentlyPlayedAlbumsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeRecentlyPlayedAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-
-                recentlyPlayedAlbumAdapter.setItems(albums);
-            }
+            if (albums == null) { if (bind != null) bind.homeRecentlyPlayedAlbumsSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.homeRecentlyPlayedAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE); recentlyPlayedAlbumAdapter.setItems(albums); }
         });
-
-        CustomLinearSnapHelper recentPlayedAlbumSnapHelper = new CustomLinearSnapHelper();
-        recentPlayedAlbumSnapHelper.attachToRecyclerView(bind.recentlyPlayedAlbumsRecyclerView);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.recentlyPlayedAlbumsRecyclerView);
     }
 
     private void initRecentAddedAlbumView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_RECENTLY_ADDED)) return;
-
         bind.recentlyAddedAlbumsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.recentlyAddedAlbumsRecyclerView.setHasFixedSize(true);
-
         recentlyAddedAlbumAdapter = new AlbumAdapter(this);
         bind.recentlyAddedAlbumsRecyclerView.setAdapter(recentlyAddedAlbumAdapter);
         homeViewModel.getMostRecentlyAddedAlbums(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), albums -> {
-            if (albums == null) {
-                if (bind != null) bind.homeRecentlyAddedAlbumsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.homeRecentlyAddedAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE);
-
-                recentlyAddedAlbumAdapter.setItems(albums);
-            }
+            if (albums == null) { if (bind != null) bind.homeRecentlyAddedAlbumsSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.homeRecentlyAddedAlbumsSector.setVisibility(!albums.isEmpty() ? View.VISIBLE : View.GONE); recentlyAddedAlbumAdapter.setItems(albums); }
         });
-
-        CustomLinearSnapHelper recentAddedAlbumSnapHelper = new CustomLinearSnapHelper();
-        recentAddedAlbumSnapHelper.attachToRecyclerView(bind.recentlyAddedAlbumsRecyclerView);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.recentlyAddedAlbumsRecyclerView);
     }
 
     private void initPinnedPlaylistsView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_PINNED_PLAYLISTS)) return;
-
         bind.pinnedPlaylistsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         bind.pinnedPlaylistsRecyclerView.setHasFixedSize(true);
-
         playlistHorizontalAdapter = new PlaylistHorizontalAdapter(this);
         bind.pinnedPlaylistsRecyclerView.setAdapter(playlistHorizontalAdapter);
         homeViewModel.getPinnedPlaylists(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), playlists -> {
-            if (playlists == null) {
-                if (bind != null) bind.pinnedPlaylistsSector.setVisibility(View.GONE);
-            } else {
-                if (bind != null)
-                    bind.pinnedPlaylistsSector.setVisibility(!playlists.isEmpty() ? View.VISIBLE : View.GONE);
-
-                playlistHorizontalAdapter.setItems(playlists);
-            }
+            if (playlists == null) { if (bind != null) bind.pinnedPlaylistsSector.setVisibility(View.GONE); }
+            else { if (bind != null) bind.pinnedPlaylistsSector.setVisibility(!playlists.isEmpty() ? View.VISIBLE : View.GONE); playlistHorizontalAdapter.setItems(playlists); }
         });
     }
 
     private void initSharesView() {
         if (homeViewModel.checkHomeSectorVisibility(Constants.HOME_SECTOR_SHARED)) return;
-
         bind.sharesRecyclerView.setHasFixedSize(true);
-
         shareHorizontalAdapter = new ShareHorizontalAdapter(this);
         bind.sharesRecyclerView.setAdapter(shareHorizontalAdapter);
         if (Preferences.isSharingEnabled()) {
             homeViewModel.getShares(getViewLifecycleOwner()).observe(getViewLifecycleOwner(), shares -> {
-                if (shares == null) {
-                    if (bind != null) bind.sharesSector.setVisibility(View.GONE);
-                } else {
-                    if (bind != null)
-                        bind.sharesSector.setVisibility(!shares.isEmpty() ? View.VISIBLE : View.GONE);
-                    if (bind != null)
-                        bind.sharesRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(shares.size(), 10), GridLayoutManager.HORIZONTAL, false));
-
-                    shareHorizontalAdapter.setItems(shares);
-                }
+                if (shares == null) { if (bind != null) bind.sharesSector.setVisibility(View.GONE); }
+                else { if (bind != null) { bind.sharesSector.setVisibility(!shares.isEmpty() ? View.VISIBLE : View.GONE); bind.sharesRecyclerView.setLayoutManager(new GridLayoutManager(requireContext(), UIUtil.getSpanCount(shares.size(), 4), GridLayoutManager.HORIZONTAL, false)); } shareHorizontalAdapter.setItems(shares); }
             });
         }
-
-        SnapHelper starredTrackSnapHelper = new PagerSnapHelper();
-        starredTrackSnapHelper.attachToRecyclerView(bind.sharesRecyclerView);
-
-        bind.sharesRecyclerView.addItemDecoration(
-                new DotsIndicatorDecoration(
-                        getResources().getDimensionPixelSize(R.dimen.radius),
-                        getResources().getDimensionPixelSize(R.dimen.radius) * 4,
-                        getResources().getDimensionPixelSize(R.dimen.dots_height),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null),
-                        requireContext().getResources().getColor(R.color.titleTextColor, null))
-        );
     }
 
     private void initHomeReorganizer() {
-        final Handler handler = new Handler();
-        final Runnable runnable = () -> {
-            if (bind != null) bind.homeSectorRearrangementButton.setVisibility(View.VISIBLE);
-        };
-        handler.postDelayed(runnable, 5000);
-
-        bind.homeSectorRearrangementButton.setOnClickListener(v -> {
-            HomeRearrangementDialog dialog = new HomeRearrangementDialog();
-            dialog.show(requireActivity().getSupportFragmentManager(), null);
-        });
+        new Handler().postDelayed(() -> { if (bind != null) bind.homeSectorRearrangementButton.setVisibility(View.VISIBLE); }, 5000);
+        bind.homeSectorRearrangementButton.setOnClickListener(v -> new HomeRearrangementDialog().show(requireActivity().getSupportFragmentManager(), null));
     }
 
     private void refreshSharesView() {
-        final Handler handler = new Handler();
-        final Runnable runnable = () -> {
-            if (getView() != null && bind != null && Preferences.isSharingEnabled()) {
-                homeViewModel.refreshShares(getViewLifecycleOwner());
-            }
-        };
-        handler.postDelayed(runnable, 100);
+        new Handler().postDelayed(() -> { if (getView() != null && bind != null && Preferences.isSharingEnabled()) homeViewModel.refreshShares(getViewLifecycleOwner()); }, 100);
     }
 
     private void setSlideViewOffset(ViewPager2 viewPager, float pageOffset, float pageMargin) {
         viewPager.setPageTransformer((page, position) -> {
             float myOffset = position * -(2 * pageOffset + pageMargin);
-            if (viewPager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL) {
-                if (ViewCompat.getLayoutDirection(viewPager) == ViewCompat.LAYOUT_DIRECTION_RTL) {
-                    page.setTranslationX(-myOffset);
-                } else {
-                    page.setTranslationX(myOffset);
-                }
-            } else {
-                page.setTranslationY(myOffset);
-            }
+            if (viewPager.getOrientation() == ViewPager2.ORIENTATION_HORIZONTAL) { if (ViewCompat.getLayoutDirection(viewPager) == ViewCompat.LAYOUT_DIRECTION_RTL) page.setTranslationX(-myOffset); else page.setTranslationX(myOffset); }
+            else page.setTranslationY(myOffset);
         });
     }
 
     public void reorder() {
         if (bind != null && homeViewModel.getHomeSectorList() != null) {
             bind.homeLinearLayoutContainer.removeAllViews();
-
             for (HomeSector sector : homeViewModel.getHomeSectorList()) {
                 if (!sector.isVisible()) continue;
-
                 switch (sector.getId()) {
-                    case Constants.HOME_SECTOR_DISCOVERY:
-                        bind.homeLinearLayoutContainer.addView(bind.homeDiscoverSector);
-                        break;
-                    case Constants.HOME_SECTOR_MADE_FOR_YOU:
-                        bind.homeLinearLayoutContainer.addView(bind.homeSimilarTracksSector);
-                        break;
-                    case Constants.HOME_SECTOR_BEST_OF:
-                        bind.homeLinearLayoutContainer.addView(bind.homeBestOfArtistSector);
-                        break;
-                    case Constants.HOME_SECTOR_RADIO_STATION:
-                        bind.homeLinearLayoutContainer.addView(bind.homeRadioArtistSector);
-                        break;
-                    case Constants.HOME_SECTOR_TOP_SONGS:
-                        bind.homeLinearLayoutContainer.addView(bind.homeGridTracksSector);
-                        break;
-                    case Constants.HOME_SECTOR_STARRED_TRACKS:
-                        bind.homeLinearLayoutContainer.addView(bind.starredTracksSector);
-                        break;
-                    case Constants.HOME_SECTOR_STARRED_ALBUMS:
-                        bind.homeLinearLayoutContainer.addView(bind.starredAlbumsSector);
-                        break;
-                    case Constants.HOME_SECTOR_STARRED_ARTISTS:
-                        bind.homeLinearLayoutContainer.addView(bind.starredArtistsSector);
-                        break;
-                    case Constants.HOME_SECTOR_NEW_RELEASES:
-                        bind.homeLinearLayoutContainer.addView(bind.homeNewReleasesSector);
-                        break;
-                    case Constants.HOME_SECTOR_FLASHBACK:
-                        bind.homeLinearLayoutContainer.addView(bind.homeFlashbackSector);
-                        break;
-                    case Constants.HOME_SECTOR_MOST_PLAYED:
-                        bind.homeLinearLayoutContainer.addView(bind.homeMostPlayedAlbumsSector);
-                        break;
-                    case Constants.HOME_SECTOR_LAST_PLAYED:
-                        bind.homeLinearLayoutContainer.addView(bind.homeRecentlyPlayedAlbumsSector);
-                        break;
-                    case Constants.HOME_SECTOR_RECENTLY_ADDED:
-                        bind.homeLinearLayoutContainer.addView(bind.homeRecentlyAddedAlbumsSector);
-                        break;
-                    case Constants.HOME_SECTOR_PINNED_PLAYLISTS:
-                        bind.homeLinearLayoutContainer.addView(bind.pinnedPlaylistsSector);
-                        break;
-                    case Constants.HOME_SECTOR_SHARED:
-                        bind.homeLinearLayoutContainer.addView(bind.sharesSector);
-                        break;
+                    case Constants.HOME_SECTOR_DISCOVERY: bind.homeLinearLayoutContainer.addView(bind.homeDiscoverSector); break;
+                    case Constants.HOME_SECTOR_MADE_FOR_YOU: bind.homeLinearLayoutContainer.addView(bind.homeSimilarTracksSector); break;
+                    case Constants.HOME_SECTOR_RADIO_STATION: bind.homeLinearLayoutContainer.addView(bind.homeRadioArtistSector); break;
+                    case Constants.HOME_SECTOR_TOP_SONGS: bind.homeLinearLayoutContainer.addView(bind.homeGridTracksSector); break;
+                    case Constants.HOME_SECTOR_STARRED_TRACKS: bind.homeLinearLayoutContainer.addView(bind.starredTracksSector); break;
+                    case Constants.HOME_SECTOR_STARRED_ALBUMS: bind.homeLinearLayoutContainer.addView(bind.starredAlbumsSector); break;
+                    case Constants.HOME_SECTOR_STARRED_ARTISTS: bind.homeLinearLayoutContainer.addView(bind.starredArtistsSector); break;
+                    case Constants.HOME_SECTOR_NEW_RELEASES: bind.homeLinearLayoutContainer.addView(bind.homeNewReleasesSector); break;
+                    case Constants.HOME_SECTOR_FLASHBACK: bind.homeLinearLayoutContainer.addView(bind.homeFlashbackSector); break;
+                    case Constants.HOME_SECTOR_MOST_PLAYED: bind.homeLinearLayoutContainer.addView(bind.homeMostPlayedAlbumsSector); break;
+                    case Constants.HOME_SECTOR_LAST_PLAYED: bind.homeLinearLayoutContainer.addView(bind.homeRecentlyPlayedAlbumsSector); break;
+                    case Constants.HOME_SECTOR_RECENTLY_ADDED: bind.homeLinearLayoutContainer.addView(bind.homeRecentlyAddedAlbumsSector); break;
+                    case Constants.HOME_SECTOR_PINNED_PLAYLISTS: bind.homeLinearLayoutContainer.addView(bind.pinnedPlaylistsSector); break;
+                    case Constants.HOME_SECTOR_SHARED: bind.homeLinearLayoutContainer.addView(bind.sharesSector); break;
                 }
             }
-
             bind.homeLinearLayoutContainer.addView(bind.homeSectorRearrangementButton);
         }
     }
@@ -831,157 +484,63 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     private void showPopupMenu(View view, int menuResource) {
         PopupMenu popup = new PopupMenu(requireContext(), view);
         popup.getMenuInflater().inflate(menuResource, popup.getMenu());
-
         popup.setOnMenuItemClickListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.menu_last_week_name) {
-                homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 0);
-                bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_week));
-                return true;
-            } else if (menuItem.getItemId() == R.id.menu_last_month_name) {
-                homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 1);
-                bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_month));
-                return true;
-            } else if (menuItem.getItemId() == R.id.menu_last_year_name) {
-                homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 2);
-                bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_year));
-                return true;
-            }
-
+            if (menuItem.getItemId() == R.id.menu_last_week_name) { homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 0); bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_week)); return true; }
+            else if (menuItem.getItemId() == R.id.menu_last_month_name) { homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 1); bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_month)); return true; }
+            else if (menuItem.getItemId() == R.id.menu_last_year_name) { homeViewModel.changeChronologyPeriod(getViewLifecycleOwner(), 2); bind.gridTracksPreTextView.setText(getString(R.string.home_title_last_year)); return true; }
             return false;
         });
-
         popup.show();
     }
 
-    private void refreshPlaylistView() {
-        final Handler handler = new Handler();
+    private void refreshPlaylistView() { new Handler().postDelayed(() -> { if (getView() != null && bind != null && homeViewModel != null) homeViewModel.getPinnedPlaylists(getViewLifecycleOwner()); }, 100); }
+    private void initializeMediaBrowser() { mediaBrowserListenableFuture = new MediaBrowser.Builder(requireContext(), new SessionToken(requireContext(), new ComponentName(requireContext(), MediaService.class))).buildAsync(); }
+    private void releaseMediaBrowser() { MediaBrowser.releaseFuture(mediaBrowserListenableFuture); }
 
-        final Runnable runnable = () -> {
-            if (getView() != null && bind != null && homeViewModel != null)
-                homeViewModel.getPinnedPlaylists(getViewLifecycleOwner());
-        };
-
-        handler.postDelayed(runnable, 100);
-    }
-
-    private void initializeMediaBrowser() {
-        mediaBrowserListenableFuture = new MediaBrowser.Builder(requireContext(), new SessionToken(requireContext(), new ComponentName(requireContext(), MediaService.class))).buildAsync();
-    }
-
-    private void releaseMediaBrowser() {
-        MediaBrowser.releaseFuture(mediaBrowserListenableFuture);
-    }
-
-    @Override
-    public void onMediaClick(Bundle bundle) {
-        if (bundle.containsKey(Constants.MEDIA_MIX)) {
-            MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelable(Constants.TRACK_OBJECT));
+    @Override public void onMediaClick(Bundle b) {
+        if (b.containsKey(Constants.MEDIA_MIX)) {
+            MediaManager.startQueue(mediaBrowserListenableFuture, b.getParcelable(Constants.TRACK_OBJECT));
             activity.setBottomSheetInPeek(true);
-
-            if (mediaBrowserListenableFuture != null) {
-                homeViewModel.getMediaInstantMix(getViewLifecycleOwner(), bundle.getParcelable(Constants.TRACK_OBJECT)).observe(getViewLifecycleOwner(), songs -> {
-                    MusicUtil.ratingFilter(songs);
-
-                    if (songs != null && !songs.isEmpty()) {
-                        MediaManager.enqueue(mediaBrowserListenableFuture, songs, true);
-                    }
-                });
+            if (mediaBrowserListenableFuture != null) homeViewModel.getMediaInstantMix(getViewLifecycleOwner(), b.getParcelable(Constants.TRACK_OBJECT)).observe(getViewLifecycleOwner(), songs -> { MusicUtil.ratingFilter(songs); if (songs != null && !songs.isEmpty()) MediaManager.enqueue(mediaBrowserListenableFuture, songs, true); });
+        } else if (b.containsKey(Constants.MEDIA_CHRONOLOGY)) {
+            ArrayList<Chronology> chronologies = b.getParcelableArrayList(Constants.TRACKS_OBJECT);
+            if (chronologies != null) {
+                List<Child> media = chronologies.stream().map(c -> (Child) c).collect(Collectors.toList());
+                MediaManager.startQueue(mediaBrowserListenableFuture, media, b.getInt(Constants.ITEM_POSITION));
+                activity.setBottomSheetInPeek(true);
             }
-        } else if (bundle.containsKey(Constants.MEDIA_CHRONOLOGY)) {
-            List<Child> media = bundle.getParcelableArrayList(Constants.TRACKS_OBJECT);
-            MediaManager.startQueue(mediaBrowserListenableFuture, media, bundle.getInt(Constants.ITEM_POSITION));
-            activity.setBottomSheetInPeek(true);
         } else {
-            MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+            MediaManager.startQueue(mediaBrowserListenableFuture, b.getParcelableArrayList(Constants.TRACKS_OBJECT), b.getInt(Constants.ITEM_POSITION));
             activity.setBottomSheetInPeek(true);
         }
     }
-
-    @Override
-    public void onMediaLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.songBottomSheetDialog, bundle);
+    @Override public void onMediaLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.songBottomSheetDialog, b); }
+    @Override public void onAlbumClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.albumPageFragment, b); }
+    @Override public void onAlbumLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.albumBottomSheetDialog, b); }
+    @Override public void onArtistClick(Bundle b) {
+        if (b.containsKey(Constants.MEDIA_MIX) && b.getBoolean(Constants.MEDIA_MIX)) {
+            Snackbar.make(requireView(), R.string.artist_adapter_radio_station_starting, Snackbar.LENGTH_LONG).setAnchorView(activity.bind.playerBottomSheet).show();
+            if (mediaBrowserListenableFuture != null) homeViewModel.getArtistInstantMix(getViewLifecycleOwner(), b.getParcelable(Constants.ARTIST_OBJECT)).observe(getViewLifecycleOwner(), songs -> { MusicUtil.ratingFilter(songs); if (!songs.isEmpty()) { MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0); activity.setBottomSheetInPeek(true); } });
+        } else { Navigation.findNavController(requireView()).navigate(R.id.artistPageFragment, b); }
     }
-
-    @Override
-    public void onAlbumClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.albumPageFragment, bundle);
-    }
-
-    @Override
-    public void onAlbumLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.albumBottomSheetDialog, bundle);
-    }
-
-    @Override
-    public void onArtistClick(Bundle bundle) {
-        if (bundle.containsKey(Constants.MEDIA_MIX) && bundle.getBoolean(Constants.MEDIA_MIX)) {
-            Snackbar.make(requireView(), R.string.artist_adapter_radio_station_starting, Snackbar.LENGTH_LONG)
-                    .setAnchorView(activity.bind.playerBottomSheet)
-                    .show();
-
-            if (mediaBrowserListenableFuture != null) {
-                homeViewModel.getArtistInstantMix(getViewLifecycleOwner(), bundle.getParcelable(Constants.ARTIST_OBJECT)).observe(getViewLifecycleOwner(), songs -> {
-                    MusicUtil.ratingFilter(songs);
-
-                    if (!songs.isEmpty()) {
-                        MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
-                        activity.setBottomSheetInPeek(true);
-                    }
-                });
-            }
-        } else if (bundle.containsKey(Constants.MEDIA_BEST_OF) && bundle.getBoolean(Constants.MEDIA_BEST_OF)) {
-            if (mediaBrowserListenableFuture != null) {
-                homeViewModel.getArtistBestOf(getViewLifecycleOwner(), bundle.getParcelable(Constants.ARTIST_OBJECT)).observe(getViewLifecycleOwner(), songs -> {
-                    MusicUtil.ratingFilter(songs);
-
-                    if (!songs.isEmpty()) {
-                        MediaManager.startQueue(mediaBrowserListenableFuture, songs, 0);
-                        activity.setBottomSheetInPeek(true);
-                    }
-                });
-            }
-        } else {
-            Navigation.findNavController(requireView()).navigate(R.id.artistPageFragment, bundle);
-        }
-    }
-
-    @Override
-    public void onArtistLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
-    }
-
-    @Override
-    public void onYearClick(Bundle bundle) {
+    @Override public void onArtistLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, b); }
+    @Override public void onYearClick(Bundle b) {
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.MEDIA_BY_YEAR, Constants.MEDIA_BY_YEAR);
+        bundle.putInt("year_object", b.getInt("year_object"));
         Navigation.findNavController(requireView()).navigate(R.id.songListPageFragment, bundle);
     }
-
-    @Override
-    public void onShareClick(Bundle bundle) {
-        Share share = bundle.getParcelable(Constants.SHARE_OBJECT);
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(share.getUrl())).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onPlaylistClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.playlistPageFragment, bundle);
-    }
-
-    @Override
-    public void onPlaylistLongClick(Bundle bundle) {
+    @Override public void onShareClick(Bundle b) { Share share = b.getParcelable(Constants.SHARE_OBJECT); Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(share.getUrl())).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(intent); }
+    @Override public void onPlaylistClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.playlistPageFragment, b); }
+    @Override public void onPlaylistLongClick(Bundle b) {
         PlaylistEditorDialog dialog = new PlaylistEditorDialog(new PlaylistCallback() {
             @Override
             public void onDismiss() {
                 refreshPlaylistView();
             }
         });
-
-        dialog.setArguments(bundle);
+        dialog.setArguments(b);
         dialog.show(activity.getSupportFragmentManager(), null);
     }
-
-    @Override
-    public void onShareLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.shareBottomSheetDialog, bundle);
-    }
+    @Override public void onShareLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.shareBottomSheetDialog, b); }
 }

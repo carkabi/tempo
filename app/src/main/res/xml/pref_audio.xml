@@ -1,0 +1,89 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/settings_title_general">
+        <Preference
+            android:key="equalizer"
+            android:title="@string/settings_equalizer_title"
+            android:summary="@string/settings_equalizer_summary" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_transcoding">
+        <SwitchPreference
+            android:title="@string/settings_audio_transcode_priority_title"
+            android:defaultValue="false"
+            android:key="audio_transcode_priority" />
+
+        <ListPreference
+            app:key="audio_transcode_format_wifi"
+            app:title="@string/settings_audio_transcode_format_wifi"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/audio_transcode_format_wifi_list_titles"
+            app:entryValues="@array/audio_transcode_format_wifi_list_values" />
+
+        <ListPreference
+            app:key="max_bitrate_wifi"
+            app:title="@string/settings_max_bitrate_wifi"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/max_bitrate_wifi_list_titles"
+            app:entryValues="@array/max_bitrate_wifi_list_values" />
+
+        <ListPreference
+            app:key="audio_transcode_format_mobile"
+            app:title="@string/settings_audio_transcode_format_mobile"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/audio_transcode_format_mobile_list_titles"
+            app:entryValues="@array/audio_transcode_format_mobile_list_values" />
+
+        <ListPreference
+            app:key="max_bitrate_mobile"
+            app:title="@string/settings_max_bitrate_mobile"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/max_bitrate_mobile_list_titles"
+            app:entryValues="@array/max_bitrate_mobile_list_values" />
+
+        <ListPreference
+            app:defaultValue="1"
+            app:dialogTitle="@string/settings_buffering_strategy"
+            app:entries="@array/buffering_strategy_titles"
+            app:entryValues="@array/buffering_strategy_values"
+            app:key="buffering_strategy"
+            app:title="@string/settings_buffering_strategy" />
+
+        <SwitchPreference
+            android:title="@string/settings_audio_transcode_estimate_content_length_title"
+            android:defaultValue="false"
+            android:key="estimate_content_length" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_replay_gain">
+        <ListPreference
+            android:key="replay_gain_mode"
+            app:title="@string/settings_replay_gain"
+            app:useSimpleSummaryProvider="true"
+            app:entries="@array/replay_gain_titles"
+            app:entryValues="@array/replay_gain_values" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_audio_quality">
+        <SwitchPreference
+            android:key="audio_quality_per_item"
+            android:title="@string/settings_audio_quality" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_rating">
+        <SeekBarPreference
+            android:key="min_star_rating"
+            app:defaultValue="0"
+            app:min="0"
+            android:max="4"
+            app:seekBarIncrement="1"
+            app:showSeekBarValue="true"
+            app:title="@string/settings_title_skip_min_star_rating" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_scrobble">
+        <SwitchPreference
+            android:key="scrobbling"
+            android:title="@string/settings_scrobble_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

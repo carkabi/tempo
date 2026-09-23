@@ -64,6 +64,16 @@ object Preferences {
     private const val NEXT_UPDATE_CHECK = "next_update_check"
     private const val CONTINUOUS_PLAY = "continuous_play"
     private const val LAST_INSTANT_MIX = "last_instant_mix"
+    private const val PEACH_NOTIFICATION_ENABLED = "peach_notification_enabled"
+    private const val PEACH_NOTIFIED_KEYS = "peach_notified_keys"
+    private const val PEACH_ACKNOWLEDGED_NOTICES = "peach_acknowledged_notices"
+    private const val PEACH_LAST_SEEN_NEWS_ID = "peach_last_seen_news_id"
+    private const val PEACH_CONTACT_DRAFT_CATEGORY = "peach_contact_draft_category"
+    private const val PEACH_CONTACT_DRAFT_NAME = "peach_contact_draft_name"
+    private const val PEACH_CONTACT_DRAFT_EMAIL = "peach_contact_draft_email"
+    private const val PEACH_CONTACT_DRAFT_SUBJECT = "peach_contact_draft_subject"
+    private const val PEACH_CONTACT_DRAFT_MESSAGE = "peach_contact_draft_message"
+    private const val PEACH_CONTACT_DRAFT_INCLUDE_DIAG = "peach_contact_draft_include_diag"
 
 
     @JvmStatic
@@ -84,6 +94,11 @@ object Preferences {
     @JvmStatic
     fun setUser(user: String?) {
         App.getInstance().preferences.edit().putString(USER, user).apply()
+    }
+
+    @JvmStatic
+    fun getTheme(): String {
+        return App.getInstance().preferences.getString(THEME, com.cappielloantonio.tempo.helper.ThemeHelper.DEFAULT_MODE) ?: com.cappielloantonio.tempo.helper.ThemeHelper.DEFAULT_MODE
     }
 
     @JvmStatic
@@ -500,5 +515,100 @@ object Preferences {
         return App.getInstance().preferences.getLong(
                 LAST_INSTANT_MIX, 0
         ) + 5000 < System.currentTimeMillis()
+    }
+
+    @JvmStatic
+    fun isPeachNotificationEnabled(): Boolean {
+        return App.getInstance().preferences.getBoolean(PEACH_NOTIFICATION_ENABLED, true)
+    }
+
+    @JvmStatic
+    fun setPeachNotificationEnabled(enabled: Boolean) {
+        App.getInstance().preferences.edit().putBoolean(PEACH_NOTIFICATION_ENABLED, enabled).apply()
+    }
+
+    @JvmStatic
+    fun getNotifiedKeys(): MutableSet<String> {
+        return HashSet(App.getInstance().preferences.getStringSet(PEACH_NOTIFIED_KEYS, HashSet<String>()) ?: HashSet<String>())
+    }
+
+    @JvmStatic
+    fun setNotifiedKeys(keys: Set<String>) {
+        App.getInstance().preferences.edit().putStringSet(PEACH_NOTIFIED_KEYS, HashSet(keys)).apply()
+    }
+
+    @JvmStatic
+    fun addNotifiedKey(key: String) {
+        val keys = getNotifiedKeys()
+        keys.add(key)
+        setNotifiedKeys(keys)
+    }
+
+    @JvmStatic
+    fun isNoticeAcknowledged(key: String): Boolean {
+        val set = App.getInstance().preferences.getStringSet(PEACH_ACKNOWLEDGED_NOTICES, emptySet()) ?: emptySet()
+        return set.contains(key)
+    }
+
+    @JvmStatic
+    fun acknowledgeNotice(key: String) {
+        val set = HashSet(App.getInstance().preferences.getStringSet(PEACH_ACKNOWLEDGED_NOTICES, emptySet()) ?: emptySet())
+        set.add(key)
+        App.getInstance().preferences.edit().putStringSet(PEACH_ACKNOWLEDGED_NOTICES, set).apply()
+    }
+
+    @JvmStatic
+    fun getLastSeenNewsId(): Int {
+        return App.getInstance().preferences.getInt(PEACH_LAST_SEEN_NEWS_ID, 0)
+    }
+
+    @JvmStatic
+    fun setLastSeenNewsId(id: Int) {
+        val current = getLastSeenNewsId()
+        if (id > current) {
+            App.getInstance().preferences.edit().putInt(PEACH_LAST_SEEN_NEWS_ID, id).apply()
+        }
+    }
+
+    @JvmStatic
+    fun saveContactDraft(category: String?, name: String?, email: String?, subject: String?, message: String?, includeDiag: Boolean) {
+        App.getInstance().preferences.edit()
+            .putString(PEACH_CONTACT_DRAFT_CATEGORY, category)
+            .putString(PEACH_CONTACT_DRAFT_NAME, name)
+            .putString(PEACH_CONTACT_DRAFT_EMAIL, email)
+            .putString(PEACH_CONTACT_DRAFT_SUBJECT, subject)
+            .putString(PEACH_CONTACT_DRAFT_MESSAGE, message)
+            .putBoolean(PEACH_CONTACT_DRAFT_INCLUDE_DIAG, includeDiag)
+            .apply()
+    }
+
+    @JvmStatic
+    fun getContactDraftCategory(): String? = App.getInstance().preferences.getString(PEACH_CONTACT_DRAFT_CATEGORY, "bug")
+
+    @JvmStatic
+    fun getContactDraftName(): String? = App.getInstance().preferences.getString(PEACH_CONTACT_DRAFT_NAME, null)
+
+    @JvmStatic
+    fun getContactDraftEmail(): String? = App.getInstance().preferences.getString(PEACH_CONTACT_DRAFT_EMAIL, null)
+
+    @JvmStatic
+    fun getContactDraftSubject(): String? = App.getInstance().preferences.getString(PEACH_CONTACT_DRAFT_SUBJECT, null)
+
+    @JvmStatic
+    fun getContactDraftMessage(): String? = App.getInstance().preferences.getString(PEACH_CONTACT_DRAFT_MESSAGE, null)
+
+    @JvmStatic
+    fun getContactDraftIncludeDiag(): Boolean = App.getInstance().preferences.getBoolean(PEACH_CONTACT_DRAFT_INCLUDE_DIAG, true)
+
+    @JvmStatic
+    fun clearContactDraft() {
+        App.getInstance().preferences.edit()
+            .remove(PEACH_CONTACT_DRAFT_CATEGORY)
+            .remove(PEACH_CONTACT_DRAFT_NAME)
+            .remove(PEACH_CONTACT_DRAFT_EMAIL)
+            .remove(PEACH_CONTACT_DRAFT_SUBJECT)
+            .remove(PEACH_CONTACT_DRAFT_MESSAGE)
+            .remove(PEACH_CONTACT_DRAFT_INCLUDE_DIAG)
+            .apply()
     }
 }

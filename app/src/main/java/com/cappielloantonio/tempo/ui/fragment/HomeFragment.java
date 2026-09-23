@@ -1,6 +1,7 @@
 package com.cappielloantonio.tempo.ui.fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,31 +13,18 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentHomeBinding;
-import com.cappielloantonio.tempo.ui.activity.MainActivity;
-import com.cappielloantonio.tempo.ui.fragment.pager.HomePager;
-import com.cappielloantonio.tempo.util.Preferences;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.Objects;
 
 @UnstableApi
 public class HomeFragment extends Fragment {
-    private static final String TAG = "HomeFragment";
+
+    private static final String TAG = "PEACH_NAV";
 
     private FragmentHomeBinding bind;
-    private MainActivity activity;
-
-    private MaterialToolbar materialToolbar;
-    private AppBarLayout appBarLayout;
-    private TabLayout tabLayout;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        activity = (MainActivity) getActivity();
+        Log.i(TAG, "HomeFragment.onCreateView()");
         bind = FragmentHomeBinding.inflate(inflater, container, false);
         return bind.getRoot();
     }
@@ -44,59 +32,41 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        Log.i(TAG, "HomeFragment.onViewCreated(), childFragments = " + getChildFragmentManager().getFragments());
 
-        initAppBar();
-        initHomePager();
+        if (getChildFragmentManager().findFragmentById(R.id.home_container) == null) {
+            showMusicTab();
+        }
+    }
+
+    public void showMusicTab() {
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.home_container, new HomeTabMusicFragment(), "home_music")
+                .commit();
+    }
+
+    public void showRadioTab() {
+        getChildFragmentManager().beginTransaction()
+                .replace(R.id.home_container, new HomeTabRadioFragment(), "home_radio")
+                .commit();
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "HomeFragment.onResume(), childFragments = " + getChildFragmentManager().getFragments());
+    }
 
-        activity.setBottomNavigationBarVisibility(true);
-        activity.setBottomSheetVisibility(true);
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i(TAG, "HomeFragment.onPause()");
     }
 
     @Override
     public void onDestroyView() {
+        Log.i(TAG, "HomeFragment.onDestroyView()");
         super.onDestroyView();
         bind = null;
-    }
-
-    private void initAppBar() {
-        appBarLayout = bind.getRoot().findViewById(R.id.toolbar_fragment);
-        materialToolbar = bind.getRoot().findViewById(R.id.toolbar);
-
-        activity.setSupportActionBar(materialToolbar);
-        Objects.requireNonNull(materialToolbar.getOverflowIcon()).setTint(requireContext().getResources().getColor(R.color.titleTextColor, null));
-
-        tabLayout = new TabLayout(requireContext());
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setTabMode(TabLayout.MODE_FIXED);
-
-        appBarLayout.addView(tabLayout);
-    }
-
-    private void initHomePager() {
-        HomePager pager = new HomePager(this);
-
-        pager.addFragment(new HomeTabMusicFragment(), getString(R.string.home_tab_accueil), R.drawable.ic_home);
-        pager.addFragment(new LibraryFragment(), getString(R.string.home_tab_library), R.drawable.ic_graphic_eq);
-
-        if (Preferences.isRadioSectionVisible())
-            pager.addFragment(new HomeTabRadioFragment(), getString(R.string.home_tab_radio), R.drawable.ic_play_for_work);
-
-        bind.homeViewPager.setAdapter(pager);
-        bind.homeViewPager.setOffscreenPageLimit(3);
-        bind.homeViewPager.setUserInputEnabled(false);
-
-        new TabLayoutMediator(tabLayout, bind.homeViewPager,
-                (tab, position) -> {
-                    tab.setText(pager.getPageTitle(position));
-                    // tab.setIcon(pager.getPageIcon(position));
-                }
-        ).attach();
-
-        tabLayout.setVisibility(Preferences.isPodcastSectionVisible() || Preferences.isRadioSectionVisible() ? View.VISIBLE : View.GONE);
     }
 }

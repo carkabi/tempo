@@ -1,12 +1,16 @@
 <resources>
     <string-array name="theme_list_titles">
-        <item>라이트</item>
-        <item>다크</item>
+        <item>Dark Peach 🍑</item>
+        <item>Dark Tropical 🌴</item>
+        <item>Light Peach 🍑</item>
+        <item>Light Tropical 🌴</item>
         <item>시스템 기본</item>
     </string-array>
     <string-array name="theme_list_values">
-        <item>light</item>
-        <item>dark</item>
+        <item>dark_peach</item>
+        <item>dark_tropical</item>
+        <item>light_peach</item>
+        <item>light_tropical</item>
         <item>default</item>
     </string-array>
 

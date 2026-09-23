@@ -1,149 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_premium_gradient">
+
+    <!-- Premium Search Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="#4D000000">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Recherche"
+            android:textColor="@color/accent_gold"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:paddingBottom="16dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            app:cardCornerRadius="30dp"
+            app:cardBackgroundColor="#26FFFFFF"
+            app:strokeColor="#4DFFFFFF"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/white"
+                    android:contentDescription="Icone recherche" />
+
+                <EditText
+                    android:id="@+id/search_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Artistes, titres, albums..."
+                    android:textColor="@color/white"
+                    android:textColorHint="#B3FFFFFF"
+                    android:paddingHorizontal="12dp"
+                    android:singleLine="true"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:importantForAutofill="no" />
+
+                <ImageView
+                    android:id="@+id/clear_search_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/white"
+                    android:visibility="gone"
+                    android:contentDescription="Effacer" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/search_filter_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            app:singleSelection="true"
+            app:selectionRequired="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filter_all"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tout"
+                android:checked="true"
+                android:textColor="@color/white"
+                app:chipBackgroundColor="@color/accent_gold" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filter_artist"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artiste"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filter_album"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Album"
+                android:textColor="@color/white" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filter_song"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Titre"
+                android:textColor="@color/white" />
+        </com.google.android.material.chip.ChipGroup>
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/search_result_nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/searchbar_scrolling_view_behavior">
+        android:fillViewport="true">
 
-        <!-- Search result -->
         <LinearLayout
             android:id="@+id/search_result_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="64dp"
-            android:paddingBottom="@dimen/global_padding_bottom">
+            android:paddingBottom="120dp">
 
-            <!--  Artist  -->
             <LinearLayout
                 android:id="@+id/search_artist_sector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp"
                 android:visibility="gone">
-
-                <TextView
-                    style="@style/TitleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingTop="20dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/search_title_artist" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/search_result_artist_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp" />
+                <TextView style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:text="@string/search_title_artist" android:textColor="@color/accent_cyan" android:textAllCaps="true" />
+                <androidx.recyclerview.widget.RecyclerView android:id="@+id/search_result_artist_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:clipToPadding="false" android:paddingStart="16dp" android:paddingEnd="16dp" />
             </LinearLayout>
 
-            <!--  Album  -->
             <LinearLayout
                 android:id="@+id/search_album_sector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp"
                 android:visibility="gone">
-
-                <TextView
-                    style="@style/TitleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingTop="20dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/search_title_album" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/search_result_album_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingTop="8dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="8dp" />
+                <TextView style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:text="@string/search_title_album" android:textColor="@color/accent_gold" android:textAllCaps="true" />
+                <androidx.recyclerview.widget.RecyclerView android:id="@+id/search_result_album_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:clipToPadding="false" android:paddingStart="16dp" android:paddingEnd="16dp" />
             </LinearLayout>
 
-            <!--  Songs  -->
             <LinearLayout
                 android:id="@+id/search_song_sector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="8dp"
                 android:visibility="gone">
-
-                <TextView
-                    style="@style/TitleLarge"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingTop="20dp"
-                    android:paddingEnd="16dp"
-                    android:text="@string/search_title_song" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/search_result_tracks_recycler_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:clipToPadding="false"
-                    android:paddingTop="8dp"
-                    android:paddingBottom="8dp" />
+                <TextView style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp" android:text="@string/search_title_song" android:textColor="@color/success_green" android:textAllCaps="true" />
+                <androidx.recyclerview.widget.RecyclerView android:id="@+id/search_result_tracks_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
             </LinearLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.search.SearchBar
-            android:id="@+id/search_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/search_hint">
-
-        </com.google.android.material.search.SearchBar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <com.google.android.material.search.SearchView
-        android:id="@+id/search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:hint="@string/search_hint"
-        app:layout_anchor="@id/search_bar">
-
-        <!-- Content goes here (ScrollView, RecyclerView, etc.). -->
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none"
-            android:paddingBottom="@dimen/global_padding_bottom">
 
             <LinearLayout
-                android:id="@+id/search_view_suggestion_container"
+                android:id="@+id/search_empty_placeholder"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"/>
-        </ScrollView>
-    </com.google.android.material.search.SearchView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp">
+                <ImageView android:layout_width="100dp" android:layout_height="100dp" android:src="@drawable/ic_search" app:tint="@color/white" android:alpha="0.1" android:contentDescription="Vide" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Explorez votre bibliothèque Tropikeau" android:textColor="@color/white" android:alpha="0.4" android:layout_marginTop="16dp" android:textSize="16sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>

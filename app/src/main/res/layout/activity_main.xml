@@ -36,6 +36,9 @@
             android:paddingStart="24dp"
             android:paddingEnd="24dp"
             android:visibility="gone"
+            app:backgroundTint="#CC0F2027"
+            app:itemIconTint="@color/white"
+            app:itemTextColor="@color/white"
             app:menu="@menu/bottom_nav_menu" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

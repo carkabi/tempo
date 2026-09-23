@@ -8,10 +8,20 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.cappielloantonio.tempo.github.Github;
+import com.cappielloantonio.tempo.helper.PeachNotificationHelper;
 import com.cappielloantonio.tempo.helper.ThemeHelper;
 import com.cappielloantonio.tempo.subsonic.Subsonic;
 import com.cappielloantonio.tempo.subsonic.SubsonicPreferences;
 import com.cappielloantonio.tempo.util.Preferences;
+import com.cappielloantonio.tempo.worker.PeachUpdateWorker;
+
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
+import java.util.concurrent.TimeUnit;
 
 public class App extends Application {
     private static App instance;
@@ -28,9 +38,30 @@ public class App extends Application {
         String themePref = sharedPreferences.getString(Preferences.THEME, ThemeHelper.DEFAULT_MODE);
         ThemeHelper.applyTheme(themePref);
 
-        instance = new App();
+        instance = this;
         context = getApplicationContext();
         preferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            PeachNotificationHelper.createNotificationChannels(this);
+            schedulePeachUpdateWorker();
+        }
+    }
+
+    private void schedulePeachUpdateWorker() {
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(PeachUpdateWorker.class, 6, TimeUnit.HOURS)
+                .setConstraints(constraints)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "PeachUpdateWorker",
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+        );
     }
 
     public static App getInstance() {

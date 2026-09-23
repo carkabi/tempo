@@ -1,12 +1,16 @@
 <resources>
     <string-array name="theme_list_titles">
-        <item>Chiaro</item>
-        <item>Scuro</item>
+        <item>Scuro Peach 🍑</item>
+        <item>Scuro Tropical 🌴</item>
+        <item>Chiaro Peach 🍑</item>
+        <item>Chiaro Tropical 🌴</item>
         <item>Predefinito del sistema</item>
     </string-array>
     <string-array name="theme_list_values">
-        <item>light</item>
-        <item>dark</item>
+        <item>dark_peach</item>
+        <item>dark_tropical</item>
+        <item>light_peach</item>
+        <item>light_tropical</item>
         <item>default</item>
     </string-array>
 

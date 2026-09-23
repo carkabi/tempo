@@ -1,0 +1,58 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory app:title="@string/settings_title_general">
+        <ListPreference
+            app:defaultValue="default"
+            app:dialogTitle="@string/settings_language"
+            app:key="language"
+            app:title="@string/settings_language"/>
+
+        <SwitchPreference
+            android:title="@string/settings_continuous_play_title"
+            android:defaultValue="true"
+            android:summary="@string/settings_continuous_play_summary"
+            android:key="continuous_play" />
+
+        <SwitchPreference
+            android:key="peach_notifications_enabled"
+            android:title="Notifications Peach"
+            android:summary="Recevoir les alertes de maintenance et de mises à jour"
+            android:defaultValue="true" />
+
+        <Preference
+            android:key="scan_library"
+            android:title="@string/settings_scan_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_title_syncing">
+        <SwitchPreference
+            android:title="@string/settings_queue_syncing_title"
+            android:defaultValue="false"
+            android:key="queue_syncing" />
+
+        <ListPreference
+            app:defaultValue="5"
+            app:dialogTitle="@string/settings_queue_syncing_countdown"
+            app:entries="@array/queue_syncing_countdown_titles"
+            app:entryValues="@array/queue_syncing_countdown_values"
+            app:key="queue_syncing_countdown"
+            app:title="@string/settings_queue_syncing_countdown"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_about_title">
+        <Preference
+            android:key="check_peach_update"
+            android:title="Rechercher une mise à jour"
+            android:summary="Vérifier si une nouvelle version de Peach est disponible" />
+
+        <Preference
+            android:key="logout"
+            android:title="@string/settings_logout_title"/>
+
+        <Preference
+            android:key="version"
+            app:summary="@string/settings_version_summary"
+            app:title="@string/settings_version_title" />
+    </PreferenceCategory>
+</PreferenceScreen>

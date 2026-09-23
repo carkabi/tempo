@@ -2,11 +2,14 @@ package com.cappielloantonio.tempo.repository.tropikeau;
 
 import androidx.annotation.NonNull;
 
+import com.cappielloantonio.tempo.repository.peach.models.RadioManifestResponse;
+import com.cappielloantonio.tempo.repository.peach.models.RadioPackageResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequestResponse;
 import com.cappielloantonio.tempo.subsonic.utils.StringUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -66,6 +69,154 @@ public class TropikeauRepository {
         });
     }
 
+    public void getStatus(int requestId, TropikeauCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.getRequestStatus(username, token, salt, requestId).enqueue(new Callback<MusicRequestResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MusicRequestResponse> call, @NonNull Response<MusicRequestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(response.code(), getErrorMessage(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MusicRequestResponse> call, @NonNull Throwable t) {
+                callback.onError(-1, "Erreur réseau : " + t.getMessage());
+            }
+        });
+    }
+
+    public void getHistory(int limit, TropikeauCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.getHistory(username, token, salt, limit).enqueue(new Callback<MusicRequestResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<MusicRequestResponse> call, @NonNull Response<MusicRequestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(response.code(), getErrorMessage(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MusicRequestResponse> call, @NonNull Throwable t) {
+                callback.onError(-1, "Erreur réseau : " + t.getMessage());
+            }
+        });
+    }
+
+    public void getRadioManifest(RadioManifestCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.getRadioManifest(username, token, salt).enqueue(new Callback<RadioManifestResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<RadioManifestResponse> call, @NonNull Response<RadioManifestResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(response.code(), getErrorMessage(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RadioManifestResponse> call, @NonNull Throwable t) {
+                callback.onError(-1, "Erreur réseau : " + t.getMessage());
+            }
+        });
+    }
+
+    public void getRadioPackage(RadioPackageCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.getRadioPackage(username, token, salt).enqueue(new Callback<RadioPackageResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<RadioPackageResponse> call, @NonNull Response<RadioPackageResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(response.code(), getErrorMessage(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<RadioPackageResponse> call, @NonNull Throwable t) {
+                callback.onError(-1, "Erreur réseau : " + t.getMessage());
+            }
+        });
+    }
+
+    public RadioManifestResponse getRadioManifestSync() throws IOException {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) return null;
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        Response<RadioManifestResponse> response = apiService.getRadioManifest(username, token, salt).execute();
+        if (response.isSuccessful() && response.body() != null) {
+            return response.body();
+        }
+        return null;
+    }
+
+    public RadioPackageResponse getRadioPackageSync() throws IOException {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) return null;
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        Response<RadioPackageResponse> response = apiService.getRadioPackage(username, token, salt).execute();
+        if (response.isSuccessful() && response.body() != null) {
+            return response.body();
+        }
+        return null;
+    }
+
     private String generateSalt() {
         byte[] saltBytes = new byte[8];
         secureRandom.nextBytes(saltBytes);
@@ -80,7 +231,8 @@ public class TropikeauRepository {
         switch (code) {
             case 401: return "Connexion Navidrome refusée ou incomplète.";
             case 403: return "Compte Tropikeau non lié ou accès refusé.";
-            case 422: return "Lien invalide ou métadonnées indisponibles.";
+            case 404: return "Ressource introuvable sur le serveur.";
+            case 422: return "Données invalides.";
             case 429: return "Trop de demandes. Veuillez patienter.";
             case 503: return "Serveur Navidrome inaccessible.";
             default: return "Erreur serveur (" + code + ").";
@@ -89,6 +241,16 @@ public class TropikeauRepository {
 
     public interface TropikeauCallback {
         void onSuccess(MusicRequestResponse response);
+        void onError(int code, String message);
+    }
+
+    public interface RadioManifestCallback {
+        void onSuccess(RadioManifestResponse response);
+        void onError(int code, String message);
+    }
+
+    public interface RadioPackageCallback {
+        void onSuccess(RadioPackageResponse response);
         void onError(int code, String message);
     }
 }

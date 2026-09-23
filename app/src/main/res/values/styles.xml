@@ -1,43 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#000000</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ui_splash_screen</item>
-        <item name="postSplashScreenTheme">@style/AppTheme</item>
+        <item name="windowSplashScreenBackground">#1E0E18</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash_logo</item>
+        <item name="postSplashScreenTheme">@style/AppTheme.DarkPeach</item>
         <item name="windowSplashScreenAnimationDuration">100</item>
     </style>
 
-    <style name="AppTheme" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <item name="colorOnPrimary">@color/md_theme_dark_onPrimary</item>
-        <item name="colorPrimaryContainer">@color/md_theme_dark_primaryContainer</item>
-        <item name="colorOnPrimaryContainer">@color/md_theme_dark_onPrimaryContainer</item>
-        <item name="colorSecondary">@color/md_theme_dark_secondary</item>
-        <item name="colorOnSecondary">@color/md_theme_dark_onSecondary</item>
-        <item name="colorSecondaryContainer">@color/md_theme_dark_secondaryContainer</item>
-        <item name="colorOnSecondaryContainer">@color/md_theme_dark_onSecondaryContainer</item>
-        <item name="colorTertiary">@color/md_theme_dark_tertiary</item>
-        <item name="colorOnTertiary">@color/md_theme_dark_onTertiary</item>
-        <item name="colorTertiaryContainer">@color/md_theme_dark_tertiaryContainer</item>
-        <item name="colorOnTertiaryContainer">@color/md_theme_dark_onTertiaryContainer</item>
-        <item name="colorError">@color/md_theme_dark_error</item>
-        <item name="colorErrorContainer">@color/md_theme_dark_errorContainer</item>
-        <item name="colorOnError">@color/md_theme_dark_onError</item>
-        <item name="colorOnErrorContainer">@color/md_theme_dark_onErrorContainer</item>
-        <item name="android:colorBackground">@color/md_theme_dark_background</item>
-        <item name="colorOnBackground">@color/md_theme_dark_onBackground</item>
-        <item name="colorSurface">@color/md_theme_dark_surface</item>
-        <item name="colorOnSurface">@color/md_theme_dark_onSurface</item>
-        <item name="colorSurfaceVariant">@color/md_theme_dark_surfaceVariant</item>
-        <item name="colorOnSurfaceVariant">@color/md_theme_dark_onSurfaceVariant</item>
-        <item name="colorOutline">@color/md_theme_dark_outline</item>
-        <item name="colorOnSurfaceInverse">@color/md_theme_dark_inverseOnSurface</item>
-        <item name="colorSurfaceInverse">@color/md_theme_dark_inverseSurface</item>
-        <item name="colorPrimaryInverse">@color/md_theme_dark_primaryInverse</item>
+    <style name="AppTheme" parent="AppTheme.DarkPeach" />
 
+    <style name="AppTheme.DarkPeach" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="appGradientStart">#1E0E18</item>
+        <item name="appGradientCenter">#2D121B</item>
+        <item name="appGradientEnd">#180B15</item>
+        <item name="appCardBackground">#26FFFFFF</item>
+        <item name="appCardStroke">#33FFFFFF</item>
+        <item name="appTextColorPrimary">#FFFFFF</item>
+        <item name="appTextColorSecondary">#B0B0B0</item>
+        <item name="appAccentColor">#FFD700</item>
+
+        <item name="colorPrimary">#FFD700</item>
+        <item name="colorOnPrimary">#1E0E18</item>
+        <item name="colorSecondary">#FF6B57</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorTertiary">#00D2FF</item>
+        <item name="android:colorBackground">#1E0E18</item>
+        <item name="colorSurface">#2D121B</item>
+        <item name="colorOnSurface">#FFFFFF</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:statusBarColor">#1E0E18</item>
+        <item name="android:navigationBarColor">#180B15</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.DarkTropical" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="appGradientStart">#0B1B18</item>
+        <item name="appGradientCenter">#142B27</item>
+        <item name="appGradientEnd">#081210</item>
+        <item name="appCardBackground">#2600E676</item>
+        <item name="appCardStroke">#3300E5FF</item>
+        <item name="appTextColorPrimary">#FFFFFF</item>
+        <item name="appTextColorSecondary">#A0E0D6</item>
+        <item name="appAccentColor">#00E676</item>
+
+        <item name="colorPrimary">#00E676</item>
+        <item name="colorOnPrimary">#0B1B18</item>
+        <item name="colorSecondary">#00E5FF</item>
+        <item name="colorOnSecondary">#003643</item>
+        <item name="colorTertiary">#FFD700</item>
+        <item name="android:colorBackground">#0B1B18</item>
+        <item name="colorSurface">#142B27</item>
+        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#0B1B18</item>
+        <item name="android:navigationBarColor">#081210</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.LightPeach" parent="Theme.Material3.Light.NoActionBar">
+        <item name="appGradientStart">#FFF5EE</item>
+        <item name="appGradientCenter">#FFE8E0</item>
+        <item name="appGradientEnd">#FFDDD5</item>
+        <item name="appCardBackground">#D0FFFFFF</item>
+        <item name="appCardStroke">#40FF7043</item>
+        <item name="appTextColorPrimary">#2C121B</item>
+        <item name="appTextColorSecondary">#664048</item>
+        <item name="appAccentColor">#FF5722</item>
+
+        <item name="colorPrimary">#FF5722</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#FF7043</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorTertiary">#00ACC1</item>
+        <item name="android:colorBackground">#FFF5EE</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#2C121B</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#FFF5EE</item>
+        <item name="android:navigationBarColor">#FFE0B2</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.LightTropical" parent="Theme.Material3.Light.NoActionBar">
+        <item name="appGradientStart">#F0FDFA</item>
+        <item name="appGradientCenter">#CCFBF1</item>
+        <item name="appGradientEnd">#99F6E4</item>
+        <item name="appCardBackground">#D0FFFFFF</item>
+        <item name="appCardStroke">#4000B8D4</item>
+        <item name="appTextColorPrimary">#062C27</item>
+        <item name="appTextColorSecondary">#2D5550</item>
+        <item name="appAccentColor">#00B8D4</item>
+
+        <item name="colorPrimary">#00B8D4</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#00C853</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorTertiary">#FFAB00</item>
+        <item name="android:colorBackground">#F0FDFA</item>
+        <item name="colorSurface">#FFFFFF</item>
+        <item name="colorOnSurface">#062C27</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#F0FDFA</item>
+        <item name="android:navigationBarColor">#CCFBF1</item>
         <item name="android:scrollbars">none</item>
     </style>
 
@@ -51,8 +115,32 @@
         <item name="background">?attr/colorErrorContainer</item>
         <item name="android:textColor">?attr/colorOnErrorContainer</item>
     </style>
+
     <style name="RoundedCornersImage">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="Widget.Peach.Button.Play" parent="Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorPrimary</item>
+        <item name="iconTint">?attr/colorOnPrimary</item>
+        <item name="cornerRadius">18dp</item>
+        <item name="android:layout_width">36dp</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconSize">20dp</item>
+    </style>
+
+    <style name="TransparentDialog" parent="Theme.Material3.Dark.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

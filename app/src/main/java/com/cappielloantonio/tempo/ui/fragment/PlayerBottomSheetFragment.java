@@ -30,7 +30,6 @@ import com.cappielloantonio.tempo.subsonic.models.PlayQueue;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.fragment.pager.PlayerControllerVerticalPager;
 import com.cappielloantonio.tempo.util.Constants;
-import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.PlayerBottomSheetViewModel;
 import com.google.android.material.elevation.SurfaceColors;
@@ -210,6 +209,23 @@ public class PlayerBottomSheetFragment extends Fragment {
         bind.playerHeaderLayout.playerHeaderNextMediaButton.setOnClickListener(view -> bind.getRoot().findViewById(R.id.exo_next).performClick());
         bind.playerHeaderLayout.playerHeaderRewindMediaButton.setOnClickListener(view -> bind.getRoot().findViewById(R.id.exo_rew).performClick());
         bind.playerHeaderLayout.playerHeaderFastForwardMediaButton.setOnClickListener(view -> bind.getRoot().findViewById(R.id.exo_ffwd).performClick());
+        bind.playerHeaderLayout.playerHeaderCloseButton.setOnClickListener(view -> {
+            try {
+                if (mediaBrowserListenableFuture != null && mediaBrowserListenableFuture.isDone()) {
+                    MediaBrowser browser = mediaBrowserListenableFuture.get();
+                    if (browser != null) {
+                        browser.pause();
+                        browser.stop();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).setBottomSheetInPeek(false);
+                ((MainActivity) getActivity()).setBottomSheetVisibility(false);
+            }
+        });
     }
 
     private void setHeaderNextButtonState(boolean isEnabled) {
@@ -278,34 +294,30 @@ public class PlayerBottomSheetFragment extends Fragment {
                 public void onChanged(PlayQueue playQueue) {
                     playerBottomSheetViewModel.getPlayQueue().removeObserver(this);
 
-                    if (bind == null) return;
+                    if (playQueue != null && playQueue.getEntries() != null && playQueue.getCurrent() != null) {
+                        int[] index = IntStream.range(0, playQueue.getEntries().size())
+                                .filter(i -> Objects.equals(playQueue.getEntries().get(i).getId(), playQueue.getCurrent()))
+                                .toArray();
 
-                    if (playQueue != null && !playQueue.getEntries().isEmpty()) {
-                        int index = IntStream.range(0, playQueue.getEntries().size()).filter(ix -> playQueue.getEntries().get(ix).getId().equals(playQueue.getCurrent())).findFirst().orElse(-1);
+                        if (index.length > 0) {
+                            MediaManager.startQueue(mediaBrowserListenableFuture, playQueue.getEntries(), index[0]);
 
-                        if (index != -1) {
-                            bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setVisibility(View.VISIBLE);
-                            bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setOnClickListener(v -> {
-                                MediaManager.startQueue(mediaBrowserListenableFuture, playQueue.getEntries(), index);
-                                bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setVisibility(View.GONE);
-                            });
+                            if (playQueue.getPosition() != null) {
+                                mediaBrowserListenableFuture.addListener(() -> {
+                                    try {
+                                        MediaBrowser mediaBrowser = mediaBrowserListenableFuture.get();
+
+                                        mediaBrowser.seekTo(playQueue.getPosition() * 1000);
+                                        mediaBrowser.pause();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }, MoreExecutors.directExecutor());
+                            }
                         }
-                    } else {
-                        bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setVisibility(View.GONE);
-                        bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setOnClickListener(null);
                     }
                 }
             });
-
-            bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setOnLongClickListener(v -> {
-                bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setVisibility(View.GONE);
-                return true;
-            });
-
-            new Handler().postDelayed(() -> {
-                if (bind != null)
-                    bind.playerHeaderLayout.playerHeaderBookmarkMediaButton.setVisibility(View.GONE);
-            }, Preferences.getSyncCountdownTimer() * 1000L);
         }
     }
 }

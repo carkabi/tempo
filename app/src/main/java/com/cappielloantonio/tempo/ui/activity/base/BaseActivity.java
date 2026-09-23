@@ -17,6 +17,7 @@ import androidx.media3.exoplayer.offline.DownloadService;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 
+import com.cappielloantonio.tempo.helper.ThemeHelper;
 import com.cappielloantonio.tempo.service.DownloaderService;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.ui.dialog.BatteryOptimizationDialog;
@@ -33,6 +34,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        ThemeHelper.applyActivityTheme(this, Preferences.getTheme());
         super.onCreate(savedInstanceState);
         Flavors.initializeCastContext(this);
         initializeDownloader();

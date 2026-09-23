@@ -106,6 +106,7 @@
     <string name="home_title_most_played_see_all_button">Voir tout</string>
     <string name="home_title_new_releases">Nouvelles sorties</string>
     <string name="home_title_newest_podcasts">Nouveau podcasts</string>
+    <string name="home_title_pinned_playlists">Playlists</string>
     <string name="home_title_podcast_channels">Chaînes</string>
     <string name="home_title_podcast_channels_see_all_button">Voir tout</string>
     <string name="home_title_radio_station">Stations radio</string>
@@ -146,7 +147,7 @@
     <string name="menu_group_by_year">Année</string>
     <string name="menu_home_label">Accueil</string>
     <string name="menu_search_label">Rechercher</string>
-    <string name="menu_playlist_label">Playlist</string>
+    <string name="menu_playlist_label">Bibliothèque</string>
     <string name="menu_add_label">Ajout</string>
     <string name="menu_profile_label">Profil</string>
     <string name="menu_search_button">Rechercher</string>
@@ -365,6 +366,7 @@
     <string name="undraw_page">unDraw</string>
     <string name="undraw_thanks">Un grand merci à unDraw, nous n\'aurions pas pu rendre cette application aussi belle sans leurs illustrations.</string>
     <string name="undraw_url">https://undraw.co/</string>
+    <string name="home_welcome_text">Bienvenue sur Tropikeau</string>
     <string name="home_tab_accueil">Accueil</string>
     <string name="home_tab_library">Ma bibliothèque</string>
     <string name="home_tab_radio">Radio</string>
@@ -377,7 +379,7 @@
     <string name="add_music_success">Musique ajoutée avec succès !</string>
     <string name="add_music_error_link">Lien Spotify invalide.</string>
     <string name="add_music_tutorial_title">Comment ça marche ?</string>
-    <string name="add_music_tutorial_text">1. Copiez un lien depuis Spotify.\n2. Collez-le ci-dessus.\n3. Cliquez sur Ajouter.\nLes liens d\'artistes ou d\'albums complets fonctionnent également !</string>
+    <string name="add_music_tutorial_text">1. Copiez un lien depuis Spotify ou SoundCloud.\n2. Collez-le ci-dessus.\n3. Cliquez sur Ajouter.\nLes liens d\'artistes ou d\'albums complets fonctionnent également ! Vous pouvez quitter l\'application pendant le traitement, le suivi reprendra à votre retour.</string>
     <string name="add_music_success_details">Titre : %1$s\nStatut : %2$s\nPosition dans la file : %3$d</string>
     <string name="add_music_error_auth">Erreur d\'authentification. Vérifiez votre compte Navidrome.</string>
     <string name="add_music_error_forbidden">Accès refusé. Votre compte n\'a pas les droits nécessaires.</string>

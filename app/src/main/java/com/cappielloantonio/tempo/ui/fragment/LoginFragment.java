@@ -65,15 +65,6 @@ public class LoginFragment extends Fragment {
         bind.registerLink.setOnClickListener(v -> openUrl("https://tropikeau.fr/register"));
         bind.forgotPasswordLink.setOnClickListener(v -> openUrl("https://tropikeau.fr/contact"));
         activity.setSupportActionBar(bind.toolbar);
-
-        bind.appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
-            if (bind == null) return;
-            if ((bind.serverInfoSector.getHeight() + verticalOffset) < (2 * ViewCompat.getMinimumHeight(bind.toolbar))) {
-                bind.toolbar.setTitle(R.string.login_title);
-            } else {
-                bind.toolbar.setTitle(R.string.empty_string);
-            }
-        });
     }
 
     private void openUrl(String url) {

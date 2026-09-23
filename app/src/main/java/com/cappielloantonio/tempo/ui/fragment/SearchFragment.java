@@ -1,17 +1,14 @@
 package com.cappielloantonio.tempo.ui.fragment;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +31,7 @@ import com.cappielloantonio.tempo.ui.adapter.AlbumAdapter;
 import com.cappielloantonio.tempo.ui.adapter.ArtistAdapter;
 import com.cappielloantonio.tempo.ui.adapter.SongHorizontalAdapter;
 import com.cappielloantonio.tempo.util.Constants;
+import com.cappielloantonio.tempo.viewmodel.HomeViewModel;
 import com.cappielloantonio.tempo.viewmodel.SearchViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -41,11 +39,10 @@ import java.util.Collections;
 
 @UnstableApi
 public class SearchFragment extends Fragment implements ClickCallback {
-    private static final String TAG = "SearchFragment";
-
     private FragmentSearchBinding bind;
     private MainActivity activity;
     private SearchViewModel searchViewModel;
+    private HomeViewModel homeViewModel;
 
     private ArtistAdapter artistAdapter;
     private AlbumAdapter albumAdapter;
@@ -57,22 +54,73 @@ public class SearchFragment extends Fragment implements ClickCallback {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         activity = (MainActivity) getActivity();
-
         bind = FragmentSearchBinding.inflate(inflater, container, false);
-        View view = bind.getRoot();
         searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         initSearchResultView();
-        initSearchView();
-        inputFocus();
+        initSearchInput();
+        initFilterView();
+        loadInitialContent();
+        return bind.getRoot();
+    }
 
-        return view;
+    private void initSearchInput() {
+        bind.searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String query = s.toString();
+                bind.clearSearchIcon.setVisibility(query.isEmpty() ? View.GONE : View.VISIBLE);
+                if (isQueryValid(query)) {
+                    performSearch(query);
+                } else if (query.isEmpty()) {
+                    loadInitialContent();
+                }
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+
+        bind.clearSearchIcon.setOnClickListener(v -> {
+            bind.searchEditText.setText("");
+            loadInitialContent();
+        });
+
+        bind.searchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            hideKeyboard(v);
+            return true;
+        });
+    }
+
+    private void loadInitialContent() {
+        if (bind == null) return;
+        bind.searchEmptyPlaceholder.setVisibility(View.VISIBLE);
+        bind.searchArtistSector.setVisibility(View.GONE);
+        bind.searchAlbumSector.setVisibility(View.GONE);
+        bind.searchSongSector.setVisibility(View.GONE);
+
+        // On affiche des morceaux aléatoires pour donner de la vie à la page
+        homeViewModel.getRandomShuffleSample().observe(getViewLifecycleOwner(), songs -> {
+            if (bind == null || songs == null || songs.isEmpty()) return;
+            bind.searchEmptyPlaceholder.setVisibility(View.GONE);
+            bind.searchSongSector.setVisibility(View.VISIBLE);
+            songHorizontalAdapter.setItems(songs.subList(0, Math.min(30, songs.size())));
+            bind.searchResultLayout.setVisibility(View.VISIBLE);
+        });
+    }
+
+    private void initFilterView() {
+        bind.searchFilterGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            String query = bind.searchEditText.getText().toString();
+            if (isQueryValid(query)) performSearch(query);
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
         initializeMediaBrowser();
+        activity.setBottomNavigationBarVisibility(true);
+        activity.setBottomSheetVisibility(true);
     }
 
     @Override
@@ -88,165 +136,51 @@ public class SearchFragment extends Fragment implements ClickCallback {
     }
 
     private void initSearchResultView() {
-        // Artists
         bind.searchResultArtistRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.searchResultArtistRecyclerView.setHasFixedSize(true);
-
         artistAdapter = new ArtistAdapter(this, false, false);
         bind.searchResultArtistRecyclerView.setAdapter(artistAdapter);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.searchResultArtistRecyclerView);
 
-        CustomLinearSnapHelper artistSnapHelper = new CustomLinearSnapHelper();
-        artistSnapHelper.attachToRecyclerView(bind.searchResultArtistRecyclerView);
-
-        // Albums
         bind.searchResultAlbumRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
         bind.searchResultAlbumRecyclerView.setHasFixedSize(true);
-
         albumAdapter = new AlbumAdapter(this);
         bind.searchResultAlbumRecyclerView.setAdapter(albumAdapter);
+        new CustomLinearSnapHelper().attachToRecyclerView(bind.searchResultAlbumRecyclerView);
 
-        CustomLinearSnapHelper albumSnapHelper = new CustomLinearSnapHelper();
-        albumSnapHelper.attachToRecyclerView(bind.searchResultAlbumRecyclerView);
-
-        // Songs
         bind.searchResultTracksRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         bind.searchResultTracksRecyclerView.setHasFixedSize(true);
-
         songHorizontalAdapter = new SongHorizontalAdapter(this, true, false, null);
         bind.searchResultTracksRecyclerView.setAdapter(songHorizontalAdapter);
     }
 
-    private void initSearchView() {
-        setRecentSuggestions();
-
-        bind.searchView
-                .getEditText()
-                .setOnEditorActionListener((textView, actionId, keyEvent) -> {
-                    String query = bind.searchView.getText().toString();
-
-                    if (isQueryValid(query)) {
-                        search(query);
-                        return true;
-                    }
-
-                    return false;
-                });
-
-        bind.searchView
-                .getEditText()
-                .addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) {
-
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                        if (start + count > 1) {
-                            setSearchSuggestions(charSequence.toString());
-                        } else {
-                            setRecentSuggestions();
-                        }
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-
-                    }
-                });
-    }
-
-    public void setRecentSuggestions() {
-        bind.searchViewSuggestionContainer.removeAllViews();
-
-        for (String suggestion : searchViewModel.getRecentSearchSuggestion()) {
-            View view = LayoutInflater.from(bind.searchViewSuggestionContainer.getContext()).inflate(R.layout.item_search_suggestion, bind.searchViewSuggestionContainer, false);
-
-            ImageView leadingImageView = view.findViewById(R.id.search_suggestion_icon);
-            TextView titleView = view.findViewById(R.id.search_suggestion_title);
-            ImageView tailingImageView = view.findViewById(R.id.search_suggestion_delete_icon);
-
-            leadingImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_history, null));
-            titleView.setText(suggestion);
-
-            view.setOnClickListener(v -> search(suggestion));
-
-            tailingImageView.setOnClickListener(v -> {
-                searchViewModel.deleteRecentSearch(suggestion);
-                setRecentSuggestions();
-            });
-
-            bind.searchViewSuggestionContainer.addView(view);
-        }
-    }
-
-    public void setSearchSuggestions(String query) {
-        searchViewModel.getSearchSuggestion(query).observe(getViewLifecycleOwner(), suggestions -> {
-            bind.searchViewSuggestionContainer.removeAllViews();
-
-            for (String suggestion : suggestions) {
-                View view = LayoutInflater.from(bind.searchViewSuggestionContainer.getContext()).inflate(R.layout.item_search_suggestion, bind.searchViewSuggestionContainer, false);
-
-                ImageView leadingImageView = view.findViewById(R.id.search_suggestion_icon);
-                TextView titleView = view.findViewById(R.id.search_suggestion_title);
-                ImageView tailingImageView = view.findViewById(R.id.search_suggestion_delete_icon);
-
-                leadingImageView.setImageDrawable(getResources().getDrawable(R.drawable.ic_search, null));
-                titleView.setText(suggestion);
-                tailingImageView.setVisibility(View.GONE);
-
-                view.setOnClickListener(v -> search(suggestion));
-
-                bind.searchViewSuggestionContainer.addView(view);
-            }
-        });
-    }
-
-    public void search(String query) {
-        searchViewModel.setQuery(query);
-        bind.searchBar.setText(query);
-        bind.searchView.hide();
-        performSearch(query);
-    }
-
     private void performSearch(String query) {
         searchViewModel.search3(query).observe(getViewLifecycleOwner(), result -> {
-            if (bind != null) {
-                if (result.getArtists() != null) {
-                    bind.searchArtistSector.setVisibility(!result.getArtists().isEmpty() ? View.VISIBLE : View.GONE);
-                    artistAdapter.setItems(result.getArtists());
-                } else {
-                    artistAdapter.setItems(Collections.emptyList());
-                    bind.searchArtistSector.setVisibility(View.GONE);
-                }
+            if (bind == null || result == null) return;
+            bind.searchEmptyPlaceholder.setVisibility(View.GONE);
+            int checkedId = bind.searchFilterGroup.getCheckedChipId();
+            boolean showArtists = checkedId == R.id.filter_all || checkedId == R.id.filter_artist;
+            boolean showAlbums = checkedId == R.id.filter_all || checkedId == R.id.filter_album;
+            boolean showSongs = checkedId == R.id.filter_all || checkedId == R.id.filter_song;
 
-                if (result.getAlbums() != null) {
-                    bind.searchAlbumSector.setVisibility(!result.getAlbums().isEmpty() ? View.VISIBLE : View.GONE);
-                    albumAdapter.setItems(result.getAlbums());
-                } else {
-                    albumAdapter.setItems(Collections.emptyList());
-                    bind.searchAlbumSector.setVisibility(View.GONE);
-                }
+            bind.searchArtistSector.setVisibility(showArtists && result.getArtists() != null && !result.getArtists().isEmpty() ? View.VISIBLE : View.GONE);
+            if (showArtists && result.getArtists() != null) artistAdapter.setItems(result.getArtists());
 
-                if (result.getSongs() != null) {
-                    bind.searchSongSector.setVisibility(!result.getSongs().isEmpty() ? View.VISIBLE : View.GONE);
-                    songHorizontalAdapter.setItems(result.getSongs());
-                } else {
-                    songHorizontalAdapter.setItems(Collections.emptyList());
-                    bind.searchSongSector.setVisibility(View.GONE);
-                }
-            }
+            bind.searchAlbumSector.setVisibility(showAlbums && result.getAlbums() != null && !result.getAlbums().isEmpty() ? View.VISIBLE : View.GONE);
+            if (showAlbums && result.getAlbums() != null) albumAdapter.setItems(result.getAlbums());
+
+            bind.searchSongSector.setVisibility(showSongs && result.getSongs() != null && !result.getSongs().isEmpty() ? View.VISIBLE : View.GONE);
+            if (showSongs && result.getSongs() != null) songHorizontalAdapter.setItems(result.getSongs());
         });
-
-        bind.searchResultLayout.setVisibility(View.VISIBLE);
     }
 
     private boolean isQueryValid(String query) {
-        return !query.equals("") && query.trim().length() > 2;
+        return query != null && !query.trim().isEmpty();
     }
 
-    private void inputFocus() {
-        bind.searchView.show();
+    private void hideKeyboard(View view) {
+        InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     private void initializeMediaBrowser() {
@@ -257,34 +191,13 @@ public class SearchFragment extends Fragment implements ClickCallback {
         MediaBrowser.releaseFuture(mediaBrowserListenableFuture);
     }
 
-    @Override
-    public void onMediaClick(Bundle bundle) {
-        MediaManager.startQueue(mediaBrowserListenableFuture, bundle.getParcelableArrayList(Constants.TRACKS_OBJECT), bundle.getInt(Constants.ITEM_POSITION));
+    @Override public void onMediaClick(Bundle b) {
+        MediaManager.startQueue(mediaBrowserListenableFuture, b.getParcelableArrayList(Constants.TRACKS_OBJECT), b.getInt(Constants.ITEM_POSITION));
         activity.setBottomSheetInPeek(true);
     }
-
-    @Override
-    public void onMediaLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.songBottomSheetDialog, bundle);
-    }
-
-    @Override
-    public void onAlbumClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.albumPageFragment, bundle);
-    }
-
-    @Override
-    public void onAlbumLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.albumBottomSheetDialog, bundle);
-    }
-
-    @Override
-    public void onArtistClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.artistPageFragment, bundle);
-    }
-
-    @Override
-    public void onArtistLongClick(Bundle bundle) {
-        Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, bundle);
-    }
+    @Override public void onMediaLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.songBottomSheetDialog, b); }
+    @Override public void onAlbumClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.albumPageFragment, b); }
+    @Override public void onAlbumLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.albumBottomSheetDialog, b); }
+    @Override public void onArtistClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.artistPageFragment, b); }
+    @Override public void onArtistLongClick(Bundle b) { Navigation.findNavController(requireView()).navigate(R.id.artistBottomSheetDialog, b); }
 }
