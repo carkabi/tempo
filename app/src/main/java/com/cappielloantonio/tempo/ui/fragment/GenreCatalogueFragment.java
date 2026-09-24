@@ -25,6 +25,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentGenreCatalogueBinding;
 import com.cappielloantonio.tempo.helper.recyclerview.GridItemDecoration;
@@ -70,7 +71,15 @@ public class GenreCatalogueFragment extends Fragment implements ClickCallback {
     }
 
     private void init() {
-        bind.filterGenresTextViewClickable.setOnClickListener(v -> activity.navController.navigate(R.id.action_genreCatalogueFragment_to_filterFragment));
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            bind.filterGenresTextViewClickable.setVisibility(View.GONE);
+        } else {
+            bind.filterGenresTextViewClickable.setOnClickListener(
+                    v -> activity.navController.navigate(
+                            R.id.action_genreCatalogueFragment_to_filterFragment
+                    )
+            );
+        }
     }
 
     private void initAppBar() {

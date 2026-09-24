@@ -9,7 +9,11 @@ import com.cappielloantonio.tempo.subsonic.models.Child;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -157,30 +161,103 @@ public class SongRepository {
         return songsByGenre;
     }
 
-    public MutableLiveData<List<Child>> getSongsByGenres(ArrayList<String> genresId) {
-        MutableLiveData<List<Child>> songsByGenre = new MutableLiveData<>();
+    public MutableLiveData<List<Child>> getSongsByGenres(
+            ArrayList<String> genresId
+    ) {
+        return getSongsByGenres(genresId, 0, 100);
+    }
 
-        for (String id : genresId)
+    public MutableLiveData<List<Child>> getSongsByGenres(
+            ArrayList<String> genresId,
+            int page,
+            int pageSize
+    ) {
+        MutableLiveData<List<Child>> songsByGenre =
+                new MutableLiveData<>();
+
+        if (genresId == null || genresId.isEmpty()) {
+            songsByGenre.setValue(Collections.emptyList());
+            return songsByGenre;
+        }
+
+        Map<String, Child> merged =
+                Collections.synchronizedMap(
+                        new LinkedHashMap<>()
+                );
+        AtomicInteger pending =
+                new AtomicInteger(genresId.size());
+
+        for (String id : genresId) {
             App.getSubsonicClientInstance(false)
                     .getAlbumSongListClient()
-                    .getSongsByGenre(id, 500, 0)
+                    .getSongsByGenre(
+                            id,
+                            pageSize,
+                            pageSize * page
+                    )
                     .enqueue(new Callback<ApiResponse>() {
                         @Override
-                        public void onResponse(@NonNull Call<ApiResponse> call, @NonNull Response<ApiResponse> response) {
-                            List<Child> songs = new ArrayList<>();
+                        public void onResponse(
+                                @NonNull Call<ApiResponse> call,
+                                @NonNull Response<ApiResponse> response
+                        ) {
+                            if (response.isSuccessful()
+                                    && response.body() != null
+                                    && response.body()
+                                    .getSubsonicResponse()
+                                    .getSongsByGenre() != null
+                                    && response.body()
+                                    .getSubsonicResponse()
+                                    .getSongsByGenre()
+                                    .getSongs() != null) {
 
-                            if (response.isSuccessful() && response.body() != null && response.body().getSubsonicResponse().getSongsByGenre() != null) {
-                                songs.addAll(response.body().getSubsonicResponse().getSongsByGenre().getSongs());
+                                synchronized (merged) {
+                                    for (Child child : response.body()
+                                            .getSubsonicResponse()
+                                            .getSongsByGenre()
+                                            .getSongs()) {
+                                        merged.put(child.getId(), child);
+                                    }
+                                }
                             }
 
-                            songsByGenre.setValue(songs);
+                            publishWhenComplete();
                         }
 
                         @Override
-                        public void onFailure(@NonNull Call<ApiResponse> call, @NonNull Throwable t) {
+                        public void onFailure(
+                                @NonNull Call<ApiResponse> call,
+                                @NonNull Throwable t
+                        ) {
+                            publishWhenComplete();
+                        }
 
+                        private void publishWhenComplete() {
+                            if (pending.decrementAndGet() != 0) {
+                                return;
+                            }
+
+                            List<Child> result;
+
+                            synchronized (merged) {
+                                result = new ArrayList<>(
+                                        merged.values()
+                                );
+                            }
+
+                            result.sort(
+                                    Comparator.comparing(
+                                            child -> child.getTitle() == null
+                                                    ? ""
+                                                    : child.getTitle(),
+                                            String.CASE_INSENSITIVE_ORDER
+                                    )
+                            );
+
+                            songsByGenre.postValue(result);
                         }
                     });
+        }
 
         return songsByGenre;
     }

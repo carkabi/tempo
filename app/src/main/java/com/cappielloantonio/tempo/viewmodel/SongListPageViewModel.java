@@ -18,7 +18,9 @@ import com.cappielloantonio.tempo.subsonic.models.Genre;
 import com.cappielloantonio.tempo.util.Constants;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SongListPageViewModel extends AndroidViewModel {
     private final SongRepository songRepository;
@@ -39,6 +41,9 @@ public class SongListPageViewModel extends AndroidViewModel {
     public int maxNumberByYear = 500;
     public int maxNumberByGenre = 100;
 
+    private int genreGroupPage = 0;
+    private boolean genreGroupFinished = false;
+
     public SongListPageViewModel(@NonNull Application application) {
         super(application);
 
@@ -57,7 +62,13 @@ public class SongListPageViewModel extends AndroidViewModel {
                 songList = artistRepository.getTopSongs(artist.getName(), 50);
                 break;
             case Constants.MEDIA_BY_GENRES:
-                songList = songRepository.getSongsByGenres(filters);
+                genreGroupPage = 0;
+                genreGroupFinished = false;
+                songList = songRepository.getSongsByGenres(
+                        filters,
+                        genreGroupPage,
+                        maxNumberByGenre
+                );
                 break;
             case Constants.MEDIA_BY_YEAR:
                 songList = songRepository.getRandomSample(maxNumberByYear, year, year + 10);
@@ -86,8 +97,61 @@ public class SongListPageViewModel extends AndroidViewModel {
                     }
                 });
                 break;
-            case Constants.MEDIA_BY_ARTIST:
             case Constants.MEDIA_BY_GENRES:
+                if (genreGroupFinished) {
+                    List<Child> current = songList.getValue();
+                    songList.setValue(
+                            current != null
+                                    ? current
+                                    : new ArrayList<>()
+                    );
+                    break;
+                }
+
+                int nextPage = genreGroupPage + 1;
+
+                songRepository.getSongsByGenres(
+                        filters,
+                        nextPage,
+                        maxNumberByGenre
+                ).observe(owner, children -> {
+                    List<Child> current = songList.getValue();
+
+                    if (current == null) {
+                        current = new ArrayList<>();
+                    } else {
+                        current = new ArrayList<>(current);
+                    }
+
+                    if (children == null || children.isEmpty()) {
+                        genreGroupFinished = true;
+                        songList.setValue(current);
+                        return;
+                    }
+
+                    Set<String> existingIds = new HashSet<>();
+                    for (Child child : current) {
+                        existingIds.add(child.getId());
+                    }
+
+                    int before = current.size();
+
+                    for (Child child : children) {
+                        if (existingIds.add(child.getId())) {
+                            current.add(child);
+                        }
+                    }
+
+                    genreGroupPage = nextPage;
+
+                    if (current.size() == before) {
+                        genreGroupFinished = true;
+                    }
+
+                    songList.setValue(current);
+                });
+                break;
+            case Constants.MEDIA_BY_ARTIST:
             case Constants.MEDIA_BY_YEAR:
             case Constants.MEDIA_STARRED:
                 break;
