@@ -42,6 +42,19 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="parent" />
 
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/shared_playlist_button"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/shared_playlist_open"
+                    android:visibility="gone"
+                    app:cornerRadius="24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <Button
                     android:id="@+id/playlist_list_sort_image_view"
                     style="@style/Widget.Material3.Button.TonalButton.Icon"

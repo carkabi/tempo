@@ -23,6 +23,7 @@ import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentPlaylistCatalogueBinding;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
@@ -122,7 +123,22 @@ public class PlaylistCatalogueFragment extends Fragment implements ClickCallback
             return false;
         });
 
-        bind.playlistListSortImageView.setOnClickListener(view -> showPopupMenu(view, R.menu.sort_playlist_popup_menu));
+        bind.playlistListSortImageView.setOnClickListener(
+                view -> showPopupMenu(
+                        view,
+                        R.menu.sort_playlist_popup_menu
+                )
+        );
+
+        boolean isPeach = "peach".equals(BuildConfig.FLAVOR);
+        bind.sharedPlaylistButton.setVisibility(
+                isPeach ? View.VISIBLE : View.GONE
+        );
+        bind.sharedPlaylistButton.setOnClickListener(v ->
+                Navigation.findNavController(bind.getRoot()).navigate(
+                        R.id.action_playlistCatalogueFragment_to_sharedPlaylistFragment
+                )
+        );
     }
 
     @Override

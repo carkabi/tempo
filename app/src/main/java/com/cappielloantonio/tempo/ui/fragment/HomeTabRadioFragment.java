@@ -18,6 +18,7 @@ import androidx.media3.session.SessionToken;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.cappielloantonio.tempo.BuildConfig;
+import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentHomeTabRadioBinding;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
 import com.cappielloantonio.tempo.interfaces.RadioCallback;
@@ -105,7 +106,13 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
 
     private void init() {
         if ("peach".equals(BuildConfig.FLAVOR)) {
-            bind.internetRadioStationPreTextView.setVisibility(View.GONE);
+            bind.internetRadioStationPreTextView.setVisibility(View.VISIBLE);
+            bind.internetRadioStationPreTextView.setText(
+                    R.string.peach_radio_kicker
+            );
+            bind.internetRadioStationTitleTextView.setText(
+                    R.string.peach_radio_title
+            );
             bind.internetRadioStationTitleTextView.setOnLongClickListener(null);
         } else {
             bind.internetRadioStationPreTextView.setOnClickListener(v -> {
@@ -141,15 +148,9 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
                     bind.emptyRadioStationLayout.setVisibility(View.GONE);
                     peachRadioAdapter.setItems(stations);
 
-                    // Auto-start House radio on tab open for local playback test
-                    if (PeachRadioPlayerManager.getActiveRadioSlug() == null) {
-                        PeachRadioStation houseStation = stations.get(0);
-                        Log.i(TAG, "Starting House radio station on tab open: " + houseStation.getSlug());
-                        PeachRadioPlayerManager.startPeachRadio(requireContext(), mediaBrowserListenableFuture, houseStation);
-                        if (activity != null) {
-                            activity.setBottomSheetInPeek(true);
-                        }
-                    }
+                    // Playback starts only after an explicit user action.
+                    // This avoids launching a station before Media3 is ready
+                    // and prevents unwanted playback when opening the Radio tab.
                 }
             });
 

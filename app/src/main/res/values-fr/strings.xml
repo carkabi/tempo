@@ -387,4 +387,33 @@
     <string name="add_music_error_too_many">Trop de demandes. Veuillez patienter un instant.</string>
     <string name="add_music_error_unavailable">Le service est temporairement indisponible.</string>
     <string name="add_music_error_network">Erreur réseau. Vérifiez votre connexion.</string>
+    <string name="shared_playlist_title">Playlist partagée</string>
+    <string name="shared_playlist_hero_title">La playlist de tout le monde</string>
+    <string name="shared_playlist_description">Ajoutez vos morceaux préférés depuis Peach. Ils sont partagés avec tous les membres et lus directement depuis Navidrome.</string>
+    <string name="shared_playlist_play">Lire</string>
+    <string name="shared_playlist_shuffle">Aléatoire</string>
+    <string name="shared_playlist_empty">La playlist est encore vide. Ajoutez un morceau depuis son menu.</string>
+    <string name="shared_playlist_count_empty">Aucun titre pour le moment</string>
+    <plurals name="shared_playlist_count">
+        <item quantity="one">%d titre partagé</item>
+        <item quantity="other">%d titres partagés</item>
+    </plurals>
+    <string name="shared_playlist_unknown_artist">Artiste inconnu</string>
+    <string name="shared_playlist_member">Membre Peach</string>
+    <string name="shared_playlist_item_subtitle">%1$s · %2$s · ajouté par %3$s</string>
+    <string name="shared_playlist_remove_title">Retirer ce morceau ?</string>
+    <string name="shared_playlist_remove_message">« %1$s » sera retiré de la playlist partagée.</string>
+    <string name="shared_playlist_remove_action">Retirer</string>
+    <string name="shared_playlist_removed">Morceau retiré de la playlist partagée.</string>
+    <string name="shared_playlist_open">Playlist partagée</string>
+    <string name="shared_playlist_open_summary">La sélection collaborative de Peach</string>
+    <string name="shared_playlist_add_action">Ajouter à la playlist partagée</string>
+    <string name="shared_playlist_added">Morceau ajouté à la playlist partagée.</string>
+    <string name="shared_playlist_already_added">Ce morceau est déjà dans la playlist partagée.</string>
+    <string name="peach_radio_kicker">RADIOS PEACH</string>
+    <string name="peach_radio_title">En direct, toute la journée</string>
+    <string name="peach_radio_live">EN DIRECT</string>
+    <string name="peach_radio_default_description">Radio linéaire Peach</string>
+    <string name="peach_radio_now_format">%1$s — %2$s</string>
+    <string name="peach_radio_next_format">À suivre · %1$s — %2$s</string>
 </resources>

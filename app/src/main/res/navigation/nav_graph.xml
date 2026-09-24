@@ -244,7 +244,16 @@
         <action
             android:id="@+id/action_playlistCatalogueFragment_to_playlistPageFragment"
             app:destination="@id/playlistPageFragment" />
+        <action
+            android:id="@+id/action_playlistCatalogueFragment_to_sharedPlaylistFragment"
+            app:destination="@id/sharedPlaylistFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/sharedPlaylistFragment"
+        android:name="com.cappielloantonio.tempo.ui.fragment.SharedPlaylistFragment"
+        android:label="@string/shared_playlist_title"
+        tools:layout="@layout/fragment_shared_playlist" />
 
     <fragment
         android:id="@+id/artistPageFragment"

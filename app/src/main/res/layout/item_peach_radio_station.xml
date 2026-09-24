@@ -36,8 +36,7 @@
                 android:clickable="false"
                 android:focusable="false"
                 android:src="@drawable/ic_radio_premium"
-                app:shapeAppearanceOverlay="@style/RoundedCornersImage"
-                app:tint="?attr/colorPrimary" />
+                app:shapeAppearanceOverlay="@style/RoundedCornersImage" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -73,13 +72,12 @@
                         style="@style/LabelSmall"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/ic_check_circle"
-                        android:backgroundTint="?attr/colorPrimary"
+                        android:background="@drawable/bg_peach_live_badge"
                         android:clickable="false"
                         android:focusable="false"
                         android:paddingHorizontal="8dp"
                         android:paddingVertical="2dp"
-                        android:text="EN DIRECT"
+                        android:text="@string/peach_radio_live"
                         android:textColor="@color/peach_background"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -103,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:background="#1AFFFFFF"
+            android:background="@drawable/bg_peach_radio_track_info"
             android:clickable="false"
             android:focusable="false"
             android:padding="12dp"

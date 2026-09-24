@@ -4,9 +4,12 @@ import com.cappielloantonio.tempo.repository.peach.models.RadioManifestResponse;
 import com.cappielloantonio.tempo.repository.peach.models.RadioPackageResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequestResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistAddRequest;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -50,5 +53,28 @@ public interface TropikeauApiService {
             @Header("X-Peach-Username") String username,
             @Header("X-Peach-Token") String token,
             @Header("X-Peach-Salt") String salt
+    );
+
+    @GET("api/peach/v1/shared-playlist")
+    Call<SharedPlaylistResponse> getSharedPlaylist(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt
+    );
+
+    @POST("api/peach/v1/shared-playlist")
+    Call<SharedPlaylistResponse> addSharedPlaylistTrack(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Body SharedPlaylistAddRequest request
+    );
+
+    @DELETE("api/peach/v1/shared-playlist/{itemId}")
+    Call<SharedPlaylistResponse> removeSharedPlaylistTrack(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Path("itemId") long itemId
     );
 }

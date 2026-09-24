@@ -20,9 +20,12 @@ import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.model.Download;
+import com.cappielloantonio.tempo.repository.tropikeau.TropikeauRepository;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistResponse;
 import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.subsonic.models.Child;
@@ -184,6 +187,61 @@ public class SongBottomSheetDialog extends BottomSheetDialogFragment implements 
             dialog.show(requireActivity().getSupportFragmentManager(), null);
 
             dismissBottomSheet();
+        });
+
+        TextView addToSharedPlaylist =
+                view.findViewById(
+                        R.id.add_to_shared_playlist_text_view
+                );
+        addToSharedPlaylist.setVisibility(
+                "peach".equals(BuildConfig.FLAVOR)
+                        ? View.VISIBLE
+                        : View.GONE
+        );
+        addToSharedPlaylist.setOnClickListener(v -> {
+            addToSharedPlaylist.setEnabled(false);
+
+            new TropikeauRepository().addSharedTrack(
+                    song.getId(),
+                    new TropikeauRepository.SharedPlaylistCallback() {
+                        @Override
+                        public void onSuccess(
+                                SharedPlaylistResponse response
+                        ) {
+                            if (!isAdded()) return;
+                            requireActivity().runOnUiThread(() -> {
+                                boolean duplicate =
+                                        Boolean.TRUE.equals(
+                                                response.getDuplicate()
+                                        );
+                                Toast.makeText(
+                                        requireContext(),
+                                        duplicate
+                                                ? R.string.shared_playlist_already_added
+                                                : R.string.shared_playlist_added,
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                                dismissBottomSheet();
+                            });
+                        }
+
+                        @Override
+                        public void onError(
+                                int code,
+                                String message
+                        ) {
+                            if (!isAdded()) return;
+                            requireActivity().runOnUiThread(() -> {
+                                addToSharedPlaylist.setEnabled(true);
+                                Toast.makeText(
+                                        requireContext(),
+                                        message,
+                                        Toast.LENGTH_LONG
+                                ).show();
+                            });
+                        }
+                    }
+            );
         });
 
         TextView goToAlbum = view.findViewById(R.id.go_to_album_text_view);

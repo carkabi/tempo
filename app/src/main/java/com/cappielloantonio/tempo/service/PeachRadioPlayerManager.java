@@ -1,5 +1,6 @@
 package com.cappielloantonio.tempo.service;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import androidx.media3.common.MediaItem;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
+import androidx.media3.session.SessionToken;
 
 import com.cappielloantonio.tempo.repository.peach.models.PeachRadioStation;
 import com.cappielloantonio.tempo.repository.peach.models.RadioProgramItem;
@@ -59,6 +61,26 @@ public class PeachRadioPlayerManager {
     private static Runnable monitorRunnable;
 
     private static PeachCrossfadeEngine crossfadeEngine;
+    private static ListenableFuture<MediaBrowser> radioMediaBrowserFuture;
+
+    private static synchronized ListenableFuture<MediaBrowser> ensureRadioBrowser(
+            Context context
+    ) {
+        if (radioMediaBrowserFuture == null) {
+            Context appContext = context.getApplicationContext();
+            radioMediaBrowserFuture = new MediaBrowser.Builder(
+                    appContext,
+                    new SessionToken(
+                            appContext,
+                            new ComponentName(
+                                    appContext,
+                                    MediaService.class
+                            )
+                    )
+            ).buildAsync();
+        }
+        return radioMediaBrowserFuture;
+    }
 
     public static void setRadioLiveCallback(RadioLiveCallback callback) {
         liveCallback = callback;
@@ -92,8 +114,11 @@ public class PeachRadioPlayerManager {
         activeStation = station;
         activeRadioSlug = station.getSlug();
 
-        playLiveCurrentTrack(context, mediaBrowserFuture, true);
-        startMonitoring(context, mediaBrowserFuture);
+        ListenableFuture<MediaBrowser> radioBrowser =
+                ensureRadioBrowser(context);
+
+        playLiveCurrentTrack(context, radioBrowser, true);
+        startMonitoring(context, radioBrowser);
     }
 
     public static void downloadTrackLocally(Context context, String trackId, TrackDownloadCallback callback) {

@@ -6,6 +6,8 @@ import com.cappielloantonio.tempo.repository.peach.models.RadioManifestResponse;
 import com.cappielloantonio.tempo.repository.peach.models.RadioPackageResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequestResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistAddRequest;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistResponse;
 import com.cappielloantonio.tempo.subsonic.utils.StringUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 
@@ -127,6 +129,90 @@ public class TropikeauRepository {
         });
     }
 
+    public void getSharedPlaylist(SharedPlaylistCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.getSharedPlaylist(username, token, salt)
+                .enqueue(sharedPlaylistCallback(callback));
+    }
+
+    public void addSharedTrack(String trackId, SharedPlaylistCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.addSharedPlaylistTrack(
+                username,
+                token,
+                salt,
+                new SharedPlaylistAddRequest(trackId)
+        ).enqueue(sharedPlaylistCallback(callback));
+    }
+
+    public void removeSharedTrack(long itemId, SharedPlaylistCallback callback) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.removeSharedPlaylistTrack(username, token, salt, itemId)
+                .enqueue(sharedPlaylistCallback(callback));
+    }
+
+    private Callback<SharedPlaylistResponse> sharedPlaylistCallback(
+            SharedPlaylistCallback callback
+    ) {
+        return new Callback<SharedPlaylistResponse>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<SharedPlaylistResponse> call,
+                    @NonNull Response<SharedPlaylistResponse> response
+            ) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(
+                            response.code(),
+                            getErrorMessage(response.code())
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<SharedPlaylistResponse> call,
+                    @NonNull Throwable t
+            ) {
+                callback.onError(
+                        -1,
+                        "Erreur réseau : " + t.getMessage()
+                );
+            }
+        };
+    }
+
     public void getRadioManifest(RadioManifestCallback callback) {
         String username = Preferences.getUser();
         String password = Preferences.getPassword();
@@ -241,6 +327,11 @@ public class TropikeauRepository {
 
     public interface TropikeauCallback {
         void onSuccess(MusicRequestResponse response);
+        void onError(int code, String message);
+    }
+
+    public interface SharedPlaylistCallback {
+        void onSuccess(SharedPlaylistResponse response);
         void onError(int code, String message);
     }
 

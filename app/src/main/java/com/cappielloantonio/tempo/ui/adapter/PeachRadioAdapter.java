@@ -63,6 +63,7 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
         private final TextView radioName;
         private final TextView radioDesc;
         private final ImageView radioIcon;
+        private final TextView liveBadge;
         private final View trackInfoContainer;
         private final TextView currentTrackText;
         private final TextView nextTrackText;
@@ -74,6 +75,7 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
             this.radioName = itemView.findViewById(R.id.peach_radio_name);
             this.radioDesc = itemView.findViewById(R.id.peach_radio_desc);
             this.radioIcon = itemView.findViewById(R.id.peach_radio_icon);
+            this.liveBadge = itemView.findViewById(R.id.peach_radio_live_badge);
             this.trackInfoContainer = itemView.findViewById(R.id.peach_radio_track_info_container);
             this.currentTrackText = itemView.findViewById(R.id.peach_radio_current_track);
             this.nextTrackText = itemView.findViewById(R.id.peach_radio_next_track);
@@ -81,7 +83,15 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
 
         void bind(PeachRadioStation station) {
             if (radioName != null) radioName.setText(station.getName());
-            if (radioDesc != null) radioDesc.setText(station.getDescription() != null ? station.getDescription() : "Radio linéaire Tropikeau");
+            if (radioDesc != null) {
+                radioDesc.setText(
+                        station.getDescription() != null
+                                ? station.getDescription()
+                                : itemView.getContext().getString(
+                                        R.string.peach_radio_default_description
+                                )
+                );
+            }
 
             if (radioIcon != null) {
                 if (station.getCoverImageUrl() != null && !station.getCoverImageUrl().isEmpty()) {
@@ -100,20 +110,48 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
             if (trackInfoContainer != null) {
                 if (activeItem != null) {
                     trackInfoContainer.setVisibility(View.VISIBLE);
-                    String currentText = "🎵 " + (activeItem.getTitle() != null ? activeItem.getTitle() : "Direct")
-                            + " - " + (activeItem.getArtist() != null ? activeItem.getArtist() : station.getName());
-                    if (currentTrackText != null) currentTrackText.setText(currentText);
+                    if (liveBadge != null) {
+                        liveBadge.setVisibility(View.VISIBLE);
+                    }
+
+                    String currentTitle = activeItem.getTitle() != null
+                            ? activeItem.getTitle()
+                            : station.getName();
+                    String currentArtist = activeItem.getArtist() != null
+                            ? activeItem.getArtist()
+                            : station.getName();
+
+                    if (currentTrackText != null) {
+                        currentTrackText.setText(
+                                itemView.getContext().getString(
+                                        R.string.peach_radio_now_format,
+                                        currentTitle,
+                                        currentArtist
+                                )
+                        );
+                    }
 
                     if (nextTrackText != null) {
                         if (nextItem != null && nextItem.getTitle() != null) {
                             nextTrackText.setVisibility(View.VISIBLE);
-                            nextTrackText.setText("À suivre : " + nextItem.getTitle() + " - " + (nextItem.getArtist() != null ? nextItem.getArtist() : ""));
+                            nextTrackText.setText(
+                                    itemView.getContext().getString(
+                                            R.string.peach_radio_next_format,
+                                            nextItem.getTitle(),
+                                            nextItem.getArtist() != null
+                                                    ? nextItem.getArtist()
+                                                    : station.getName()
+                                    )
+                            );
                         } else {
                             nextTrackText.setVisibility(View.GONE);
                         }
                     }
                 } else {
                     trackInfoContainer.setVisibility(View.GONE);
+                    if (liveBadge != null) {
+                        liveBadge.setVisibility(View.GONE);
+                    }
                 }
             }
 
