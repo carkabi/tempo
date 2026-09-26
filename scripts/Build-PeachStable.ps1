@@ -20,7 +20,12 @@ if (-not (Test-Path $CertificateFile)) { throw 'Empreinte officielle Peach absen
 $gradle = Get-Content $BuildGradle -Raw
 $gradle = [regex]::Replace($gradle, 'versionCode\s+\d+', ('versionCode ' + $VersionCode), 1)
 $gradle = [regex]::Replace($gradle, "versionName\s+'[^']+'", ("versionName '" + $VersionName + "'"), 1)
-Set-Content -Path $BuildGradle -Value $gradle -Encoding UTF8
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText(
+    $BuildGradle,
+    $gradle,
+    $utf8NoBom
+)
 
 $env:JAVA_HOME = $JavaHome
 $env:Path = "$JavaHome\bin;$env:Path"
