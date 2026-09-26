@@ -22,8 +22,8 @@ android {
         minSdkVersion 24
         targetSdk 35
 
-        versionCode 36
-        versionName '4.3.0'
+        versionCode 37
+        versionName '4.3.1-beta.1'
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
@@ -81,9 +81,19 @@ android {
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            buildConfigField(
+                    "String",
+                    "TROPIKEAU_PORTAL_URL",
+                    '"https://beta.tropikeau.fr"'
+            )
         }
 
         release {
+            buildConfigField(
+                    "String",
+                    "TROPIKEAU_PORTAL_URL",
+                    '"https://tropikeau.fr"'
+            )
             shrinkResources true
             minifyEnabled true
             debuggable false

@@ -1,153 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/peach_radio_card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
+    android:layout_margin="5dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="20dp"
+    android:foreground="?attr/selectableItemBackground"
     app:cardBackgroundColor="?attr/appCardBackground"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="3dp"
     app:strokeColor="?attr/appCardStroke"
     app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:clickable="false"
-        android:focusable="false"
-        android:padding="16dp">
+        android:padding="8dp">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:clickable="false"
-            android:focusable="false"
-            android:gravity="center_vertical">
+            android:layout_height="96dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/peach_radio_icon"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:clickable="false"
-                android:focusable="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_radio_premium"
-                app:shapeAppearanceOverlay="@style/RoundedCornersImage" />
+                app:shapeAppearanceOverlay="@style/PeachRadioLogoShape" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/peach_radio_live_badge"
+                style="@style/LabelSmall"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="16dp"
-                android:clickable="false"
-                android:focusable="false"
-                android:orientation="vertical">
+                android:layout_gravity="top|end"
+                android:layout_margin="6dp"
+                android:background="@drawable/bg_peach_live_badge"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="3dp"
+                android:text="ON AIR"
+                android:textColor="#161018"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/peach_radio_name"
-                        style="@style/TitleMedium"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:clickable="false"
-                        android:focusable="false"
-                        android:textColor="?attr/appTextColorPrimary"
-                        android:textStyle="bold"
-                        tools:text="House" />
-
-                    <TextView
-                        android:id="@+id/peach_radio_live_badge"
-                        style="@style/LabelSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_peach_live_badge"
-                        android:clickable="false"
-                        android:focusable="false"
-                        android:paddingHorizontal="8dp"
-                        android:paddingVertical="2dp"
-                        android:text="@string/peach_radio_live"
-                        android:textColor="@color/peach_background"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/peach_radio_desc"
-                    style="@style/BodySmall"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:textColor="?attr/appTextColorSecondary"
-                    tools:text="Sélection House &amp; Electro" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Current Track Info Bar -->
-        <LinearLayout
-            android:id="@+id/peach_radio_track_info_container"
+        <TextView
+            android:id="@+id/peach_radio_name"
+            style="@style/TitleMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_peach_radio_track_info"
-            android:clickable="false"
-            android:focusable="false"
-            android:padding="12dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/peach_radio_current_track"
-                style="@style/LabelMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-                android:focusable="false"
-                android:textColor="?attr/appTextColorPrimary"
-                android:textStyle="bold"
-                tools:text="🎵 Titre en cours" />
-
-            <TextView
-                android:id="@+id/peach_radio_next_track"
-                style="@style/LabelSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:clickable="false"
-                android:focusable="false"
-                android:textColor="?attr/appTextColorSecondary"
-                tools:text="À suivre : Prochain morceau" />
-
-            <TextView
-                android:id="@+id/peach_radio_history"
-                style="@style/LabelSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="?attr/appTextColorSecondary"
-                android:visibility="gone"
-                tools:text="Récemment · Titre 1 · Titre 2" />
-
-            <TextView
-                android:id="@+id/peach_radio_upcoming"
-                style="@style/LabelSmall"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textColor="?attr/appTextColorSecondary"
-                android:visibility="gone"
-                tools:text="À venir · Titre 3 · Titre 4" />
-        </LinearLayout>
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:maxLines="1"
+            android:textColor="?attr/appTextColorPrimary"
+            android:textStyle="bold"
+            tools:text="Peach Hits" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

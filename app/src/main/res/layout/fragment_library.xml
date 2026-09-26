@@ -12,7 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@android:color/transparent"
         app:title="@string/menu_library_label"
-        app:titleTextColor="@color/accent_gold" />
+        app:titleTextColor="?attr/colorPrimary" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -32,10 +32,10 @@
                 android:gravity="start|center_vertical"
                 android:text="Dernières sorties"
                 app:icon="@drawable/ic_history"
-                app:iconTint="@color/accent_gold"
+                app:iconTint="?attr/colorPrimary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_artists_button"
@@ -45,10 +45,10 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/library_title_artist"
                 app:icon="@drawable/ic_placeholder_artist"
-                app:iconTint="@color/accent_gold"
+                app:iconTint="?attr/colorPrimary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_albums_button"
@@ -58,10 +58,10 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/library_title_album"
                 app:icon="@drawable/ic_placeholder_album"
-                app:iconTint="@color/accent_cyan"
+                app:iconTint="?attr/colorSecondary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_songs_button"
@@ -74,7 +74,7 @@
                 app:iconTint="@color/success_green"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_genres_button"
@@ -87,7 +87,7 @@
                 app:iconTint="@color/warning_orange"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_playlists_button"
@@ -97,12 +97,26 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/library_title_playlist"
                 app:icon="@drawable/ic_placeholder_playlist"
-                app:iconTint="@color/accent_gold"
+                app:iconTint="?attr/colorPrimary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
-            <View style="@style/Divider" android:layout_marginVertical="16dp" android:background="@color/white" android:alpha="0.2" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/library_shared_playlist_button"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:gravity="start|center_vertical"
+                android:text="@string/shared_playlist_title"
+                android:visibility="gone"
+                app:icon="@drawable/ic_placeholder_playlist"
+                app:iconTint="?attr/colorSecondary"
+                android:textSize="18sp"
+                app:iconSize="32dp"
+                android:textColor="?attr/appTextColorPrimary" />
+
+            <View style="@style/Divider" android:layout_marginVertical="16dp" android:background="?attr/appTextColorPrimary" android:alpha="0.2" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_downloads_button"
@@ -112,10 +126,10 @@
                 android:gravity="start|center_vertical"
                 android:text="@string/download_title_section"
                 app:icon="@drawable/ic_download"
-                app:iconTint="@color/accent_cyan"
+                app:iconTint="?attr/colorSecondary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/library_folders_button"
@@ -125,10 +139,10 @@
                 android:gravity="start|center_vertical"
                 android:text="Intelligence Artificielle"
                 app:icon="@drawable/ic_info_stream"
-                app:iconTint="@color/accent_gold"
+                app:iconTint="?attr/colorPrimary"
                 android:textSize="18sp"
                 app:iconSize="32dp"
-                android:textColor="@color/white" />
+                android:textColor="?attr/appTextColorPrimary" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

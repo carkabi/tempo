@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.UnstableApi;
 import androidx.navigation.Navigation;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentLibraryBinding;
 import com.cappielloantonio.tempo.ui.dialog.AiPlaylistDialog;
@@ -48,6 +49,20 @@ public class LibraryFragment extends Fragment {
             bundle.putString(Constants.PLAYLIST_ALL, Constants.PLAYLIST_ALL);
             navigate(v, R.id.action_libraryFragment_to_playlistCatalogueFragment, bundle);
         });
+
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            bind.librarySharedPlaylistButton.setVisibility(View.VISIBLE);
+            bind.librarySharedPlaylistButton.setOnClickListener(
+                    v -> navigate(
+                            v,
+                            R.id.action_libraryFragment_to_sharedPlaylistFragment,
+                            null
+                    )
+            );
+        } else {
+            bind.librarySharedPlaylistButton.setVisibility(View.GONE);
+        }
+
         bind.libraryDownloadsButton.setOnClickListener(v -> navigate(v, R.id.downloadFragment, null));
         bind.libraryFoldersButton.setOnClickListener(v -> generateAiPlaylist());
     }

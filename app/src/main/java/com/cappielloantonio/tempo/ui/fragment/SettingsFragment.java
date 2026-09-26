@@ -254,7 +254,18 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     private void setVersion() {
         Preference pref = findPreference("version");
         if (pref != null) {
-            pref.setSummary(BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
+            String channel = BuildConfig.DEBUG
+                    ? "Bêta"
+                    : "Stable";
+
+            pref.setSummary(
+                    "Peach "
+                            + BuildConfig.VERSION_NAME
+                            + " • "
+                            + channel
+                            + " • build "
+                            + BuildConfig.VERSION_CODE
+            );
         }
     }
 

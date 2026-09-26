@@ -1,6 +1,5 @@
 package com.cappielloantonio.tempo.ui.adapter;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,49 +7,88 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.OptIn;
-import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.repository.peach.models.PeachRadioStation;
-import com.cappielloantonio.tempo.repository.peach.models.RadioProgramItem;
-import com.cappielloantonio.tempo.util.PeachRadioCache;
+import com.cappielloantonio.tempo.service.PeachRadioPlayerManager;
+import com.google.android.material.card.MaterialCardView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@OptIn(markerClass = UnstableApi.class)
-public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.ViewHolder> {
-
-    private static final String TAG = "PEACH_RADIO";
+public class PeachRadioAdapter
+        extends RecyclerView.Adapter<PeachRadioAdapter.ViewHolder> {
 
     public interface OnPeachRadioClickListener {
         void onPeachRadioClick(PeachRadioStation station);
     }
 
-    private List<PeachRadioStation> items = new ArrayList<>();
-    private final OnPeachRadioClickListener listener;
+    private final List<PeachRadioStation> items =
+            new ArrayList<>();
 
-    public PeachRadioAdapter(OnPeachRadioClickListener listener) {
+    private final OnPeachRadioClickListener listener;
+    private String activeSlug;
+
+    public PeachRadioAdapter(
+            OnPeachRadioClickListener listener
+    ) {
         this.listener = listener;
+        this.activeSlug =
+                PeachRadioPlayerManager.getActiveRadioSlug();
+        setHasStableIds(true);
     }
 
-    public void setItems(List<PeachRadioStation> items) {
-        this.items = items != null ? items : new ArrayList<>();
+    public void setItems(List<PeachRadioStation> stations) {
+        items.clear();
+
+        if (stations != null) {
+            items.addAll(stations);
+        }
+
         notifyDataSetChanged();
+    }
+
+    public void setActiveSlug(String slug) {
+        if (Objects.equals(activeSlug, slug)) {
+            return;
+        }
+
+        activeSlug = slug;
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        String slug = items.get(position).getSlug();
+        return slug != null
+                ? slug.hashCode()
+                : position;
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_peach_radio_station, parent, false);
-        return new ViewHolder(view);
+    public ViewHolder onCreateViewHolder(
+            @NonNull ViewGroup parent,
+            int viewType
+    ) {
+        return new ViewHolder(
+                LayoutInflater.from(parent.getContext())
+                        .inflate(
+                                R.layout.item_peach_radio_station,
+                                parent,
+                                false
+                        )
+        );
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(
+            @NonNull ViewHolder holder,
+            int position
+    ) {
         holder.bind(items.get(position));
     }
 
@@ -60,180 +98,75 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView radioName;
-        private final TextView radioDesc;
-        private final ImageView radioIcon;
+        private final MaterialCardView card;
+        private final ImageView icon;
+        private final TextView name;
         private final TextView liveBadge;
-        private final View trackInfoContainer;
-        private final TextView currentTrackText;
-        private final TextView nextTrackText;
-        private final TextView historyText;
-        private final TextView upcomingText;
-        private final View radioCard;
 
         ViewHolder(View itemView) {
             super(itemView);
-            this.radioCard = itemView.findViewById(R.id.peach_radio_card);
-            this.radioName = itemView.findViewById(R.id.peach_radio_name);
-            this.radioDesc = itemView.findViewById(R.id.peach_radio_desc);
-            this.radioIcon = itemView.findViewById(R.id.peach_radio_icon);
-            this.liveBadge = itemView.findViewById(R.id.peach_radio_live_badge);
-            this.trackInfoContainer = itemView.findViewById(R.id.peach_radio_track_info_container);
-            this.currentTrackText = itemView.findViewById(R.id.peach_radio_current_track);
-            this.nextTrackText = itemView.findViewById(R.id.peach_radio_next_track);
-            this.historyText = itemView.findViewById(R.id.peach_radio_history);
-            this.upcomingText = itemView.findViewById(R.id.peach_radio_upcoming);
+            card = itemView.findViewById(
+                    R.id.peach_radio_card
+            );
+            icon = itemView.findViewById(
+                    R.id.peach_radio_icon
+            );
+            name = itemView.findViewById(
+                    R.id.peach_radio_name
+            );
+            liveBadge = itemView.findViewById(
+                    R.id.peach_radio_live_badge
+            );
         }
 
         void bind(PeachRadioStation station) {
-            if (radioName != null) radioName.setText(station.getName());
-            if (radioDesc != null) {
-                radioDesc.setText(
-                        station.getDescription() != null
-                                ? station.getDescription()
-                                : itemView.getContext().getString(
-                                        R.string.peach_radio_default_description
-                                )
-                );
-            }
+            name.setText(station.getName());
 
-            if (radioIcon != null) {
-                if (station.getCoverImageUrl() != null && !station.getCoverImageUrl().isEmpty()) {
-                    Glide.with(itemView.getContext())
-                            .load(station.getCoverImageUrl())
-                            .placeholder(R.drawable.ic_radio_premium)
-                            .into(radioIcon);
-                } else {
-                    radioIcon.setImageResource(R.drawable.ic_radio_premium);
-                }
-            }
+            String cover = station.getCoverImageUrl();
 
-            RadioProgramItem activeItem = PeachRadioCache.findActiveProgramItem(station.getSlug());
-            RadioProgramItem nextItem = PeachRadioCache.findNextProgramItem(station.getSlug(), activeItem);
+            Glide.with(itemView)
+                    .load(
+                            cover != null && !cover.trim().isEmpty()
+                                    ? cover
+                                    : R.drawable.ic_radio_premium
+                    )
+                    .placeholder(R.drawable.ic_radio_premium)
+                    .centerCrop()
+                    .into(icon);
 
-            if (trackInfoContainer != null) {
-                if (activeItem != null) {
-                    trackInfoContainer.setVisibility(View.VISIBLE);
-                    if (liveBadge != null) {
-                        liveBadge.setVisibility(View.VISIBLE);
-                    }
+            boolean active = Objects.equals(
+                    activeSlug,
+                    station.getSlug()
+            );
 
-                    String currentTitle = activeItem.getTitle() != null
-                            ? activeItem.getTitle()
-                            : station.getName();
-                    String currentArtist = activeItem.getArtist() != null
-                            ? activeItem.getArtist()
-                            : station.getName();
+            liveBadge.setVisibility(
+                    active ? View.VISIBLE : View.GONE
+            );
 
-                    if (currentTrackText != null) {
-                        currentTrackText.setText(
-                                itemView.getContext().getString(
-                                        R.string.peach_radio_now_format,
-                                        currentTitle,
-                                        currentArtist
-                                )
-                        );
-                    }
+            card.setStrokeWidth(
+                    active
+                            ? (int) (
+                            2
+                            * itemView.getResources()
+                            .getDisplayMetrics().density
+                    )
+                            : (int) (
+                            itemView.getResources()
+                                    .getDisplayMetrics().density
+                    )
+            );
 
-                    if (nextTrackText != null) {
-                        if (nextItem != null && nextItem.getTitle() != null) {
-                            nextTrackText.setVisibility(View.VISIBLE);
-                            nextTrackText.setText(
-                                    itemView.getContext().getString(
-                                            R.string.peach_radio_next_format,
-                                            nextItem.getTitle(),
-                                            nextItem.getArtist() != null
-                                                    ? nextItem.getArtist()
-                                                    : station.getName()
-                                    )
-                            );
-                        } else {
-                            nextTrackText.setVisibility(View.GONE);
-                        }
-                    }
+            View.OnClickListener clickListener = view -> {
+                activeSlug = station.getSlug();
+                notifyDataSetChanged();
 
-                    List<RadioProgramItem> previous =
-                            PeachRadioCache.getPreviousProgramItems(
-                                    station.getSlug(),
-                                    3
-                            );
-                    List<RadioProgramItem> upcoming =
-                            PeachRadioCache.getUpcomingProgramItems(
-                                    station.getSlug(),
-                                    3
-                            );
-
-                    bindProgramSummary(
-                            historyText,
-                            R.string.peach_radio_history_format,
-                            previous
-                    );
-                    bindProgramSummary(
-                            upcomingText,
-                            R.string.peach_radio_upcoming_format,
-                            upcoming
-                    );
-                } else {
-                    trackInfoContainer.setVisibility(View.GONE);
-                    if (liveBadge != null) {
-                        liveBadge.setVisibility(View.GONE);
-                    }
-                }
-            }
-
-            View.OnClickListener clickListener = v -> {
-                Log.i(TAG, "Step 1: PeachRadioAdapter receives click for station = " + station.getSlug());
                 if (listener != null) {
                     listener.onPeachRadioClick(station);
                 }
             };
 
+            card.setOnClickListener(clickListener);
             itemView.setOnClickListener(clickListener);
-            if (radioCard != null) {
-                radioCard.setOnClickListener(clickListener);
-            }
         }
-
-        private void bindProgramSummary(
-                TextView view,
-                int formatRes,
-                List<RadioProgramItem> program
-        ) {
-            if (view == null) return;
-
-            if (program == null || program.isEmpty()) {
-                view.setVisibility(View.GONE);
-                return;
-            }
-
-            StringBuilder titles = new StringBuilder();
-
-            for (RadioProgramItem item : program) {
-                if (item.getTitle() == null
-                        || item.getTitle().trim().isEmpty()) {
-                    continue;
-                }
-
-                if (titles.length() > 0) {
-                    titles.append(" · ");
-                }
-
-                titles.append(item.getTitle());
-            }
-
-            if (titles.length() == 0) {
-                view.setVisibility(View.GONE);
-                return;
-            }
-
-            view.setText(
-                    itemView.getContext().getString(
-                            formatRes,
-                            titles.toString()
-                    )
-            );
-            view.setVisibility(View.VISIBLE);
-        }
-
     }
 }

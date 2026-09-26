@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.cappielloantonio.tempo.BuildConfig;
@@ -76,7 +77,9 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
     public void onStart() {
         super.onStart();
 
-        initializeMediaBrowser();
+        if (!"peach".equals(BuildConfig.FLAVOR)) {
+            initializeMediaBrowser();
+        }
     }
 
     @Override
@@ -93,7 +96,9 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
 
     @Override
     public void onStop() {
-        releaseMediaBrowser();
+        if (!"peach".equals(BuildConfig.FLAVOR)) {
+            releaseMediaBrowser();
+        }
         super.onStop();
     }
 
@@ -130,7 +135,16 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
     }
 
     private void initRadioStationView() {
-        bind.internetRadioStationRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            bind.internetRadioStationRecyclerView.setLayoutManager(
+                    new GridLayoutManager(requireContext(), 3)
+            );
+            bind.internetRadioStationRecyclerView.setItemAnimator(null);
+        } else {
+            bind.internetRadioStationRecyclerView.setLayoutManager(
+                    new LinearLayoutManager(requireContext())
+            );
+        }
         bind.internetRadioStationRecyclerView.setHasFixedSize(true);
 
         if ("peach".equals(BuildConfig.FLAVOR)) {
@@ -158,7 +172,11 @@ public class HomeTabRadioFragment extends Fragment implements ClickCallback, Rad
                 @Override
                 public void onTrackChanged(PeachRadioStation station, RadioProgramItem currentItem, RadioProgramItem nextItem) {
                     if (peachRadioAdapter != null) {
-                        peachRadioAdapter.notifyDataSetChanged();
+                        peachRadioAdapter.setActiveSlug(
+                                station != null
+                                        ? station.getSlug()
+                                        : null
+                        );
                     }
                 }
 

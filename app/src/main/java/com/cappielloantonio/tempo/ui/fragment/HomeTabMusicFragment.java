@@ -108,23 +108,27 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.i(TAG, "HomeTabMusicFragment.onViewCreated()");
-        initSyncStarredView();
-        initDiscoverSongSlideView();
-        initSimilarSongView();
-        initArtistRadio();
-        initStarredTracksView();
-        initStarredAlbumsView();
-        initStarredArtistsView();
-        initMostPlayedSongView();
-        initRecentPlayedAlbumView();
-        initNewReleasesView();
-        initYearSongView();
-        initRecentAddedAlbumView();
-        initTopSongsView();
-        initPinnedPlaylistsView();
-        initSharesView();
-        initHomeReorganizer();
-        reorder();
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            initPeachHome();
+        } else {
+            initSyncStarredView();
+            initDiscoverSongSlideView();
+            initSimilarSongView();
+            initArtistRadio();
+            initStarredTracksView();
+            initStarredAlbumsView();
+            initStarredArtistsView();
+            initMostPlayedSongView();
+            initRecentPlayedAlbumView();
+            initNewReleasesView();
+            initYearSongView();
+            initRecentAddedAlbumView();
+            initTopSongsView();
+            initPinnedPlaylistsView();
+            initSharesView();
+            initHomeReorganizer();
+            reorder();
+        }
     }
 
     @Override
@@ -136,7 +140,9 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     @Override
     public void onResume() {
         super.onResume();
-        refreshSharesView();
+        if (!"peach".equals(BuildConfig.FLAVOR)) {
+            refreshSharesView();
+        }
     }
 
     @Override
@@ -156,10 +162,17 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
         bind.gridTracksPreTextView.setOnClickListener(view -> showPopupMenu(view, R.menu.filter_top_songs_popup_menu));
 
         if ("peach".equals(BuildConfig.FLAVOR)) {
+            bind.homeWelcomeText.setText("Peach");
             bind.homeQuickAccessScroll.setVisibility(View.VISIBLE);
             bind.homeQuickSearch.setOnClickListener(v ->
                     Navigation.findNavController(v).navigate(R.id.searchFragment)
             );
+            bind.homeQuickRadio.setOnClickListener(v -> {
+                Fragment parent = getParentFragment();
+                if (parent instanceof HomeFragment) {
+                    ((HomeFragment) parent).showRadioTab();
+                }
+            });
             bind.homeQuickShared.setOnClickListener(v ->
                     Navigation.findNavController(v).navigate(R.id.sharedPlaylistFragment)
             );
@@ -246,6 +259,39 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
                 activity.setBottomSheetInPeek(true);
             }
         });
+    }
+
+    private void initPeachHome() {
+        if (bind == null) return;
+
+        // Peach home stays deliberately compact:
+        // quick actions, favourites and recently played only.
+        bind.homeDiscoverSector.setVisibility(View.GONE);
+        bind.homeSimilarTracksSector.setVisibility(View.GONE);
+        bind.homeBestOfArtistSector.setVisibility(View.GONE);
+        bind.homeRadioArtistSector.setVisibility(View.GONE);
+        bind.afterRadioArtistDivider.setVisibility(View.GONE);
+        bind.homeGridTracksSector.setVisibility(View.GONE);
+        bind.afterGridDivider.setVisibility(View.GONE);
+        bind.starredAlbumsSector.setVisibility(View.GONE);
+        bind.starredArtistsSector.setVisibility(View.GONE);
+        bind.afterFavoritesDivider.setVisibility(View.GONE);
+        bind.homeNewReleasesSector.setVisibility(View.GONE);
+        bind.homeFlashbackSector.setVisibility(View.GONE);
+        bind.homeMostPlayedAlbumsSector.setVisibility(View.GONE);
+        bind.homeRecentlyAddedAlbumsSector.setVisibility(View.GONE);
+        bind.pinnedPlaylistsSector.setVisibility(View.GONE);
+        bind.sharesSector.setVisibility(View.GONE);
+        bind.homeSectorRearrangementButton.setVisibility(View.GONE);
+
+        bind.homeQuickGenres.setVisibility(View.VISIBLE);
+        bind.homeQuickDownloads.setVisibility(View.GONE);
+        bind.homeQuickSupport.setVisibility(View.GONE);
+
+        initStarredTracksView();
+        initRecentPlayedAlbumView();
+        bind.starredTracksRecyclerView.setItemAnimator(null);
+        bind.recentlyPlayedAlbumsRecyclerView.setItemAnimator(null);
     }
 
     private void initSyncStarredView() {

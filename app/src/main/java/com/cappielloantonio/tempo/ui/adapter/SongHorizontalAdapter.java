@@ -23,6 +23,7 @@ import com.cappielloantonio.tempo.util.Constants;
 import com.cappielloantonio.tempo.util.DownloadUtil;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.util.Preferences;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     private List<Child> songsFull;
     private List<Child> songs;
     private String currentFilter;
+    private String currentMediaId;
 
     private final Filter filtering = new Filter() {
         @Override
@@ -96,6 +98,27 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
 
         holder.item.searchResultSongTitleTextView.setText(song.getTitle());
 
+        boolean isCurrent = Objects.equals(
+                currentMediaId,
+                song.getId()
+        );
+
+        holder.item.searchResultSongTitleTextView.setTextColor(
+                MaterialColors.getColor(
+                        holder.itemView,
+                        isCurrent
+                                ? com.google.android.material.R.attr.colorPrimary
+                                : com.google.android.material.R.attr.colorOnSurface
+                )
+        );
+
+        holder.item.searchResultSongTitleTextView.setTypeface(
+                android.graphics.Typeface.DEFAULT,
+                isCurrent
+                        ? android.graphics.Typeface.BOLD
+                        : android.graphics.Typeface.NORMAL
+        );
+
         holder.item.searchResultSongSubtitleTextView.setText(
                 holder.itemView.getContext().getString(
                         R.string.song_subtitle_formatter,
@@ -107,7 +130,14 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
                 )
         );
 
-        holder.item.trackNumberTextView.setText(MusicUtil.getReadableTrackNumber(holder.itemView.getContext(), song.getTrack()));
+        holder.item.trackNumberTextView.setText(
+                isCurrent
+                        ? "▶"
+                        : MusicUtil.getReadableTrackNumber(
+                                holder.itemView.getContext(),
+                                song.getTrack()
+                        )
+        );
 
         if (DownloadUtil.getDownloadTracker(holder.itemView.getContext()).isDownloaded(song.getId())) {
             holder.item.searchResultDownloadIndicatorImageView.setVisibility(View.VISIBLE);
@@ -173,9 +203,67 @@ public class SongHorizontalAdapter extends RecyclerView.Adapter<SongHorizontalAd
     }
 
     public void setItems(List<Child> songs) {
-        this.songsFull = songs != null ? songs : Collections.emptyList();
-        filtering.filter(currentFilter);
-        notifyDataSetChanged();
+        this.songsFull =
+                songs != null
+                        ? new ArrayList<>(songs)
+                        : Collections.emptyList();
+
+        if (
+                currentFilter == null
+                        || currentFilter.trim().isEmpty()
+        ) {
+            this.songs = new ArrayList<>(songsFull);
+            notifyDataSetChanged();
+        } else {
+            filtering.filter(currentFilter);
+        }
+    }
+
+    public void setCurrentMediaId(String mediaId) {
+        if (Objects.equals(currentMediaId, mediaId)) {
+            return;
+        }
+
+        int previousPosition =
+                findPositionByMediaId(currentMediaId);
+
+        currentMediaId = mediaId;
+
+        int currentPosition =
+                findPositionByMediaId(currentMediaId);
+
+        if (previousPosition >= 0) {
+            notifyItemChanged(previousPosition);
+        }
+
+        if (
+                currentPosition >= 0
+                        && currentPosition != previousPosition
+        ) {
+            notifyItemChanged(currentPosition);
+        }
+    }
+
+    private int findPositionByMediaId(String mediaId) {
+        if (mediaId == null || songs == null) {
+            return -1;
+        }
+
+        for (int index = 0; index < songs.size(); index++) {
+            Child item = songs.get(index);
+
+            if (
+                    item != null
+                            && Objects.equals(
+                            mediaId,
+                            item.getId()
+                    )
+            ) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     @Override

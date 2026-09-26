@@ -12,9 +12,11 @@ import com.cappielloantonio.tempo.databinding.ItemSharedPlaylistTrackBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistItem;
 import com.cappielloantonio.tempo.util.MusicUtil;
+import com.google.android.material.color.MaterialColors;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class SharedPlaylistAdapter
         extends RecyclerView.Adapter<SharedPlaylistAdapter.ViewHolder> {
@@ -28,6 +30,8 @@ public class SharedPlaylistAdapter
     private final Callback callback;
     private final List<SharedPlaylistItem> items =
             new ArrayList<>();
+
+    private String currentTrackId;
 
     public SharedPlaylistAdapter(Callback callback) {
         this.callback = callback;
@@ -55,6 +59,31 @@ public class SharedPlaylistAdapter
         SharedPlaylistItem item = items.get(position);
 
         holder.binding.title.setText(item.getTitle());
+
+        boolean isCurrent = Objects.equals(
+                currentTrackId,
+                item.getTrackId()
+        );
+
+        holder.binding.title.setTextColor(
+                MaterialColors.getColor(
+                        holder.itemView,
+                        isCurrent
+                                ? com.google.android.material.R.attr.colorPrimary
+                                : com.google.android.material.R.attr.colorOnSurface
+                )
+        );
+
+        holder.binding.title.setTypeface(
+                android.graphics.Typeface.DEFAULT,
+                isCurrent
+                        ? android.graphics.Typeface.BOLD
+                        : android.graphics.Typeface.NORMAL
+        );
+
+        holder.binding.cover.setAlpha(
+                isCurrent ? 1f : 0.88f
+        );
 
         String artist = item.getArtist() != null
                 ? item.getArtist()
@@ -120,6 +149,41 @@ public class SharedPlaylistAdapter
 
     public List<SharedPlaylistItem> getItems() {
         return new ArrayList<>(items);
+    }
+
+    public void setCurrentTrackId(String trackId) {
+        if (Objects.equals(currentTrackId, trackId)) {
+            return;
+        }
+
+        int previous = findPosition(currentTrackId);
+        currentTrackId = trackId;
+        int current = findPosition(currentTrackId);
+
+        if (previous >= 0) {
+            notifyItemChanged(previous);
+        }
+
+        if (current >= 0 && current != previous) {
+            notifyItemChanged(current);
+        }
+    }
+
+    private int findPosition(String trackId) {
+        if (trackId == null) {
+            return -1;
+        }
+
+        for (int index = 0; index < items.size(); index++) {
+            if (Objects.equals(
+                    trackId,
+                    items.get(index).getTrackId()
+            )) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

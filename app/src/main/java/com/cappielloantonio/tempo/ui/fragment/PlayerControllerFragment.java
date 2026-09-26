@@ -8,11 +8,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.media3.common.MediaMetadata;
 import androidx.media3.common.PlaybackParameters;
@@ -24,9 +27,12 @@ import androidx.media3.session.SessionToken;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.InnerFragmentPlayerControllerBinding;
+import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.service.MediaService;
+import com.cappielloantonio.tempo.subsonic.models.Child;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.dialog.RatingDialog;
 import com.cappielloantonio.tempo.ui.dialog.TrackInfoDialog;
@@ -40,7 +46,11 @@ import com.google.android.material.elevation.SurfaceColors;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @UnstableApi
 public class PlayerControllerFragment extends Fragment {
@@ -57,6 +67,7 @@ public class PlayerControllerFragment extends Fragment {
     private TextView playerMediaBitrate;
     private ConstraintLayout playerQuickActionView;
     private ImageButton playerOpenQueueButton;
+    private ImageButton playerRegenerateQueueButton;
     private ImageButton playerTrackInfo;
 
     private MainActivity activity;
@@ -112,11 +123,36 @@ public class PlayerControllerFragment extends Fragment {
         playerMediaBitrate = bind.getRoot().findViewById(R.id.player_media_bitrate);
         playerQuickActionView = bind.getRoot().findViewById(R.id.player_quick_action_view);
         playerOpenQueueButton = bind.getRoot().findViewById(R.id.player_open_queue_button);
+        playerRegenerateQueueButton = bind.getRoot().findViewById(R.id.player_regenerate_queue_button);
         playerTrackInfo = bind.getRoot().findViewById(R.id.player_info_track);
+
+        View peachNowPlayingLabel =
+                bind.getRoot().findViewById(
+                        R.id.player_peach_now_playing_label
+                );
+
+        if (peachNowPlayingLabel != null) {
+            peachNowPlayingLabel.setVisibility(
+                    "peach".equals(BuildConfig.FLAVOR)
+                            ? View.VISIBLE
+                            : View.GONE
+            );
+        }
     }
 
     private void initQuickActionView() {
-        playerQuickActionView.setBackgroundColor(SurfaceColors.getColorForElevation(requireContext(), 8));
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            playerQuickActionView.setBackgroundColor(
+                    android.graphics.Color.TRANSPARENT
+            );
+        } else {
+            playerQuickActionView.setBackgroundColor(
+                    SurfaceColors.getColorForElevation(
+                            requireContext(),
+                            8
+                    )
+            );
+        }
 
         playerOpenQueueButton.setOnClickListener(view -> {
             PlayerBottomSheetFragment playerBottomSheetFragment = (PlayerBottomSheetFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("PlayerBottomSheet");
@@ -124,6 +160,96 @@ public class PlayerControllerFragment extends Fragment {
                 playerBottomSheetFragment.goToQueuePage();
             }
         });
+
+        playerRegenerateQueueButton.setOnClickListener(
+                view -> regenerateUpcomingQueue()
+        );
+    }
+
+    private void regenerateUpcomingQueue() {
+        Child current =
+                playerBottomSheetViewModel
+                        .getLiveMedia()
+                        .getValue();
+
+        if (current == null) {
+            Toast.makeText(
+                    requireContext(),
+                    "Aucun morceau actif à partir duquel régénérer la file.",
+                    Toast.LENGTH_SHORT
+            ).show();
+            return;
+        }
+
+        LiveData<List<Child>> liveMix =
+                playerBottomSheetViewModel
+                        .getMediaInstantMix(
+                                getViewLifecycleOwner(),
+                                current
+                        );
+
+        Observer<List<Child>> observer =
+                new Observer<List<Child>>() {
+                    @Override
+                    public void onChanged(
+                            List<Child> mix
+                    ) {
+                        if (
+                                mix == null
+                                || mix.isEmpty()
+                        ) {
+                            return;
+                        }
+
+                        List<Child> upcoming =
+                                new ArrayList<>();
+
+                        Set<String> seen =
+                                new HashSet<>();
+
+                        seen.add(current.getId());
+
+                        for (Child item : mix) {
+                            if (
+                                    item == null
+                                    || item.getId() == null
+                                    || seen.contains(
+                                    item.getId()
+                            )
+                            ) {
+                                continue;
+                            }
+
+                            seen.add(item.getId());
+                            upcoming.add(item);
+
+                            if (upcoming.size() >= 25) {
+                                break;
+                            }
+                        }
+
+                        if (!upcoming.isEmpty()) {
+                            MediaManager.replaceUpcoming(
+                                    mediaBrowserListenableFuture,
+                                    current,
+                                    upcoming
+                            );
+
+                            Toast.makeText(
+                                    requireContext(),
+                                    "Nouvelle sélection prête",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+
+                        liveMix.removeObserver(this);
+                    }
+                };
+
+        liveMix.observe(
+                getViewLifecycleOwner(),
+                observer
+        );
     }
 
     private void initializeBrowser() {
@@ -155,17 +281,48 @@ public class PlayerControllerFragment extends Fragment {
 
         mediaBrowser.addListener(new Player.Listener() {
             @Override
-            public void onMediaMetadataChanged(@NonNull MediaMetadata mediaMetadata) {
+            public void onMediaMetadataChanged(
+                    @NonNull MediaMetadata mediaMetadata
+            ) {
                 setMediaControllerUI(mediaBrowser);
                 setMetadata(mediaMetadata);
                 setMediaInfo(mediaMetadata);
+            }
+
+            @Override
+            public void onMediaItemTransition(
+                    androidx.media3.common.MediaItem mediaItem,
+                    int reason
+            ) {
+                MediaMetadata metadata =
+                        mediaBrowser.getMediaMetadata();
+                setMediaControllerUI(mediaBrowser);
+                setMetadata(metadata);
+                setMediaInfo(metadata);
             }
         });
     }
 
     private void setMetadata(MediaMetadata mediaMetadata) {
-        playerMediaTitleLabel.setText(String.valueOf(mediaMetadata.title));
-        playerArtistNameLabel.setText(String.valueOf(mediaMetadata.artist));
+        if (mediaMetadata == null) return;
+
+        playerMediaTitleLabel.setText(
+                mediaMetadata.title != null
+                        ? mediaMetadata.title
+                        : ""
+        );
+        playerArtistNameLabel.setText(
+                mediaMetadata.artist != null
+                        ? mediaMetadata.artist
+                        : ""
+        );
+
+        if (mediaMetadata.extras != null
+                && mediaMetadata.extras.containsKey("starred")) {
+            buttonFavorite.setChecked(
+                    mediaMetadata.extras.getLong("starred", 0L) > 0L
+            );
+        }
 
         playerMediaTitleLabel.setSelected(true);
         playerArtistNameLabel.setSelected(true);
@@ -206,6 +363,12 @@ public class PlayerControllerFragment extends Fragment {
     private void setMediaControllerUI(MediaBrowser mediaBrowser) {
         initPlaybackSpeedButton(mediaBrowser);
 
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            playerMediaExtension.setVisibility(View.GONE);
+            playerMediaBitrate.setVisibility(View.GONE);
+            playerTrackInfo.setVisibility(View.GONE);
+        }
+
         if (mediaBrowser.getMediaMetadata().extras != null) {
             switch (mediaBrowser.getMediaMetadata().extras.getString("type", Constants.MEDIA_TYPE_MUSIC)) {
                 case Constants.MEDIA_TYPE_PODCAST:
@@ -226,14 +389,38 @@ public class PlayerControllerFragment extends Fragment {
                     bind.getRoot().setShowPreviousButton(false);
                     bind.getRoot().setShowNextButton(false);
                     bind.getRoot().setShowFastForwardButton(false);
-                    bind.getRoot().setRepeatToggleModes(RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE);
-                    bind.getRoot().findViewById(R.id.player_playback_speed_button).setVisibility(View.GONE);
-                    bind.getRoot().findViewById(R.id.player_skip_silence_toggle_button).setVisibility(View.GONE);
-                    bind.getRoot().findViewById(R.id.button_favorite).setVisibility(View.GONE);
-                    setPlaybackParameters(mediaBrowser);
+                    bind.getRoot().setRepeatToggleModes(
+                            RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
+                    );
+                    bind.getRoot()
+                            .findViewById(R.id.player_playback_speed_button)
+                            .setVisibility(View.GONE);
+                    bind.getRoot()
+                            .findViewById(R.id.player_skip_silence_toggle_button)
+                            .setVisibility(View.GONE);
+                    bind.getRoot()
+                            .findViewById(R.id.button_favorite)
+                            .setVisibility(View.VISIBLE);
+                    playerMediaExtension.setVisibility(View.GONE);
+                    playerMediaBitrate.setVisibility(View.GONE);
+                    playerTrackInfo.setVisibility(View.GONE);
+                    playerRegenerateQueueButton.setVisibility(View.GONE);
+                    resetPlaybackParameters(mediaBrowser);
                     break;
                 case Constants.MEDIA_TYPE_MUSIC:
                 default:
+                    playerMediaExtension.setVisibility(
+                            "peach".equals(BuildConfig.FLAVOR)
+                                    ? View.GONE
+                                    : View.VISIBLE
+                    );
+                    playerMediaBitrate.setVisibility(View.GONE);
+                    playerTrackInfo.setVisibility(
+                            "peach".equals(BuildConfig.FLAVOR)
+                                    ? View.GONE
+                                    : View.VISIBLE
+                    );
+                    playerRegenerateQueueButton.setVisibility(View.VISIBLE);
                     bind.getRoot().setShowShuffleButton(true);
                     bind.getRoot().setShowRewindButton(false);
                     bind.getRoot().setShowPreviousButton(true);

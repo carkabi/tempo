@@ -213,6 +213,91 @@ public class MediaManager {
         }
     }
 
+    public static void replaceUpcoming(
+            ListenableFuture<MediaBrowser> mediaBrowserListenableFuture,
+            Child currentMedia,
+            List<Child> upcoming
+    ) {
+        if (
+                mediaBrowserListenableFuture == null
+                || currentMedia == null
+                || upcoming == null
+        ) {
+            return;
+        }
+
+        mediaBrowserListenableFuture.addListener(() -> {
+            try {
+                if (!mediaBrowserListenableFuture.isDone()) {
+                    return;
+                }
+
+                MediaBrowser browser =
+                        mediaBrowserListenableFuture.get();
+
+                int currentIndex =
+                        browser.getCurrentMediaItemIndex();
+
+                if (currentIndex < 0) {
+                    return;
+                }
+
+                int removeFrom = currentIndex + 1;
+
+                if (
+                        browser.getMediaItemCount()
+                        > removeFrom
+                ) {
+                    browser.removeMediaItems(
+                            removeFrom,
+                            browser.getMediaItemCount()
+                    );
+                }
+
+                if (!upcoming.isEmpty()) {
+                    browser.addMediaItems(
+                            MappingUtil.mapMediaItems(upcoming)
+                    );
+                }
+
+                List<Child> existing =
+                        getQueueRepository().getMedia();
+
+                java.util.ArrayList<Child> newQueue =
+                        new java.util.ArrayList<>();
+
+                if (
+                        existing != null
+                        && !existing.isEmpty()
+                ) {
+                    int keepUntil =
+                            Math.min(
+                                    currentIndex,
+                                    existing.size() - 1
+                            );
+
+                    for (
+                            int index = 0;
+                            index <= keepUntil;
+                            index++
+                    ) {
+                        newQueue.add(existing.get(index));
+                    }
+                } else {
+                    newQueue.add(currentMedia);
+                }
+
+                newQueue.addAll(upcoming);
+                swapDatabase(newQueue);
+            } catch (
+                    ExecutionException
+                    | InterruptedException exception
+            ) {
+                exception.printStackTrace();
+            }
+        }, MoreExecutors.directExecutor());
+    }
+
     public static void shuffle(ListenableFuture<MediaBrowser> mediaBrowserListenableFuture, List<Child> media, int startIndex, int endIndex) {
         if (mediaBrowserListenableFuture != null) {
             mediaBrowserListenableFuture.addListener(() -> {

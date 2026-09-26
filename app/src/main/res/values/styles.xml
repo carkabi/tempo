@@ -10,57 +10,148 @@
     <style name="AppTheme" parent="AppTheme.DarkPeach" />
 
     <style name="AppTheme.DarkPeach" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="appGradientStart">#1E0E18</item>
-        <item name="appGradientCenter">#2D121B</item>
-        <item name="appGradientEnd">#180B15</item>
-        <item name="appCardBackground">#26FFFFFF</item>
-        <item name="appCardStroke">#33FFFFFF</item>
-        <item name="appTextColorPrimary">#FFFFFF</item>
-        <item name="appTextColorSecondary">#B0B0B0</item>
-        <item name="appAccentColor">#FFD700</item>
+        <item name="appGradientStart">#160818</item>
+        <item name="appGradientCenter">#661742</item>
+        <item name="appGradientEnd">#121A3A</item>
+        <item name="appCardBackground">#7A4A1639</item>
+        <item name="appCardStroke">#CCFF9A3D</item>
+        <item name="appTextColorPrimary">#FFF8F5</item>
+        <item name="appTextColorSecondary">#FFD0C8</item>
+        <item name="appAccentColor">#FFB13B</item>
 
-        <item name="colorPrimary">#FFD700</item>
-        <item name="colorOnPrimary">#1E0E18</item>
-        <item name="colorSecondary">#FF6B57</item>
+        <item name="colorPrimary">#FFB13B</item>
+        <item name="colorOnPrimary">#271000</item>
+        <item name="colorPrimaryContainer">#6B291A</item>
+        <item name="colorOnPrimaryContainer">#FFF0D5</item>
+        <item name="colorSecondary">#FF3B79</item>
         <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorTertiary">#00D2FF</item>
-        <item name="android:colorBackground">#1E0E18</item>
-        <item name="colorSurface">#2D121B</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorSecondaryContainer">#651A3D</item>
+        <item name="colorOnSecondaryContainer">#FFD9E6</item>
+        <item name="colorTertiary">#55D9FF</item>
+        <item name="android:colorBackground">#160818</item>
+        <item name="colorSurface">#271125</item>
+        <item name="colorOnSurface">#FFF8F5</item>
+        <item name="colorSurfaceVariant">#3B1A35</item>
+        <item name="colorOnSurfaceVariant">#F1CADF</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">#1E0E18</item>
-        <item name="android:navigationBarColor">#180B15</item>
+        <item name="android:statusBarColor">#160818</item>
+        <item name="android:navigationBarColor">#121A3A</item>
         <item name="android:scrollbars">none</item>
     </style>
 
     <style name="AppTheme.DarkTropical" parent="Theme.Material3.Dark.NoActionBar">
-        <item name="appGradientStart">#0B1B18</item>
-        <item name="appGradientCenter">#142B27</item>
-        <item name="appGradientEnd">#081210</item>
-        <item name="appCardBackground">#2600E676</item>
-        <item name="appCardStroke">#3300E5FF</item>
-        <item name="appTextColorPrimary">#FFFFFF</item>
-        <item name="appTextColorSecondary">#A0E0D6</item>
-        <item name="appAccentColor">#00E676</item>
+        <item name="appGradientStart">#031B1B</item>
+        <item name="appGradientCenter">#075D49</item>
+        <item name="appGradientEnd">#08162C</item>
+        <item name="appCardBackground">#6B0FCB84</item>
+        <item name="appCardStroke">#B800F5D4</item>
+        <item name="appTextColorPrimary">#F2FFF9</item>
+        <item name="appTextColorSecondary">#A8F4D7</item>
+        <item name="appAccentColor">#00F5A0</item>
 
-        <item name="colorPrimary">#00E676</item>
-        <item name="colorOnPrimary">#0B1B18</item>
+        <item name="colorPrimary">#00F5A0</item>
+        <item name="colorOnPrimary">#002D1D</item>
+        <item name="colorPrimaryContainer">#006B4D</item>
+        <item name="colorOnPrimaryContainer">#B8FFE3</item>
         <item name="colorSecondary">#00E5FF</item>
-        <item name="colorOnSecondary">#003643</item>
-        <item name="colorTertiary">#FFD700</item>
-        <item name="android:colorBackground">#0B1B18</item>
-        <item name="colorSurface">#142B27</item>
-        <item name="colorOnSurface">#FFFFFF</item>
+        <item name="colorOnSecondary">#002B31</item>
+        <item name="colorTertiary">#FFE66D</item>
+        <item name="android:colorBackground">#031B1B</item>
+        <item name="colorSurface">#07332F</item>
+        <item name="colorOnSurface">#F2FFF9</item>
+        <item name="colorSurfaceVariant">#0A4B43</item>
+        <item name="colorOnSurfaceVariant">#BEEBDD</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:statusBarColor">#0B1B18</item>
-        <item name="android:navigationBarColor">#081210</item>
+        <item name="android:statusBarColor">#031B1B</item>
+        <item name="android:navigationBarColor">#08162C</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.NightNeon" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="appGradientStart">#07051C</item>
+        <item name="appGradientCenter">#2E0A66</item>
+        <item name="appGradientEnd">#001F3F</item>
+        <item name="appCardBackground">#662A8BFF</item>
+        <item name="appCardStroke">#B84EECFF</item>
+        <item name="appTextColorPrimary">#F8F7FF</item>
+        <item name="appTextColorSecondary">#C9C5FF</item>
+        <item name="appAccentColor">#00F0FF</item>
+        <item name="colorPrimary">#00F0FF</item>
+        <item name="colorOnPrimary">#00191C</item>
+        <item name="colorPrimaryContainer">#053F55</item>
+        <item name="colorOnPrimaryContainer">#C6F9FF</item>
+        <item name="colorSecondary">#FF2BD6</item>
+        <item name="colorOnSecondary">#35002C</item>
+        <item name="colorTertiary">#A56CFF</item>
+        <item name="android:colorBackground">#07051C</item>
+        <item name="colorSurface">#15102C</item>
+        <item name="colorOnSurface">#F8F7FF</item>
+        <item name="colorSurfaceVariant">#231A46</item>
+        <item name="colorOnSurfaceVariant">#D3CDF9</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#07051C</item>
+        <item name="android:navigationBarColor">#001F3F</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.Sunset" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="appGradientStart">#2B0A1D</item>
+        <item name="appGradientCenter">#A7284D</item>
+        <item name="appGradientEnd">#30175D</item>
+        <item name="appCardBackground">#6BFF6B4A</item>
+        <item name="appCardStroke">#B8FFB347</item>
+        <item name="appTextColorPrimary">#FFF9F2</item>
+        <item name="appTextColorSecondary">#FFD8C5</item>
+        <item name="appAccentColor">#FFB347</item>
+        <item name="colorPrimary">#FFB347</item>
+        <item name="colorOnPrimary">#321400</item>
+        <item name="colorPrimaryContainer">#7D3513</item>
+        <item name="colorOnPrimaryContainer">#FFE5C8</item>
+        <item name="colorSecondary">#FF4E78</item>
+        <item name="colorOnSecondary">#430014</item>
+        <item name="colorTertiary">#C982FF</item>
+        <item name="android:colorBackground">#2B0A1D</item>
+        <item name="colorSurface">#48152D</item>
+        <item name="colorOnSurface">#FFF9F2</item>
+        <item name="colorSurfaceVariant">#652040</item>
+        <item name="colorOnSurfaceVariant">#FFD1DE</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#2B0A1D</item>
+        <item name="android:navigationBarColor">#30175D</item>
+        <item name="android:scrollbars">none</item>
+    </style>
+
+    <style name="AppTheme.Ocean" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="appGradientStart">#00111C</item>
+        <item name="appGradientCenter">#00577C</item>
+        <item name="appGradientEnd">#082B4B</item>
+        <item name="appCardBackground">#6624A8E8</item>
+        <item name="appCardStroke">#B870E1F5</item>
+        <item name="appTextColorPrimary">#F2FCFF</item>
+        <item name="appTextColorSecondary">#B8E9F5</item>
+        <item name="appAccentColor">#62E6FF</item>
+        <item name="colorPrimary">#62E6FF</item>
+        <item name="colorOnPrimary">#00272E</item>
+        <item name="colorPrimaryContainer">#00536B</item>
+        <item name="colorOnPrimaryContainer">#C6F5FF</item>
+        <item name="colorSecondary">#33D6A6</item>
+        <item name="colorOnSecondary">#00382B</item>
+        <item name="colorTertiary">#FFC857</item>
+        <item name="android:colorBackground">#00111C</item>
+        <item name="colorSurface">#062B3B</item>
+        <item name="colorOnSurface">#F2FCFF</item>
+        <item name="colorSurfaceVariant">#0A4054</item>
+        <item name="colorOnSurfaceVariant">#BEE7F2</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">#00111C</item>
+        <item name="android:navigationBarColor">#082B4B</item>
         <item name="android:scrollbars">none</item>
     </style>
 
     <style name="AppTheme.LightPeach" parent="Theme.Material3.Light.NoActionBar">
         <item name="appGradientStart">#FFF5EE</item>
-        <item name="appGradientCenter">#FFE8E0</item>
-        <item name="appGradientEnd">#FFDDD5</item>
+        <item name="appGradientCenter">#FFD5CA</item>
+        <item name="appGradientEnd">#FFC7BE</item>
         <item name="appCardBackground">#D0FFFFFF</item>
         <item name="appCardStroke">#40FF7043</item>
         <item name="appTextColorPrimary">#2C121B</item>
@@ -84,7 +175,7 @@
     <style name="AppTheme.LightTropical" parent="Theme.Material3.Light.NoActionBar">
         <item name="appGradientStart">#F0FDFA</item>
         <item name="appGradientCenter">#CCFBF1</item>
-        <item name="appGradientEnd">#99F6E4</item>
+        <item name="appGradientEnd">#7EEBD7</item>
         <item name="appCardBackground">#D0FFFFFF</item>
         <item name="appCardStroke">#4000B8D4</item>
         <item name="appTextColorPrimary">#062C27</item>
@@ -119,6 +210,11 @@
     <style name="RoundedCornersImage">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="PeachRadioLogoShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
     </style>
 
     <style name="Widget.Peach.Button.Play" parent="Widget.Material3.Button">

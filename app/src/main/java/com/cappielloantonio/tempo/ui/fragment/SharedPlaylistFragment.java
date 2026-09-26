@@ -11,6 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
@@ -27,6 +29,8 @@ import com.cappielloantonio.tempo.ui.activity.MainActivity;
 import com.cappielloantonio.tempo.ui.adapter.SharedPlaylistAdapter;
 import com.cappielloantonio.tempo.util.SharedPlaylistMapper;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,6 +81,66 @@ public class SharedPlaylistFragment extends Fragment
                         )
                 )
         ).buildAsync();
+
+        mediaBrowserFuture.addListener(() -> {
+            try {
+                MediaBrowser browser = mediaBrowserFuture.get();
+                updateCurrentTrack(browser);
+
+                browser.addListener(new Player.Listener() {
+                    @Override
+                    public void onMediaMetadataChanged(
+                            @NonNull MediaMetadata mediaMetadata
+                    ) {
+                        updateCurrentTrack(browser);
+                    }
+
+                    @Override
+                    public void onMediaItemTransition(
+                            @Nullable androidx.media3.common.MediaItem item,
+                            int reason
+                    ) {
+                        updateCurrentTrack(browser);
+                    }
+                });
+            } catch (Exception ignored) {
+            }
+        }, MoreExecutors.directExecutor());
+    }
+
+    private void updateCurrentTrack(
+            MediaBrowser browser
+    ) {
+        if (adapter == null || browser == null) {
+            return;
+        }
+
+        MediaMetadata metadata =
+                browser.getMediaMetadata();
+
+        String trackId =
+                metadata != null
+                        && metadata.extras != null
+                        ? metadata.extras.getString("id")
+                        : null;
+
+        if (
+                (trackId == null || trackId.trim().isEmpty())
+                        && browser.getCurrentMediaItem() != null
+        ) {
+            trackId =
+                    browser.getCurrentMediaItem().mediaId;
+        }
+
+        final String currentTrackId = trackId;
+
+        if (getActivity() != null) {
+            requireActivity().runOnUiThread(
+                    () -> adapter.setCurrentTrackId(
+                            currentTrackId
+                    )
+            );
+        }
     }
 
     @Override

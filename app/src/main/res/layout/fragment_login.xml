@@ -35,7 +35,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/login_title_expanded"
-                android:textColor="@color/accent_gold"
+                android:textColor="?attr/colorPrimary"
                 android:gravity="center"
                 android:textSize="28sp"
                 android:textStyle="bold"
@@ -47,15 +47,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/login_username_hint"
-                app:boxStrokeColor="@color/accent_gold"
-                app:hintTextColor="@color/accent_gold">
+                app:boxStrokeColor="?attr/colorPrimary"
+                app:hintTextColor="?attr/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/username_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
-                    android:textColor="@color/white" />
+                    android:textColor="?attr/appTextColorPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -66,16 +66,16 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/login_password_hint"
                 app:passwordToggleEnabled="true"
-                app:boxStrokeColor="@color/accent_gold"
-                app:hintTextColor="@color/accent_gold"
-                app:passwordToggleTint="@color/white">
+                app:boxStrokeColor="?attr/colorPrimary"
+                app:hintTextColor="?attr/colorPrimary"
+                app:passwordToggleTint="?attr/appTextColorSecondary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/password_edit_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:textColor="@color/white" />
+                    android:textColor="?attr/appTextColorPrimary" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
@@ -85,8 +85,8 @@
                 android:layout_marginTop="32dp"
                 android:text="@string/login_button"
                 app:cornerRadius="32dp"
-                app:backgroundTint="@color/accent_gold"
-                android:textColor="@color/peach_background" />
+                app:backgroundTint="?attr/colorPrimary"
+                android:textColor="?attr/colorOnPrimary" />
 
             <ProgressBar
                 android:id="@+id/login_progress_bar"
@@ -95,15 +95,18 @@
                 android:layout_marginTop="16dp"
                 android:visibility="gone" />
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/register_link"
-                style="@style/TitleSmall"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:gravity="center"
+                android:layout_height="56dp"
+                android:layout_marginTop="22dp"
                 android:text="@string/login_register_link"
-                android:textColor="@color/accent_cyan" />
+                android:textAllCaps="false"
+                android:textColor="?attr/colorPrimary"
+                app:cornerRadius="28dp"
+                app:strokeColor="?attr/colorPrimary"
+                app:strokeWidth="1dp" />
 
             <TextView
                 android:id="@+id/forgot_password_link"
@@ -113,7 +116,7 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/login_forgot_password_link"
-                android:textColor="@color/white"
+                android:textColor="?attr/appTextColorPrimary"
                 android:alpha="0.6" />
 
         </LinearLayout>

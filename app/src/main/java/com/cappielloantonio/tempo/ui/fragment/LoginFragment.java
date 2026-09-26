@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.media3.common.util.UnstableApi;
 import com.cappielloantonio.tempo.App;
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentLoginBinding;
 import com.cappielloantonio.tempo.interfaces.SystemCallback;
@@ -62,8 +63,18 @@ public class LoginFragment extends Fragment {
 
     private void initServerListView() {
         bind.loginButton.setOnClickListener(v -> attemptLogin());
-        bind.registerLink.setOnClickListener(v -> openUrl("https://tropikeau.fr/register"));
-        bind.forgotPasswordLink.setOnClickListener(v -> openUrl("https://tropikeau.fr/contact"));
+
+        String portalBaseUrl =
+                BuildConfig.TROPIKEAU_PORTAL_URL;
+
+        bind.registerLink.setOnClickListener(
+                v -> openUrl(portalBaseUrl + "/register")
+        );
+
+        bind.forgotPasswordLink.setOnClickListener(
+                v -> openUrl(portalBaseUrl + "/contact")
+        );
+
         activity.setSupportActionBar(bind.toolbar);
     }
 

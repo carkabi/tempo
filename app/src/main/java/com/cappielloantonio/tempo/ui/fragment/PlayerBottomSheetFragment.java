@@ -136,6 +136,20 @@ public class PlayerBottomSheetFragment extends Fragment {
             }
 
             @Override
+            public void onMediaItemTransition(
+                    @Nullable androidx.media3.common.MediaItem mediaItem,
+                    int reason
+            ) {
+                MediaMetadata metadata =
+                        mediaBrowser.getMediaMetadata();
+                setMediaControllerUI(mediaBrowser);
+                setMetadata(metadata);
+                setContentDuration(
+                        mediaBrowser.getContentDuration()
+                );
+            }
+
+            @Override
             public void onIsPlayingChanged(boolean isPlaying) {
                 setPlayingState(isPlaying);
             }
@@ -153,22 +167,121 @@ public class PlayerBottomSheetFragment extends Fragment {
     }
 
     private void setMetadata(MediaMetadata mediaMetadata) {
-        if (mediaMetadata.extras != null) {
-            playerBottomSheetViewModel.setLiveMedia(getViewLifecycleOwner(), mediaMetadata.extras.getString("type"), mediaMetadata.extras.getString("id"));
-            playerBottomSheetViewModel.setLiveAlbum(getViewLifecycleOwner(), mediaMetadata.extras.getString("type"), mediaMetadata.extras.getString("albumId"));
-            playerBottomSheetViewModel.setLiveArtist(getViewLifecycleOwner(), mediaMetadata.extras.getString("type"), mediaMetadata.extras.getString("artistId"));
-            playerBottomSheetViewModel.setLiveDescription(mediaMetadata.extras.getString("description", null));
+        if (bind == null || mediaMetadata == null) {
+            return;
+        }
 
-            bind.playerHeaderLayout.playerHeaderMediaTitleLabel.setText(mediaMetadata.extras.getString("title"));
-            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setText(mediaMetadata.extras.getString("artist"));
+        Bundle extras = mediaMetadata.extras;
 
+        String type = extras != null
+                ? extras.getString(
+                "type",
+                Constants.MEDIA_TYPE_MUSIC
+        )
+                : Constants.MEDIA_TYPE_MUSIC;
+
+        String id = extras != null
+                ? extras.getString("id")
+                : null;
+
+        String title = mediaMetadata.title != null
+                ? mediaMetadata.title.toString()
+                : (
+                extras != null
+                        ? extras.getString("title")
+                        : null
+        );
+
+        String artist = mediaMetadata.artist != null
+                ? mediaMetadata.artist.toString()
+                : (
+                extras != null
+                        ? extras.getString("artist")
+                        : null
+        );
+
+        if (id != null && !id.trim().isEmpty()) {
+            playerBottomSheetViewModel.setLiveMedia(
+                    getViewLifecycleOwner(),
+                    type,
+                    id
+            );
+        }
+
+        if (extras != null) {
+            playerBottomSheetViewModel.setLiveAlbum(
+                    getViewLifecycleOwner(),
+                    type,
+                    extras.getString("albumId")
+            );
+            playerBottomSheetViewModel.setLiveArtist(
+                    getViewLifecycleOwner(),
+                    type,
+                    extras.getString("artistId")
+            );
+            playerBottomSheetViewModel.setLiveDescription(
+                    extras.getString("description", null)
+            );
+        }
+
+        bind.playerHeaderLayout
+                .playerHeaderMediaTitleLabel
+                .setText(title);
+
+        bind.playerHeaderLayout
+                .playerHeaderMediaArtistLabel
+                .setText(artist);
+
+        bind.playerHeaderLayout
+                .playerHeaderMediaTitleLabel
+                .setVisibility(
+                        title != null
+                                && !title.trim().isEmpty()
+                                ? View.VISIBLE
+                                : View.GONE
+                );
+
+        bind.playerHeaderLayout
+                .playerHeaderMediaArtistLabel
+                .setVisibility(
+                        artist != null
+                                && !artist.trim().isEmpty()
+                                ? View.VISIBLE
+                                : View.GONE
+                );
+
+        String coverArtId = extras != null
+                ? extras.getString("coverArtId")
+                : null;
+
+        if (
+                coverArtId != null
+                && !coverArtId.trim().isEmpty()
+        ) {
             CustomGlideRequest.Builder
-                    .from(requireContext(), mediaMetadata.extras.getString("coverArtId"), CustomGlideRequest.ResourceType.Song)
+                    .from(
+                            requireContext(),
+                            coverArtId,
+                            CustomGlideRequest.ResourceType.Song
+                    )
                     .build()
-                    .into(bind.playerHeaderLayout.playerHeaderMediaCoverImage);
-
-            bind.playerHeaderLayout.playerHeaderMediaTitleLabel.setVisibility(mediaMetadata.extras.getString("title") != null && !Objects.equals(mediaMetadata.extras.getString("title"), "") ? View.VISIBLE : View.GONE);
-            bind.playerHeaderLayout.playerHeaderMediaArtistLabel.setVisibility(mediaMetadata.extras.getString("artist") != null && !Objects.equals(mediaMetadata.extras.getString("artist"), "") ? View.VISIBLE : View.GONE);
+                    .into(
+                            bind.playerHeaderLayout
+                                    .playerHeaderMediaCoverImage
+                    );
+        } else if (mediaMetadata.artworkUri != null) {
+            com.bumptech.glide.Glide
+                    .with(requireContext())
+                    .load(mediaMetadata.artworkUri)
+                    .placeholder(R.drawable.ic_splash_logo)
+                    .into(
+                            bind.playerHeaderLayout
+                                    .playerHeaderMediaCoverImage
+                    );
+        } else {
+            bind.playerHeaderLayout
+                    .playerHeaderMediaCoverImage
+                    .setImageResource(R.drawable.ic_splash_logo);
         }
     }
 
@@ -178,6 +291,11 @@ public class PlayerBottomSheetFragment extends Fragment {
                 case Constants.MEDIA_TYPE_PODCAST:
                     bind.playerHeaderLayout.playerHeaderFastForwardMediaButton.setVisibility(View.VISIBLE);
                     bind.playerHeaderLayout.playerHeaderRewindMediaButton.setVisibility(View.VISIBLE);
+                    bind.playerHeaderLayout.playerHeaderNextMediaButton.setVisibility(View.GONE);
+                    break;
+                case Constants.MEDIA_TYPE_RADIO:
+                    bind.playerHeaderLayout.playerHeaderFastForwardMediaButton.setVisibility(View.GONE);
+                    bind.playerHeaderLayout.playerHeaderRewindMediaButton.setVisibility(View.GONE);
                     bind.playerHeaderLayout.playerHeaderNextMediaButton.setVisibility(View.GONE);
                     break;
                 case Constants.MEDIA_TYPE_MUSIC:

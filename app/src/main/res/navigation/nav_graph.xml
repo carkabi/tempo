@@ -92,6 +92,9 @@
             android:id="@+id/action_libraryFragment_to_playlistCatalogueFragment"
             app:destination="@id/playlistCatalogueFragment" />
         <action
+            android:id="@+id/action_libraryFragment_to_sharedPlaylistFragment"
+            app:destination="@id/sharedPlaylistFragment" />
+        <action
             android:id="@+id/action_libraryFragment_to_artistPageFragment"
             app:destination="@id/artistPageFragment" />
         <action

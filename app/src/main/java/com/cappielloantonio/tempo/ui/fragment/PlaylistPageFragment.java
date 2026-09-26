@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.MediaMetadata;
+import androidx.media3.common.Player;
 import androidx.media3.common.util.UnstableApi;
 import androidx.media3.session.MediaBrowser;
 import androidx.media3.session.SessionToken;
@@ -39,6 +41,7 @@ import com.cappielloantonio.tempo.util.MappingUtil;
 import com.cappielloantonio.tempo.util.MusicUtil;
 import com.cappielloantonio.tempo.viewmodel.PlaylistPageViewModel;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -253,7 +256,98 @@ public class PlaylistPageFragment extends Fragment implements ClickCallback {
     }
 
     private void initializeMediaBrowser() {
-        mediaBrowserListenableFuture = new MediaBrowser.Builder(requireContext(), new SessionToken(requireContext(), new ComponentName(requireContext(), MediaService.class))).buildAsync();
+        mediaBrowserListenableFuture = new MediaBrowser.Builder(
+                requireContext(),
+                new SessionToken(
+                        requireContext(),
+                        new ComponentName(
+                                requireContext(),
+                                MediaService.class
+                        )
+                )
+        ).buildAsync();
+
+        mediaBrowserListenableFuture.addListener(() -> {
+            try {
+                MediaBrowser browser =
+                        mediaBrowserListenableFuture.get();
+
+                updateCurrentTrack(browser);
+
+                browser.addListener(new Player.Listener() {
+                    @Override
+                    public void onMediaMetadataChanged(
+                            @NonNull MediaMetadata mediaMetadata
+                    ) {
+                        updateCurrentTrack(browser);
+                    }
+
+                    @Override
+                    public void onMediaItemTransition(
+                            androidx.media3.common.MediaItem mediaItem,
+                            int reason
+                    ) {
+                        updateCurrentTrack(browser);
+                    }
+
+                    @Override
+                    public void onEvents(
+                            @NonNull Player player,
+                            @NonNull Player.Events events
+                    ) {
+                        if (
+                                events.contains(
+                                        Player.EVENT_MEDIA_ITEM_TRANSITION
+                                )
+                                || events.contains(
+                                        Player.EVENT_MEDIA_METADATA_CHANGED
+                                )
+                        ) {
+                            updateCurrentTrack(browser);
+                        }
+                    }
+                });
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+        }, MoreExecutors.directExecutor());
+    }
+
+    private void updateCurrentTrack(
+            MediaBrowser browser
+    ) {
+        if (
+                songHorizontalAdapter == null
+                || browser == null
+        ) {
+            return;
+        }
+
+        MediaMetadata metadata =
+                browser.getMediaMetadata();
+
+        String mediaId =
+                metadata != null
+                        && metadata.extras != null
+                        ? metadata.extras.getString("id")
+                        : null;
+
+        if (
+                (mediaId == null || mediaId.trim().isEmpty())
+                        && browser.getCurrentMediaItem() != null
+        ) {
+            mediaId =
+                    browser.getCurrentMediaItem().mediaId;
+        }
+
+        final String currentId = mediaId;
+
+        if (getActivity() != null) {
+            requireActivity().runOnUiThread(
+                    () -> songHorizontalAdapter
+                            .setCurrentMediaId(currentId)
+            );
+        }
     }
 
     private void releaseMediaBrowser() {

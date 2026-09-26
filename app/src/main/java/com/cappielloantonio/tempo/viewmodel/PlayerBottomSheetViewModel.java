@@ -54,6 +54,8 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
     private final MutableLiveData<AlbumID3> liveAlbum = new MutableLiveData<>(null);
     private final MutableLiveData<ArtistID3> liveArtist = new MutableLiveData<>(null);
     private final MutableLiveData<List<Child>> instantMix = new MutableLiveData<>(null);
+
+    private String requestedLiveMediaId;
     private boolean lyricsSyncState = true;
 
 
@@ -157,7 +159,23 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         if (mediaType != null) {
             switch (mediaType) {
                 case Constants.MEDIA_TYPE_MUSIC:
-                    songRepository.getSong(mediaId).observe(owner, liveMedia::postValue);
+                case Constants.MEDIA_TYPE_RADIO:
+                    if (mediaId != null && !mediaId.trim().isEmpty()) {
+                        requestedLiveMediaId = mediaId;
+
+                        songRepository.getSong(mediaId)
+                                .observe(owner, media -> {
+                                    if (
+                                            media != null
+                                            && media.getId() != null
+                                            && media.getId().equals(
+                                            requestedLiveMediaId
+                                    )
+                                    ) {
+                                        liveMedia.postValue(media);
+                                    }
+                                });
+                    }
                     descriptionLiveData.postValue(null);
                     break;
                 case Constants.MEDIA_TYPE_PODCAST:
@@ -175,7 +193,13 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         if (mediaType != null) {
             switch (mediaType) {
                 case Constants.MEDIA_TYPE_MUSIC:
-                    albumRepository.getAlbum(AlbumId).observe(owner, liveAlbum::postValue);
+                    if (AlbumId != null && !AlbumId.trim().isEmpty()) {
+                        albumRepository.getAlbum(AlbumId)
+                                .observe(owner, liveAlbum::postValue);
+                    }
+                    break;
+                case Constants.MEDIA_TYPE_RADIO:
+                    liveAlbum.postValue(null);
                     break;
                 case Constants.MEDIA_TYPE_PODCAST:
                     liveAlbum.postValue(null);
@@ -192,7 +216,13 @@ public class PlayerBottomSheetViewModel extends AndroidViewModel {
         if (mediaType != null) {
             switch (mediaType) {
                 case Constants.MEDIA_TYPE_MUSIC:
-                    artistRepository.getArtist(ArtistId).observe(owner, liveArtist::postValue);
+                    if (ArtistId != null && !ArtistId.trim().isEmpty()) {
+                        artistRepository.getArtist(ArtistId)
+                                .observe(owner, liveArtist::postValue);
+                    }
+                    break;
+                case Constants.MEDIA_TYPE_RADIO:
+                    liveArtist.postValue(null);
                     break;
                 case Constants.MEDIA_TYPE_PODCAST:
                     liveArtist.postValue(null);

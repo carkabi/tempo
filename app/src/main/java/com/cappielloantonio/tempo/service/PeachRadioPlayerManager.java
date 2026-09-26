@@ -56,7 +56,9 @@ public class PeachRadioPlayerManager {
     private static RadioProgramItem activeProgramItem;
 
     private static boolean isMonitoring = false;
-    private static final long MONITOR_INTERVAL_MS = 15000;
+    private static final long MONITOR_INTERVAL_MS = 1500;
+    private static final long RADIO_FADE_MS = 1500;
+    private static long playRequestGeneration = 0L;
     private static final android.os.Handler mainHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private static Runnable monitorRunnable;
 
@@ -214,8 +216,29 @@ public class PeachRadioPlayerManager {
         });
     }
 
-    public static boolean playLiveCurrentTrack(Context context, ListenableFuture<MediaBrowser> mediaBrowserFuture, boolean forceSeek) {
+    public static boolean playLiveCurrentTrack(
+            Context context,
+            ListenableFuture<MediaBrowser> mediaBrowserFuture,
+            boolean forceSeek
+    ) {
+        return playLiveCurrentTrack(
+                context,
+                mediaBrowserFuture,
+                forceSeek,
+                false
+        );
+    }
+
+    private static boolean playLiveCurrentTrack(
+            Context context,
+            ListenableFuture<MediaBrowser> mediaBrowserFuture,
+            boolean forceSeek,
+            boolean withFade
+    ) {
         if (activeRadioSlug == null) return false;
+
+        final long requestGeneration =
+                ++playRequestGeneration;
 
         RadioProgramItem currentItem = PeachRadioCache.findActiveProgramItem(activeRadioSlug);
 
@@ -231,19 +254,29 @@ public class PeachRadioPlayerManager {
         Log.i(TAG, "track position = " + currentItem.getPosition());
         Log.i(TAG, "title = " + currentItem.getTitle());
 
-        downloadTrackLocally(context, currentItem.getNavidromeTrackId(), new TrackDownloadCallback() {
-            @Override
-            public void onDownloaded(File localFile, int statusCode, long sizeBytes) {
-                Log.i(TAG, "Local download complete (" + sizeBytes + " bytes), starting ExoPlayer playback from file: " + localFile.getAbsolutePath());
-                mainHandler.post(() -> executeExoPlayerPlayback(context, mediaBrowserFuture, currentItem, nextItem, localFile, forceSeek));
-            }
+        File cacheDir = new File(context.getCacheDir(), "peach-radio");
+        File cachedCurrent = new File(
+                cacheDir,
+                currentItem.getNavidromeTrackId() + ".mp3"
+        );
 
-            @Override
-            public void onError(int statusCode, String message) {
-                Log.e(TAG, "Local download failed (" + statusCode + ": " + message + "), falling back to streaming URL...");
-                mainHandler.post(() -> executeExoPlayerPlayback(context, mediaBrowserFuture, currentItem, nextItem, null, forceSeek));
-            }
-        });
+        File immediateSource =
+                cachedCurrent.exists() && cachedCurrent.length() > 0
+                        ? cachedCurrent
+                        : null;
+
+        // Update Media3 immediately. The player UI now follows the real
+        // radio programme without waiting for a complete cache download.
+        executeExoPlayerPlayback(
+                context,
+                mediaBrowserFuture,
+                currentItem,
+                nextItem,
+                immediateSource,
+                forceSeek,
+                withFade,
+                requestGeneration
+        );
 
         if (nextItem != null && nextItem.getNavidromeTrackId() != null) {
             downloadTrackLocally(context, nextItem.getNavidromeTrackId(), new TrackDownloadCallback() {
@@ -266,7 +299,16 @@ public class PeachRadioPlayerManager {
         return true;
     }
 
-    private static void executeExoPlayerPlayback(Context context, ListenableFuture<MediaBrowser> mediaBrowserFuture, RadioProgramItem currentItem, RadioProgramItem nextItem, File localFile, boolean forceSeek) {
+    private static void executeExoPlayerPlayback(
+            Context context,
+            ListenableFuture<MediaBrowser> mediaBrowserFuture,
+            RadioProgramItem currentItem,
+            RadioProgramItem nextItem,
+            File localFile,
+            boolean forceSeek,
+            boolean withFade,
+            long requestGeneration
+    ) {
         if (mediaBrowserFuture == null) return;
 
         long seekPositionMs = PeachRadioCache.calculateStreamPositionMs(currentItem);
@@ -285,41 +327,236 @@ public class PeachRadioPlayerManager {
             mediaUri = MusicUtil.getStreamUri(currentItem.getNavidromeTrackId());
         }
 
-        MediaMetadata metadata = new MediaMetadata.Builder()
-                .setTitle(currentItem.getTitle())
-                .setArtist(currentItem.getArtist() != null ? currentItem.getArtist() : (activeStation != null ? activeStation.getName() : "Peach Radio"))
-                .setAlbumTitle(activeStation != null ? activeStation.getName() : "Peach Radio")
-                .setArtworkUri(activeStation != null && activeStation.getCoverImageUrl() != null ? Uri.parse(activeStation.getCoverImageUrl()) : null)
-                .build();
+        String displayArtist =
+                currentItem.getArtist() != null
+                        ? currentItem.getArtist()
+                        : (
+                        activeStation != null
+                                ? activeStation.getName()
+                                : "Peach Radio"
+                );
+
+        Uri artworkUri = null;
+        if (
+                currentItem.getCoverImageUrl() != null
+                && !currentItem.getCoverImageUrl().trim().isEmpty()
+        ) {
+            artworkUri = Uri.parse(
+                    currentItem.getCoverImageUrl()
+            );
+        } else if (
+                activeStation != null
+                && activeStation.getCoverImageUrl() != null
+                && !activeStation.getCoverImageUrl().trim().isEmpty()
+        ) {
+            artworkUri = Uri.parse(
+                    activeStation.getCoverImageUrl()
+            );
+        }
 
         Bundle bundle = new Bundle();
         bundle.putString("type", Constants.MEDIA_TYPE_RADIO);
-        bundle.putString("id", currentItem.getNavidromeTrackId());
-        bundle.putString("peach_radio_slug", activeRadioSlug);
+        bundle.putString(
+                "id",
+                currentItem.getNavidromeTrackId()
+        );
+        bundle.putString(
+                "title",
+                currentItem.getTitle()
+        );
+        bundle.putString(
+                "artist",
+                displayArtist
+        );
+        bundle.putString(
+                "album",
+                currentItem.getAlbum()
+        );
+        bundle.putString(
+                "coverArtId",
+                currentItem.getCoverArtId()
+        );
+        bundle.putString(
+                "peach_radio_slug",
+                activeRadioSlug
+        );
 
-        MediaItem mediaItem = new MediaItem.Builder()
-                .setUri(mediaUri)
-                .setMediaId("peach_radio_" + currentItem.getNavidromeTrackId())
-                .setMediaMetadata(metadata)
-                .setCustomCacheKey(currentItem.getNavidromeTrackId())
-                .setTag(bundle)
-                .build();
+        MediaMetadata metadata =
+                new MediaMetadata.Builder()
+                        .setTitle(currentItem.getTitle())
+                        .setArtist(displayArtist)
+                        .setAlbumTitle(
+                                activeStation != null
+                                        ? activeStation.getName()
+                                        : "Peach Radio"
+                        )
+                        .setArtworkUri(artworkUri)
+                        .setExtras(bundle)
+                        .build();
+
+        MediaItem mediaItem =
+                new MediaItem.Builder()
+                        .setUri(mediaUri)
+                        .setMediaId(
+                                "peach_radio_"
+                                        + currentItem.getNavidromeTrackId()
+                        )
+                        .setMediaMetadata(metadata)
+                        .setCustomCacheKey(
+                                currentItem.getNavidromeTrackId()
+                        )
+                        .setTag(bundle)
+                        .build();
 
         mediaBrowserFuture.addListener(() -> {
             try {
-                MediaBrowser browser = mediaBrowserFuture.get();
-                if (browser != null) {
-                    browser.setMediaItem(mediaItem);
-                    browser.prepare();
-                    if (forceSeek || Math.abs(browser.getCurrentPosition() - seekPositionMs) > 3000) {
-                        browser.seekTo(seekPositionMs);
-                    }
-                    browser.play();
+                MediaBrowser browser =
+                        mediaBrowserFuture.get();
+
+                if (
+                        browser == null
+                        || requestGeneration
+                        != playRequestGeneration
+                ) {
+                    return;
+                }
+
+                if (
+                        withFade
+                        && browser.isPlaying()
+                ) {
+                    fadeOutAndReplace(
+                            browser,
+                            mediaItem,
+                            seekPositionMs,
+                            requestGeneration
+                    );
+                } else {
+                    browser.setVolume(1f);
+                    replaceRadioMedia(
+                            browser,
+                            mediaItem,
+                            seekPositionMs,
+                            forceSeek
+                    );
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error starting MediaBrowser playback for Peach Radio: " + e.getMessage(), e);
+                Log.e(
+                        TAG,
+                        "Error starting MediaBrowser playback for Peach Radio: "
+                                + e.getMessage(),
+                        e
+                );
             }
         }, MoreExecutors.directExecutor());
+    }
+
+    private static void fadeOutAndReplace(
+            MediaBrowser browser,
+            MediaItem mediaItem,
+            long seekPositionMs,
+            long requestGeneration
+    ) {
+        final int steps = 9;
+        final long stepDuration =
+                Math.max(40L, RADIO_FADE_MS / steps);
+
+        for (int step = 1; step <= steps; step++) {
+            final int currentStep = step;
+
+            mainHandler.postDelayed(
+                    () -> {
+                        if (
+                                requestGeneration
+                                != playRequestGeneration
+                        ) {
+                            return;
+                        }
+
+                        float volume =
+                                1f - (
+                                        currentStep
+                                        / (float) steps
+                                );
+
+                        browser.setVolume(
+                                Math.max(0f, volume)
+                        );
+                    },
+                    currentStep * stepDuration
+            );
+        }
+
+        mainHandler.postDelayed(
+                () -> {
+                    if (
+                            requestGeneration
+                            != playRequestGeneration
+                    ) {
+                        return;
+                    }
+
+                    replaceRadioMedia(
+                            browser,
+                            mediaItem,
+                            seekPositionMs,
+                            true
+                    );
+
+                    browser.setVolume(0f);
+
+                    for (
+                            int step = 1;
+                            step <= steps;
+                            step++
+                    ) {
+                        final int currentStep = step;
+
+                        mainHandler.postDelayed(
+                                () -> {
+                                    if (
+                                            requestGeneration
+                                            != playRequestGeneration
+                                    ) {
+                                        return;
+                                    }
+
+                                    browser.setVolume(
+                                            Math.min(
+                                                    1f,
+                                                    currentStep
+                                                            / (float) steps
+                                            )
+                                    );
+                                },
+                                currentStep * stepDuration
+                        );
+                    }
+                },
+                RADIO_FADE_MS
+        );
+    }
+
+    private static void replaceRadioMedia(
+            MediaBrowser browser,
+            MediaItem mediaItem,
+            long seekPositionMs,
+            boolean forceSeek
+    ) {
+        browser.setMediaItem(mediaItem);
+        browser.prepare();
+
+        if (
+                forceSeek
+                || Math.abs(
+                        browser.getCurrentPosition()
+                                - seekPositionMs
+                ) > 3000
+        ) {
+            browser.seekTo(seekPositionMs);
+        }
+
+        browser.play();
     }
 
     public static void startMonitoring(Context context, ListenableFuture<MediaBrowser> mediaBrowserFuture) {
@@ -335,7 +572,12 @@ public class PeachRadioPlayerManager {
                 if (currentActive != null && activeProgramItem != null) {
                     if (!currentActive.getNavidromeTrackId().equals(activeProgramItem.getNavidromeTrackId()) || currentActive.getPosition() != activeProgramItem.getPosition()) {
                         Log.i(TAG, "Track changed in live schedule, transitioning to next track...");
-                        playLiveCurrentTrack(context, mediaBrowserFuture, true);
+                        playLiveCurrentTrack(
+                                context,
+                                mediaBrowserFuture,
+                                true,
+                                true
+                        );
                     }
                 }
 

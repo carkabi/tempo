@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
 import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
@@ -18,49 +20,109 @@ import com.cappielloantonio.tempo.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "PEACH_NAV";
+    private static final String TAG_MUSIC = "home_music";
+    private static final String TAG_RADIO = "home_radio";
 
     private FragmentHomeBinding bind;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.i(TAG, "HomeFragment.onCreateView()");
-        bind = FragmentHomeBinding.inflate(inflater, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
+        bind = FragmentHomeBinding.inflate(
+                inflater,
+                container,
+                false
+        );
+
         return bind.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState
+    ) {
         super.onViewCreated(view, savedInstanceState);
-        Log.i(TAG, "HomeFragment.onViewCreated(), childFragments = " + getChildFragmentManager().getFragments());
 
-        if (getChildFragmentManager().findFragmentById(R.id.home_container) == null) {
+        if (
+                getChildFragmentManager()
+                        .findFragmentById(
+                                R.id.home_container
+                        ) == null
+        ) {
             showMusicTab();
         }
     }
 
     public void showMusicTab() {
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.home_container, new HomeTabMusicFragment(), "home_music")
-                .commit();
+        showTab(
+                TAG_MUSIC,
+                HomeTabMusicFragment::new
+        );
     }
 
     public void showRadioTab() {
-        getChildFragmentManager().beginTransaction()
-                .replace(R.id.home_container, new HomeTabRadioFragment(), "home_radio")
-                .commit();
+        showTab(
+                TAG_RADIO,
+                HomeTabRadioFragment::new
+        );
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "HomeFragment.onResume(), childFragments = " + getChildFragmentManager().getFragments());
-    }
+    private void showTab(
+            String tag,
+            FragmentFactory factory
+    ) {
+        Fragment current =
+                getChildFragmentManager()
+                        .findFragmentById(
+                                R.id.home_container
+                        );
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i(TAG, "HomeFragment.onPause()");
+        Fragment target =
+                getChildFragmentManager()
+                        .findFragmentByTag(tag);
+
+        if (target == null) {
+            target = factory.create();
+        }
+
+        if (current == target) {
+            return;
+        }
+
+        FragmentTransaction transaction =
+                getChildFragmentManager()
+                        .beginTransaction()
+                        .setReorderingAllowed(true);
+
+        if (current != null) {
+            transaction.hide(current);
+            transaction.setMaxLifecycle(
+                    current,
+                    Lifecycle.State.STARTED
+            );
+        }
+
+        if (!target.isAdded()) {
+            transaction.add(
+                    R.id.home_container,
+                    target,
+                    tag
+            );
+        } else {
+            transaction.show(target);
+        }
+
+        transaction.setMaxLifecycle(
+                target,
+                Lifecycle.State.RESUMED
+        );
+
+        transaction.commit();
     }
 
     @Override
@@ -68,5 +130,9 @@ public class HomeFragment extends Fragment {
         Log.i(TAG, "HomeFragment.onDestroyView()");
         super.onDestroyView();
         bind = null;
+    }
+
+    private interface FragmentFactory {
+        Fragment create();
     }
 }

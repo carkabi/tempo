@@ -1,14 +1,20 @@
 <resources>
     <string-array name="theme_list_titles">
-        <item>Dark Peach 🍑</item>
-        <item>Dark Tropical 🌴</item>
-        <item>Light Peach 🍑</item>
-        <item>Light Tropical 🌴</item>
-        <item>System default</item>
+        <item>Peach électrique</item>
+        <item>Tropique néon</item>
+        <item>Nuit néon</item>
+        <item>Sunset</item>
+        <item>Océan</item>
+        <item>Pêche claire</item>
+        <item>Menthe claire</item>
+        <item>Suivre le système</item>
     </string-array>
     <string-array name="theme_list_values">
         <item>dark_peach</item>
         <item>dark_tropical</item>
+        <item>night_neon</item>
+        <item>sunset</item>
+        <item>ocean</item>
         <item>light_peach</item>
         <item>light_tropical</item>
         <item>default</item>

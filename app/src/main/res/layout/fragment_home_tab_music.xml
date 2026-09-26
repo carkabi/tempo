@@ -30,10 +30,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
-                <TextView android:id="@+id/home_sync_starred_title" style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Synchronisation" android:textColor="@color/accent_gold" />
-                <TextView android:id="@+id/home_sync_starred_tracks_to_sync" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:alpha="0.8" />
+                <TextView android:id="@+id/home_sync_starred_title" style="@style/TitleMedium" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="Synchronisation" android:textColor="?attr/colorPrimary" />
+                <TextView android:id="@+id/home_sync_starred_tracks_to_sync" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/appTextColorPrimary" android:alpha="0.8" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="end" android:layout_marginTop="8dp">
-                    <Button android:id="@+id/home_sync_starred_cancel" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Annuler" android:textColor="@color/white" />
+                    <Button android:id="@+id/home_sync_starred_cancel" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Annuler" android:textColor="?attr/appTextColorPrimary" />
                     <Button android:id="@+id/home_sync_starred_download" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Télécharger" />
                 </LinearLayout>
             </LinearLayout>
@@ -57,7 +57,7 @@
                 android:layout_weight="1"
                 android:text="@string/home_welcome_text"
                 android:textSize="28sp"
-                android:textColor="@color/accent_gold"
+                android:textColor="?attr/colorPrimary"
                 android:textStyle="bold" />
 
             <com.google.android.material.button.MaterialButton
@@ -66,7 +66,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 app:icon="@drawable/ic_radio_premium"
-                app:iconTint="@color/accent_gold" />
+                app:iconTint="?attr/colorPrimary" />
 
         </LinearLayout>
 
@@ -97,6 +97,17 @@
                     android:textAllCaps="false"
                     app:cornerRadius="18dp"
                     app:icon="@drawable/ic_search" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/home_quick_radio"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Radios"
+                    android:textAllCaps="false"
+                    app:cornerRadius="18dp"
+                    app:icon="@drawable/ic_radio_premium" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/home_quick_shared"
@@ -150,9 +161,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/discovery_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_discovery" android:textColor="@color/accent_cyan" />
+                <TextView android:id="@+id/discovery_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_discovery" android:textColor="?attr/colorSecondary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/discovery_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/discovery_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Aléatoire" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/discovery_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Aléatoire" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.viewpager2.widget.ViewPager2 android:id="@+id/discover_song_view_pager" android:layout_width="match_parent" android:layout_height="140dp" />
         </LinearLayout>
@@ -164,7 +175,7 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/similar_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_made_for_you" android:textColor="@color/white" />
+                <TextView android:id="@+id/similar_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_made_for_you" android:textColor="?attr/appTextColorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/similar_tracks_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/similar_tracks_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
@@ -177,7 +188,7 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/best_of_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_best_of" android:textColor="@color/accent_gold" />
+                <TextView android:id="@+id/best_of_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_best_of" android:textColor="?attr/colorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/best_of_artist_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/best_of_artist_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
@@ -189,7 +200,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
-            <TextView android:id="@+id/radio_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_radio_station" android:textColor="@color/accent_cyan" />
+            <TextView android:id="@+id/radio_artist_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_radio_station" android:textColor="?attr/colorSecondary" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/radio_artist_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
         <View android:id="@+id/after_radio_artist_divider" android:layout_width="match_parent" android:layout_height="1dp" android:visibility="gone" />
@@ -201,8 +212,8 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/grid_tracks_pre_text_view" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_title_last_week" android:textColor="@color/accent_gold" android:textAllCaps="true" />
-                <TextView android:id="@+id/grid_tracks_text_view" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:text="@string/home_title_top_songs" android:textColor="@color/white" />
+                <TextView android:id="@+id/grid_tracks_pre_text_view" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/home_title_last_week" android:textColor="?attr/colorPrimary" android:textAllCaps="true" />
+                <TextView android:id="@+id/grid_tracks_text_view" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:text="@string/home_title_top_songs" android:textColor="?attr/appTextColorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/top_songs_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/top_songs_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
@@ -216,9 +227,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/starred_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_tracks" android:textColor="@color/accent_cyan" />
+                <TextView android:id="@+id/starred_tracks_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_tracks" android:textColor="?attr/colorSecondary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/starred_tracks_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/starred_tracks_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/starred_tracks_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_tracks_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -230,9 +241,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/starred_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_albums" android:textColor="@color/white" />
+                <TextView android:id="@+id/starred_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_albums" android:textColor="?attr/appTextColorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/starred_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/starred_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/starred_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -244,9 +255,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/starred_artists_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_artists" android:textColor="@color/accent_gold" />
+                <TextView android:id="@+id/starred_artists_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_starred_artists" android:textColor="?attr/colorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/starred_artists_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/starred_artists_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/starred_artists_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/starred_artists_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -259,7 +270,7 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="gone">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_new_releases" android:textColor="@color/accent_cyan" />
+                <TextView style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_new_releases" android:textColor="?attr/colorSecondary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/new_releases_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/new_releases_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
@@ -271,7 +282,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
-            <TextView style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_flashback" android:textColor="@color/white" />
+            <TextView style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_flashback" android:textColor="?attr/appTextColorPrimary" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/years_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
@@ -282,9 +293,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/most_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_most_played" android:textColor="@color/accent_gold" />
+                <TextView android:id="@+id/most_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_most_played" android:textColor="?attr/colorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/most_played_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/most_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/most_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/most_played_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -296,9 +307,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/recently_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_last_played" android:textColor="@color/white" />
+                <TextView android:id="@+id/recently_played_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_last_played" android:textColor="?attr/appTextColorPrimary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/recently_played_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/recently_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/recently_played_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/recently_played_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -310,9 +321,9 @@
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
-                <TextView android:id="@+id/recently_added_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_recently_added" android:textColor="@color/accent_cyan" />
+                <TextView android:id="@+id/recently_added_albums_text_view_refreshable" style="@style/TitleLarge" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/home_title_recently_added" android:textColor="?attr/colorSecondary" />
                 <com.google.android.material.button.MaterialButton android:id="@+id/recently_added_albums_play_button" style="@style/Widget.Peach.Button.Play" app:icon="@drawable/ic_play" />
-                <TextView android:id="@+id/recently_added_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="@color/white" android:alpha="0.7" />
+                <TextView android:id="@+id/recently_added_albums_text_view_clickable" style="@style/TitleSmall" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="Voir tout" android:textColor="?attr/appTextColorPrimary" android:alpha="0.7" />
             </LinearLayout>
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/recently_added_albums_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" />
         </LinearLayout>
@@ -323,7 +334,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
-            <TextView android:id="@+id/pinned_playlists_text_view" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_pinned_playlists" android:textColor="@color/accent_gold" />
+            <TextView android:id="@+id/pinned_playlists_text_view" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_pinned_playlists" android:textColor="?attr/colorPrimary" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/pinned_playlists_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
@@ -333,7 +344,7 @@
             android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
             android:layout_marginHorizontal="16dp" android:layout_marginBottom="16dp" android:padding="12dp"
             android:background="@drawable/bg_glass_card" android:visibility="gone" tools:visibility="visible">
-            <TextView android:id="@+id/shares_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_shares" android:textColor="@color/white" />
+            <TextView android:id="@+id/shares_text_view_refreshable" style="@style/TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/home_title_shares" android:textColor="?attr/appTextColorPrimary" />
             <androidx.recyclerview.widget.RecyclerView android:id="@+id/shares_recycler_view" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
         </LinearLayout>
 
@@ -344,7 +355,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/home_option_reorganize"
-            android:textColor="@color/white"
+            android:textColor="?attr/appTextColorPrimary"
             android:alpha="0.6"
             android:visibility="gone"
             tools:visibility="visible"/>
