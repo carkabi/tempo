@@ -264,6 +264,85 @@ public class PeachRadioCache {
         return bestNext;
     }
 
+    public static List<RadioProgramItem> getPreviousProgramItems(
+            String radioSlug,
+            int count
+    ) {
+        List<RadioProgramItem> result = new ArrayList<>();
+        List<RadioProgramItem> timeline = getTimeline(radioSlug);
+        long now = getRadioNow();
+
+        for (int i = timeline.size() - 1; i >= 0; i--) {
+            RadioProgramItem item = timeline.get(i);
+
+            if (item.getEndsAtMs() <= now) {
+                result.add(item);
+
+                if (result.size() >= count) {
+                    break;
+                }
+            }
+        }
+
+        Collections.reverse(result);
+        return result;
+    }
+
+    public static List<RadioProgramItem> getUpcomingProgramItems(
+            String radioSlug,
+            int count
+    ) {
+        List<RadioProgramItem> result = new ArrayList<>();
+        List<RadioProgramItem> timeline = getTimeline(radioSlug);
+        long now = getRadioNow();
+
+        for (RadioProgramItem item : timeline) {
+            if (item.getStartsAtMs() > now) {
+                result.add(item);
+
+                if (result.size() >= count) {
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static List<RadioProgramItem> getTimeline(
+            String radioSlug
+    ) {
+        List<RadioProgramItem> timeline = new ArrayList<>();
+        PeachPackageRadio radio = getPackageRadio(radioSlug);
+
+        if (radio == null) {
+            return timeline;
+        }
+
+        if (radio.getCurrentSchedule() != null
+                && radio.getCurrentSchedule().getTracks() != null) {
+            timeline.addAll(
+                    radio.getCurrentSchedule().getTracks()
+            );
+        }
+
+        if (radio.getNextSchedule() != null
+                && radio.getNextSchedule().getTracks() != null) {
+            timeline.addAll(
+                    radio.getNextSchedule().getTracks()
+            );
+        }
+
+        timeline.sort(
+                (a, b) -> Long.compare(
+                        a.getStartsAtMs(),
+                        b.getStartsAtMs()
+                )
+        );
+
+        return timeline;
+    }
+
     public static long calculateStreamPositionMs(RadioProgramItem item) {
         if (item == null) return 0L;
         long radioNow = getRadioNow();

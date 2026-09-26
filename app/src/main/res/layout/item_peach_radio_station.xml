@@ -128,6 +128,26 @@
                 android:focusable="false"
                 android:textColor="?attr/appTextColorSecondary"
                 tools:text="À suivre : Prochain morceau" />
+
+            <TextView
+                android:id="@+id/peach_radio_history"
+                style="@style/LabelSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textColor="?attr/appTextColorSecondary"
+                android:visibility="gone"
+                tools:text="Récemment · Titre 1 · Titre 2" />
+
+            <TextView
+                android:id="@+id/peach_radio_upcoming"
+                style="@style/LabelSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="?attr/appTextColorSecondary"
+                android:visibility="gone"
+                tools:text="À venir · Titre 3 · Titre 4" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentHomeTabMusicBinding;
 import com.cappielloantonio.tempo.helper.recyclerview.CustomLinearSnapHelper;
@@ -153,6 +154,28 @@ public class HomeTabMusicFragment extends Fragment implements ClickCallback {
     private void init() {
         if (bind == null) return;
         bind.gridTracksPreTextView.setOnClickListener(view -> showPopupMenu(view, R.menu.filter_top_songs_popup_menu));
+
+        if ("peach".equals(BuildConfig.FLAVOR)) {
+            bind.homeQuickAccessScroll.setVisibility(View.VISIBLE);
+            bind.homeQuickSearch.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.searchFragment)
+            );
+            bind.homeQuickShared.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.sharedPlaylistFragment)
+            );
+            bind.homeQuickGenres.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.genreCatalogueFragment)
+            );
+            bind.homeQuickDownloads.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.downloadFragment)
+            );
+            bind.homeQuickSupport.setOnClickListener(v ->
+                    Navigation.findNavController(v).navigate(R.id.peachSupportFragment)
+            );
+        } else {
+            bind.homeQuickAccessScroll.setVisibility(View.GONE);
+        }
+
         bind.homeRadioButton.setOnClickListener(v -> {
             Fragment parent = getParentFragment();
             if (parent instanceof HomeFragment) {

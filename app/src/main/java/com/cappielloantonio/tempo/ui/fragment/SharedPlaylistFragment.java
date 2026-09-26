@@ -218,6 +218,45 @@ public class SharedPlaylistFragment extends Fragment
     }
 
     @Override
+    public void onVote(
+            SharedPlaylistItem item,
+            int vote
+    ) {
+        repository.voteSharedTrack(
+                item.getId(),
+                vote,
+                new TropikeauRepository.SharedPlaylistCallback() {
+                    @Override
+                    public void onSuccess(
+                            SharedPlaylistResponse response
+                    ) {
+                        if (!isAdded()) return;
+
+                        requireActivity().runOnUiThread(
+                                SharedPlaylistFragment.this::loadPlaylist
+                        );
+                    }
+
+                    @Override
+                    public void onError(
+                            int code,
+                            String message
+                    ) {
+                        if (!isAdded()) return;
+
+                        requireActivity().runOnUiThread(() ->
+                                Toast.makeText(
+                                        requireContext(),
+                                        message,
+                                        Toast.LENGTH_LONG
+                                ).show()
+                        );
+                    }
+                }
+        );
+    }
+
+    @Override
     public void onRemove(SharedPlaylistItem item) {
         new AlertDialog.Builder(requireContext())
                 .setTitle(R.string.shared_playlist_remove_title)

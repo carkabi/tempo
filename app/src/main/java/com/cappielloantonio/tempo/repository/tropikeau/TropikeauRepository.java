@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 
 import com.cappielloantonio.tempo.repository.peach.models.RadioManifestResponse;
 import com.cappielloantonio.tempo.repository.peach.models.RadioPackageResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.ArtistFollowResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequestResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistAddRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistVoteRequest;
 import com.cappielloantonio.tempo.subsonic.utils.StringUtil;
 import com.cappielloantonio.tempo.util.Preferences;
 
@@ -129,6 +131,113 @@ public class TropikeauRepository {
         });
     }
 
+    public void getArtistFollow(
+            String artistId,
+            ArtistFollowCallback callback
+    ) {
+        artistFollowCall(
+                artistId,
+                callback,
+                0
+        );
+    }
+
+    public void followArtist(
+            String artistId,
+            ArtistFollowCallback callback
+    ) {
+        artistFollowCall(
+                artistId,
+                callback,
+                1
+        );
+    }
+
+    public void unfollowArtist(
+            String artistId,
+            ArtistFollowCallback callback
+    ) {
+        artistFollowCall(
+                artistId,
+                callback,
+                -1
+        );
+    }
+
+    private void artistFollowCall(
+            String artistId,
+            ArtistFollowCallback callback,
+            int action
+    ) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(
+                    401,
+                    "Authentification Navidrome manquante."
+            );
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        Call<ArtistFollowResponse> call;
+
+        if (action > 0) {
+            call = apiService.followArtist(
+                    username,
+                    token,
+                    salt,
+                    artistId
+            );
+        } else if (action < 0) {
+            call = apiService.unfollowArtist(
+                    username,
+                    token,
+                    salt,
+                    artistId
+            );
+        } else {
+            call = apiService.getArtistFollow(
+                    username,
+                    token,
+                    salt,
+                    artistId
+            );
+        }
+
+        call.enqueue(new Callback<ArtistFollowResponse>() {
+            @Override
+            public void onResponse(
+                    @NonNull Call<ArtistFollowResponse> call,
+                    @NonNull Response<ArtistFollowResponse> response
+            ) {
+                if (response.isSuccessful()
+                        && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError(
+                            response.code(),
+                            getErrorMessage(response.code())
+                    );
+                }
+            }
+
+            @Override
+            public void onFailure(
+                    @NonNull Call<ArtistFollowResponse> call,
+                    @NonNull Throwable t
+            ) {
+                callback.onError(
+                        -1,
+                        "Erreur réseau : " + t.getMessage()
+                );
+            }
+        });
+    }
+
     public void getSharedPlaylist(SharedPlaylistCallback callback) {
         String username = Preferences.getUser();
         String password = Preferences.getPassword();
@@ -162,6 +271,31 @@ public class TropikeauRepository {
                 token,
                 salt,
                 new SharedPlaylistAddRequest(trackId)
+        ).enqueue(sharedPlaylistCallback(callback));
+    }
+
+    public void voteSharedTrack(
+            long itemId,
+            int vote,
+            SharedPlaylistCallback callback
+    ) {
+        String username = Preferences.getUser();
+        String password = Preferences.getPassword();
+
+        if (username == null || password == null) {
+            callback.onError(401, "Authentification Navidrome manquante.");
+            return;
+        }
+
+        String salt = generateSalt();
+        String token = StringUtil.tokenize(password + salt);
+
+        apiService.voteSharedPlaylistTrack(
+                username,
+                token,
+                salt,
+                itemId,
+                new SharedPlaylistVoteRequest(vote)
         ).enqueue(sharedPlaylistCallback(callback));
     }
 
@@ -327,6 +461,11 @@ public class TropikeauRepository {
 
     public interface TropikeauCallback {
         void onSuccess(MusicRequestResponse response);
+        void onError(int code, String message);
+    }
+
+    public interface ArtistFollowCallback {
+        void onSuccess(ArtistFollowResponse response);
         void onError(int code, String message);
     }
 

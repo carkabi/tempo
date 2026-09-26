@@ -27,15 +27,25 @@ import java.io.File;
 @UnstableApi
 public class PeachUpdateDialog extends DialogFragment {
 
+    private static final String ARG_UPDATE = "update";
     private static final String STATE_PENDING_APK_PATH = "pending_apk_path";
     private static final String STATE_HAS_ATTEMPTED_INSTALL = "has_attempted_install";
 
-    private final PeachUpdate update;
+    private PeachUpdate update;
     private String pendingApkPath;
     private boolean hasAttemptedInstall = false;
 
-    public PeachUpdateDialog(PeachUpdate update) {
-        this.update = update;
+    public PeachUpdateDialog() {
+    }
+
+    public static PeachUpdateDialog newInstance(
+            PeachUpdate update
+    ) {
+        PeachUpdateDialog dialog = new PeachUpdateDialog();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_UPDATE, update);
+        dialog.setArguments(args);
+        return dialog;
     }
 
     @Override
@@ -50,6 +60,14 @@ public class PeachUpdateDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        Bundle args = getArguments();
+        if (update == null && args != null) {
+            Object serialized = args.getSerializable(ARG_UPDATE);
+            if (serialized instanceof PeachUpdate) {
+                update = (PeachUpdate) serialized;
+            }
+        }
+
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_peach_update, null);
 
         if (savedInstanceState != null) {
@@ -106,8 +124,12 @@ public class PeachUpdateDialog extends DialogFragment {
                 if (pendingApkPath != null) {
                     File apkFile = new File(pendingApkPath);
                     if (PeachUpdateDownloader.verifyDownloadedApk(requireContext(), apkFile, update)) {
-                        hasAttemptedInstall = true;
-                        PeachUpdateDownloader.installApk(requireContext(), apkFile);
+                        boolean installStarted =
+                                PeachUpdateDownloader.installApk(
+                                        requireContext(),
+                                        apkFile
+                                );
+                        hasAttemptedInstall = installStarted;
                     } else {
                         clearPendingApk();
                         Toast.makeText(getContext(), "Fichier APK corrompu ou supprimé. Veuillez télécharge à nouveau.", Toast.LENGTH_LONG).show();
@@ -144,15 +166,23 @@ public class PeachUpdateDialog extends DialogFragment {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 boolean canInstall = requireContext().getPackageManager().canRequestPackageInstalls();
                 if (canInstall && !hasAttemptedInstall) {
-                    hasAttemptedInstall = true;
-                    boolean installed = PeachUpdateDownloader.installApk(requireContext(), apkFile);
+                    boolean installed =
+                            PeachUpdateDownloader.installApk(
+                                    requireContext(),
+                                    apkFile
+                            );
+                    hasAttemptedInstall = installed;
                     if (installed && (update == null || !update.isMandatory())) {
                         dismiss();
                     }
                 }
             } else if (!hasAttemptedInstall) {
-                hasAttemptedInstall = true;
-                boolean installed = PeachUpdateDownloader.installApk(requireContext(), apkFile);
+                boolean installed =
+                        PeachUpdateDownloader.installApk(
+                                requireContext(),
+                                apkFile
+                        );
+                hasAttemptedInstall = installed;
                 if (installed && (update == null || !update.isMandatory())) {
                     dismiss();
                 }
@@ -195,7 +225,7 @@ public class PeachUpdateDialog extends DialogFragment {
             @Override
             public void onSuccess(File apkFile) {
                 pendingApkPath = apkFile.getAbsolutePath();
-                hasAttemptedInstall = true;
+                hasAttemptedInstall = false;
 
                 if (progressGroup != null) progressGroup.setVisibility(View.GONE);
                 if (downloadBtn != null) {
@@ -203,7 +233,13 @@ public class PeachUpdateDialog extends DialogFragment {
                     downloadBtn.setVisibility(View.VISIBLE);
                 }
 
-                boolean installed = PeachUpdateDownloader.installApk(requireContext(), apkFile);
+                boolean installed =
+                        PeachUpdateDownloader.installApk(
+                                requireContext(),
+                                apkFile
+                        );
+                hasAttemptedInstall = installed;
+
                 if (!installed && update != null && !update.isMandatory()) {
                     Toast.makeText(getContext(), "Veuillez autoriser l'installation pour continuer.", Toast.LENGTH_LONG).show();
                 } else if (installed && (update == null || !update.isMandatory())) {

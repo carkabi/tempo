@@ -25,6 +25,11 @@ public class SharedPlaylistItem {
     @SerializedName("can_remove")
     private boolean canRemove;
 
+    private int score;
+
+    @SerializedName("user_vote")
+    private int userVote;
+
     public long getId() {
         return id;
     }
@@ -62,5 +67,13 @@ public class SharedPlaylistItem {
 
     public boolean canRemove() {
         return canRemove;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public int getUserVote() {
+        return userVote;
     }
 }

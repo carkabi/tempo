@@ -2,7 +2,10 @@ package com.cappielloantonio.tempo.repository.peach.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PeachUpdate {
+import java.io.Serializable;
+
+public class PeachUpdate implements Serializable {
+    private static final long serialVersionUID = 1L;
     @SerializedName("available")
     private boolean available;
 

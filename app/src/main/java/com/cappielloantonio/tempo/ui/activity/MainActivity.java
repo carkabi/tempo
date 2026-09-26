@@ -24,6 +24,7 @@ import com.cappielloantonio.tempo.databinding.ActivityMainBinding;
 import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.ui.activity.base.BaseActivity;
 import com.cappielloantonio.tempo.ui.fragment.PlayerBottomSheetFragment;
+import com.cappielloantonio.tempo.util.PeachUpdateManager;
 import com.cappielloantonio.tempo.util.Preferences;
 import com.cappielloantonio.tempo.viewmodel.MainViewModel;
 
@@ -68,12 +69,42 @@ public class MainActivity extends BaseActivity {
 
         initViews();
         initPlayerBottomSheet();
+
+        boolean forcedUpdateCheck =
+                PeachUpdateManager.consumeUpdateIntent(this);
+
+        PeachUpdateManager.check(
+                this,
+                forcedUpdateCheck
+        );
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         initService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PeachUpdateManager.showPendingIfPossible(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+
+        boolean forcedUpdateCheck =
+                PeachUpdateManager.consumeUpdateIntent(this);
+
+        if (forcedUpdateCheck) {
+            PeachUpdateManager.check(
+                    this,
+                    true
+            );
+        }
     }
 
     private void initViews() {

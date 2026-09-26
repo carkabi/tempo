@@ -39,8 +39,14 @@ public class PeachRepository {
         this.apiService = apiService;
     }
 
+    public static String getUpdateChannel() {
+        return BuildConfig.DEBUG
+                ? "beta"
+                : "stable";
+    }
+
     public void bootstrap(PeachCallback callback) {
-        String channel = "beta";
+        String channel = getUpdateChannel();
         apiService.bootstrap(channel, BuildConfig.VERSION_CODE).enqueue(new Callback<PeachBootstrapResponse>() {
             @Override
             public void onResponse(@NonNull Call<PeachBootstrapResponse> call, @NonNull Response<PeachBootstrapResponse> response) {
@@ -60,7 +66,7 @@ public class PeachRepository {
     }
 
     public PeachBootstrapResponse bootstrapSync() throws IOException {
-        String channel = "beta";
+        String channel = getUpdateChannel();
         Response<PeachBootstrapResponse> response = apiService.bootstrap(channel, BuildConfig.VERSION_CODE).execute();
         if (response.isSuccessful() && response.body() != null) {
             return response.body();

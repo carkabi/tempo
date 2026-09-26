@@ -53,13 +53,13 @@ public class App extends Application {
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
-        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(PeachUpdateWorker.class, 6, TimeUnit.HOURS)
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(PeachUpdateWorker.class, 2, TimeUnit.HOURS)
                 .setConstraints(constraints)
                 .build();
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
                 "PeachUpdateWorker",
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.UPDATE,
                 workRequest
         );
     }

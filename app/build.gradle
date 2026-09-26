@@ -2,6 +2,18 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
+def peachKeystorePropertiesFile =
+        rootProject.file('keystore.properties')
+def peachKeystoreProperties = new Properties()
+
+if (peachKeystorePropertiesFile.exists()) {
+    peachKeystoreProperties.load(
+            new FileInputStream(
+                    peachKeystorePropertiesFile
+            )
+    )
+}
+
 android {
     compileSdk 35
     buildToolsVersion = '35.0.0'
@@ -10,8 +22,8 @@ android {
         minSdkVersion 24
         targetSdk 35
 
-        versionCode 28
-        versionName '4.1.0'
+        versionCode 35
+        versionName '4.2.6'
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
@@ -21,6 +33,19 @@ android {
                         "room.schemaLocation": "$projectDir/schemas".toString(),
                         "room.incremental"   : "true"
                 ]
+            }
+        }
+    }
+
+    signingConfigs {
+        if (peachKeystorePropertiesFile.exists()) {
+            peachRelease {
+                keyAlias peachKeystoreProperties['keyAlias']
+                keyPassword peachKeystoreProperties['keyPassword']
+                storeFile file(
+                        peachKeystoreProperties['storeFile']
+                )
+                storePassword peachKeystoreProperties['storePassword']
             }
         }
     }
@@ -46,6 +71,10 @@ android {
         peach {
             dimension = "default"
             applicationId "fr.tropikeau.peach"
+
+            if (peachKeystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.peachRelease
+            }
         }
     }
 
@@ -109,6 +138,9 @@ dependencies {
 
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
+
+    // Google Play Billing (Peach support subscriptions)
+    implementation 'com.android.billingclient:billing:9.1.0'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'

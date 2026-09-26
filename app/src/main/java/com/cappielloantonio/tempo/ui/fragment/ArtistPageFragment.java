@@ -19,12 +19,15 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.cappielloantonio.tempo.BuildConfig;
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.databinding.FragmentArtistPageBinding;
 import com.cappielloantonio.tempo.glide.CustomGlideRequest;
 import com.cappielloantonio.tempo.helper.recyclerview.CustomLinearSnapHelper;
 import com.cappielloantonio.tempo.helper.recyclerview.GridItemDecoration;
 import com.cappielloantonio.tempo.interfaces.ClickCallback;
+import com.cappielloantonio.tempo.repository.tropikeau.TropikeauRepository;
+import com.cappielloantonio.tempo.repository.tropikeau.models.ArtistFollowResponse;
 import com.cappielloantonio.tempo.service.MediaManager;
 import com.cappielloantonio.tempo.service.MediaService;
 import com.cappielloantonio.tempo.subsonic.models.ArtistID3;
@@ -55,6 +58,10 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
     private ArtistCatalogueAdapter artistCatalogueAdapter;
 
     private ListenableFuture<MediaBrowser> mediaBrowserListenableFuture;
+    private final TropikeauRepository tropikeauRepository =
+            new TropikeauRepository();
+    private boolean artistFollowing = false;
+    private boolean artistFollowAvailable = false;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,6 +75,7 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
         initAppBar();
         initArtistInfo();
         initPlayButtons();
+        initArtistFollow();
         initTopSongsView();
         initAlbumsView();
         initSimilarArtistsView();
@@ -166,6 +174,94 @@ public class ArtistPageFragment extends Fragment implements ClickCallback {
                     Toast.makeText(requireContext(), getString(R.string.artist_error_retrieving_radio), Toast.LENGTH_SHORT).show();
                 }
             });
+        });
+    }
+
+    private void initArtistFollow() {
+        if (!"peach".equals(BuildConfig.FLAVOR)) {
+            bind.artistPageFollowButton.setVisibility(View.GONE);
+            return;
+        }
+
+        String artistId = artistPageViewModel.getArtist().getId();
+
+        if (artistId == null || artistId.isEmpty()) {
+            bind.artistPageFollowButton.setVisibility(View.GONE);
+            return;
+        }
+
+        bind.artistPageFollowButton.setVisibility(View.VISIBLE);
+        bind.artistPageFollowButton.setEnabled(false);
+
+        TropikeauRepository.ArtistFollowCallback callback =
+                new TropikeauRepository.ArtistFollowCallback() {
+                    @Override
+                    public void onSuccess(
+                            ArtistFollowResponse response
+                    ) {
+                        if (!isAdded() || bind == null) return;
+
+                        requireActivity().runOnUiThread(() -> {
+                            if (bind == null) return;
+
+                            artistFollowAvailable =
+                                    response.isAvailable();
+                            artistFollowing =
+                                    response.isFollowing();
+
+                            bind.artistPageFollowButton.setEnabled(
+                                    artistFollowAvailable
+                            );
+                            bind.artistPageFollowButton.setText(
+                                    artistFollowAvailable
+                                            ? (artistFollowing
+                                                ? R.string.artist_following
+                                                : R.string.artist_follow)
+                                            : R.string.artist_follow_unavailable
+                            );
+                            bind.artistPageFollowButton.setIconResource(
+                                    artistFollowing
+                                            ? R.drawable.ic_favorite
+                                            : R.drawable.ic_favorites_outlined
+                            );
+                        });
+                    }
+
+                    @Override
+                    public void onError(
+                            int code,
+                            String message
+                    ) {
+                        if (!isAdded() || bind == null) return;
+
+                        requireActivity().runOnUiThread(() -> {
+                            if (bind == null) return;
+                            bind.artistPageFollowButton.setEnabled(false);
+                        });
+                    }
+                };
+
+        tropikeauRepository.getArtistFollow(
+                artistId,
+                callback
+        );
+
+        bind.artistPageFollowButton.setOnClickListener(v -> {
+            if (!artistFollowAvailable) return;
+
+            bind.artistPageFollowButton.setEnabled(false);
+
+            if (artistFollowing) {
+                tropikeauRepository.unfollowArtist(
+                        artistId,
+                        callback
+                );
+            } else {
+                tropikeauRepository.followArtist(
+                        artistId,
+                        callback
+                );
+            }
         });
     }
 

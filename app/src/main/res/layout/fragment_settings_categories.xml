@@ -78,6 +78,28 @@
                     android:textColor="?attr/appTextColorPrimary" />
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_support_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/settings_support_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:gravity="start|center_vertical"
+                    android:text="@string/settings_support_peach"
+                    app:icon="@drawable/ic_favorite"
+                    app:iconTint="?attr/colorPrimary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:iconSize="36dp"
+                    app:iconPadding="16dp"
+                    android:textColor="?attr/appTextColorPrimary" />
+            </RelativeLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/settings_general_button"
                 style="@style/Widget.Material3.Button.TextButton"

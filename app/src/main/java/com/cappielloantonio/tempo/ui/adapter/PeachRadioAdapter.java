@@ -67,6 +67,8 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
         private final View trackInfoContainer;
         private final TextView currentTrackText;
         private final TextView nextTrackText;
+        private final TextView historyText;
+        private final TextView upcomingText;
         private final View radioCard;
 
         ViewHolder(View itemView) {
@@ -79,6 +81,8 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
             this.trackInfoContainer = itemView.findViewById(R.id.peach_radio_track_info_container);
             this.currentTrackText = itemView.findViewById(R.id.peach_radio_current_track);
             this.nextTrackText = itemView.findViewById(R.id.peach_radio_next_track);
+            this.historyText = itemView.findViewById(R.id.peach_radio_history);
+            this.upcomingText = itemView.findViewById(R.id.peach_radio_upcoming);
         }
 
         void bind(PeachRadioStation station) {
@@ -147,6 +151,28 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
                             nextTrackText.setVisibility(View.GONE);
                         }
                     }
+
+                    List<RadioProgramItem> previous =
+                            PeachRadioCache.getPreviousProgramItems(
+                                    station.getSlug(),
+                                    3
+                            );
+                    List<RadioProgramItem> upcoming =
+                            PeachRadioCache.getUpcomingProgramItems(
+                                    station.getSlug(),
+                                    3
+                            );
+
+                    bindProgramSummary(
+                            historyText,
+                            R.string.peach_radio_history_format,
+                            previous
+                    );
+                    bindProgramSummary(
+                            upcomingText,
+                            R.string.peach_radio_upcoming_format,
+                            upcoming
+                    );
                 } else {
                     trackInfoContainer.setVisibility(View.GONE);
                     if (liveBadge != null) {
@@ -167,5 +193,47 @@ public class PeachRadioAdapter extends RecyclerView.Adapter<PeachRadioAdapter.Vi
                 radioCard.setOnClickListener(clickListener);
             }
         }
+
+        private void bindProgramSummary(
+                TextView view,
+                int formatRes,
+                List<RadioProgramItem> program
+        ) {
+            if (view == null) return;
+
+            if (program == null || program.isEmpty()) {
+                view.setVisibility(View.GONE);
+                return;
+            }
+
+            StringBuilder titles = new StringBuilder();
+
+            for (RadioProgramItem item : program) {
+                if (item.getTitle() == null
+                        || item.getTitle().trim().isEmpty()) {
+                    continue;
+                }
+
+                if (titles.length() > 0) {
+                    titles.append(" · ");
+                }
+
+                titles.append(item.getTitle());
+            }
+
+            if (titles.length() == 0) {
+                view.setVisibility(View.GONE);
+                return;
+            }
+
+            view.setText(
+                    itemView.getContext().getString(
+                            formatRes,
+                            titles.toString()
+                    )
+            );
+            view.setVisibility(View.VISIBLE);
+        }
+
     }
 }

@@ -171,6 +171,9 @@
         <action
             android:id="@+id/action_settingsCategoryFragment_to_contactFragment"
             app:destination="@id/contactFragment" />
+        <action
+            android:id="@+id/action_settingsCategoryFragment_to_peachSupportFragment"
+            app:destination="@id/peachSupportFragment" />
     </fragment>
     <fragment
         android:id="@+id/newsFragment"
@@ -182,6 +185,11 @@
         android:name="com.cappielloantonio.tempo.ui.fragment.ContactFragment"
         android:label="ContactFragment"
         tools:layout="@layout/fragment_contact" />
+    <fragment
+        android:id="@+id/peachSupportFragment"
+        android:name="com.cappielloantonio.tempo.ui.fragment.PeachSupportFragment"
+        android:label="@string/peach_support_title"
+        tools:layout="@layout/fragment_peach_support" />
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.cappielloantonio.tempo.ui.fragment.SearchFragment"

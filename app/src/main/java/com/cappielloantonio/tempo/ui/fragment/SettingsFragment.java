@@ -162,7 +162,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                             PeachUpdate update = response.getUpdate();
                             if (response.getApplication() != null && BuildConfig.APPLICATION_ID.equals(response.getApplication().getAndroidApplicationId())) {
                                 if (update != null && update.isAvailable() && update.getVersionCode() > BuildConfig.VERSION_CODE) {
-                                    new PeachUpdateDialog(update).show(getParentFragmentManager(), "PeachUpdateDialog");
+                                    if (isAdded() && !getParentFragmentManager().isStateSaved()) {
+                                        PeachUpdateDialog.newInstance(update).show(
+                                                getParentFragmentManager(),
+                                                "PeachUpdateDialog"
+                                        );
+                                    }
                                     return;
                                 }
                             }

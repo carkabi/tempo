@@ -99,6 +99,21 @@
                     app:iconPadding="18dp" />
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/artist_page_follow_button"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/artist_follow"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ic_favorites_outlined" />
+
             <View
                 android:id="@+id/bottom_button_divider"
                 style="@style/Divider"

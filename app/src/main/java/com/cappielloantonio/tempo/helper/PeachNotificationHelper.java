@@ -15,6 +15,7 @@ import androidx.media3.common.util.UnstableApi;
 
 import com.cappielloantonio.tempo.R;
 import com.cappielloantonio.tempo.ui.activity.MainActivity;
+import com.cappielloantonio.tempo.util.PeachUpdateManager;
 import com.cappielloantonio.tempo.util.Preferences;
 
 @UnstableApi
@@ -63,7 +64,14 @@ public class PeachNotificationHelper {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         } else {
             intent = new Intent(context, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            if (CHANNEL_UPDATES.equals(channelId)) {
+                intent.putExtra(
+                        PeachUpdateManager.EXTRA_OPEN_UPDATE,
+                        true
+                );
+            }
         }
 
         PendingIntent pendingIntent = PendingIntent.getActivity(
@@ -81,6 +89,14 @@ public class PeachNotificationHelper {
                 .setPriority(CHANNEL_ALERTS.equals(channelId) ? NotificationCompat.PRIORITY_HIGH : NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
+
+        if (CHANNEL_UPDATES.equals(channelId)) {
+            builder.addAction(
+                    R.drawable.ic_splash_logo,
+                    "Mettre à jour",
+                    pendingIntent
+            );
+        }
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         try {

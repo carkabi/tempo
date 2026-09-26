@@ -2,10 +2,12 @@ package com.cappielloantonio.tempo.repository.tropikeau;
 
 import com.cappielloantonio.tempo.repository.peach.models.RadioManifestResponse;
 import com.cappielloantonio.tempo.repository.peach.models.RadioPackageResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.ArtistFollowResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.MusicRequestResponse;
 import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistAddRequest;
 import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistResponse;
+import com.cappielloantonio.tempo.repository.tropikeau.models.SharedPlaylistVoteRequest;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -55,6 +57,30 @@ public interface TropikeauApiService {
             @Header("X-Peach-Salt") String salt
     );
 
+    @GET("api/peach/v1/artist-follow/{artistId}")
+    Call<ArtistFollowResponse> getArtistFollow(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Path("artistId") String artistId
+    );
+
+    @POST("api/peach/v1/artist-follow/{artistId}")
+    Call<ArtistFollowResponse> followArtist(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Path("artistId") String artistId
+    );
+
+    @DELETE("api/peach/v1/artist-follow/{artistId}")
+    Call<ArtistFollowResponse> unfollowArtist(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Path("artistId") String artistId
+    );
+
     @GET("api/peach/v1/shared-playlist")
     Call<SharedPlaylistResponse> getSharedPlaylist(
             @Header("X-Peach-Username") String username,
@@ -68,6 +94,15 @@ public interface TropikeauApiService {
             @Header("X-Peach-Token") String token,
             @Header("X-Peach-Salt") String salt,
             @Body SharedPlaylistAddRequest request
+    );
+
+    @POST("api/peach/v1/shared-playlist/{itemId}/vote")
+    Call<SharedPlaylistResponse> voteSharedPlaylistTrack(
+            @Header("X-Peach-Username") String username,
+            @Header("X-Peach-Token") String token,
+            @Header("X-Peach-Salt") String salt,
+            @Path("itemId") long itemId,
+            @Body SharedPlaylistVoteRequest request
     );
 
     @DELETE("api/peach/v1/shared-playlist/{itemId}")

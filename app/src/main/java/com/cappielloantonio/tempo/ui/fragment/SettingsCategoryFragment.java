@@ -42,6 +42,8 @@ public class SettingsCategoryFragment extends Fragment {
         View newsButton = view.findViewById(R.id.settings_news_button);
         View contactContainer = view.findViewById(R.id.settings_contact_container);
         View contactButton = view.findViewById(R.id.settings_contact_button);
+        View supportContainer = view.findViewById(R.id.settings_support_container);
+        View supportButton = view.findViewById(R.id.settings_support_button);
 
         if ("peach".equals(BuildConfig.FLAVOR)) {
             if (newsContainer != null) newsContainer.setVisibility(View.VISIBLE);
@@ -57,9 +59,17 @@ public class SettingsCategoryFragment extends Fragment {
                         Navigation.findNavController(v).navigate(R.id.action_settingsCategoryFragment_to_contactFragment)
                 );
             }
+
+            if (supportContainer != null) supportContainer.setVisibility(View.VISIBLE);
+            if (supportButton != null) {
+                supportButton.setOnClickListener(v ->
+                        Navigation.findNavController(v).navigate(R.id.action_settingsCategoryFragment_to_peachSupportFragment)
+                );
+            }
         } else {
             if (newsContainer != null) newsContainer.setVisibility(View.GONE);
             if (contactContainer != null) contactContainer.setVisibility(View.GONE);
+            if (supportContainer != null) supportContainer.setVisibility(View.GONE);
         }
 
         bind.settingsGeneralButton.setOnClickListener(v -> navigateToSettings(v, "pref_general"));
